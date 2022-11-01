@@ -12,12 +12,21 @@ public abstract class CharacterBase : MonoBehaviour
     //Mandatory Override
     protected abstract void MustBeOverridden();
 
-    void Awake()
-    {
-        Debug.Log("CharacterBase awake method - the monobehaviour is in the base class so all inherited members should also have inherit monobehaviour class");
-    }
 
-    //Optional Override
+    /*
+     * NOTE: You should use Awake to set up references between scripts, and use Start, which is called after all Awake calls are finished, to pass any information back and forth.
+     */
+
+    //void Awake()
+    //{
+    //    Debug.Log("CharacterBase awake method - the monobehaviour is in the base class so all inherited members should also have inherit monobehaviour class");
+    //}
+
+    /*
+     * TODO: 
+     * Interface? Will allow contract to be created and passed as a ref.
+     * Initialising a GO should be neccessary and enforced at code level.
+     */
     public virtual void Initialise(int speed, Vector3 position, Material mat)
     {
         Name = gameObject.name;
@@ -25,8 +34,18 @@ public abstract class CharacterBase : MonoBehaviour
         gameObject.transform.position = position;
         gameObject.GetComponent<Renderer>().material = mat;
     }
+
+    //This is an example of an method that can be optionally overriden by inherited members.
+    public virtual void VirtualMethod(int testInt, string testString)
+    {
+        Debug.Log("This is an overriden(virtual) method call from the base.");
+    }
 }
 
+/*
+ * Generic class for any object inherited from base. Will create entity and attach any components
+ * Does this go into another c# file CharacterBaseGeneric?
+ */
 public class CharacterBase<T> where T : CharacterBase
 {
     public GameObject GameObject;
