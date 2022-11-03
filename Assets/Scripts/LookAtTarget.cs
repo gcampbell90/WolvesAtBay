@@ -16,7 +16,6 @@ public class LookAtTarget : MonoBehaviour
     {
         target = GameObject.FindGameObjectWithTag("Player").transform;
 
-        // Rotate the camera every frame so it keeps looking at the target
         transform.LookAt(target);
     }
 }
