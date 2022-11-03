@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcCount: 0
-  enemyCount: 5
+  enemyCount: 0
   npc_Material: {fileID: 2100000, guid: 83b2942ba2b74af4f83876e754b68568, type: 2}
   enemy_Material: {fileID: 2100000, guid: 235177c5a2188bf4798835411c711ab0, type: 2}
 --- !u!4 &272937674
@@ -504,7 +504,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &1475170872
 BoxCollider:
   m_ObjectHideFlags: 0

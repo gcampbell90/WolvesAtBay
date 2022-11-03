@@ -2,14 +2,13 @@
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class Enemy : CharacterBase, ICanTarget
+public class Enemy : CharacterBase
 {
-    public Transform Target { get; set; }
-
     private void Start()
     {
         //VirtualMethodTest(1, "Enemy is created");
         AddLookAtTarget();
+        gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }
 
     #region OOP test methods
@@ -32,9 +31,16 @@ public class Enemy : CharacterBase, ICanTarget
     //    base.VirtualMethodTest(testInt, testString);
     //    Debug.Log($"Output: {testInt},{testString}. Overridden Virtual method called directly from class than base. I can also add to this implementation with or without calling the base method.\n Whenever that behaviour is required/useful is still to be figured out. ");
     //}
+
     public override void AddLookAtTarget()
     {
         base.AddLookAtTarget();
+    }
+
+    public override void ITakeDamage(int damage)
+    {
+        Debug.Log($"{gameObject.name} have taken damage of {damage}");
+        Health -= damage;
     }
 
     //Attaches additional component to Enemy type GO, is this the right place for it?

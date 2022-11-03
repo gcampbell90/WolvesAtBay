@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 //Base Character Class - Root of all characters
-public abstract class CharacterBase : MonoBehaviour
+public abstract class CharacterBase : MonoBehaviour, IKillable
 {
     public string Name { get; set; }
     public int Health { get; set; }
@@ -42,6 +42,8 @@ public abstract class CharacterBase : MonoBehaviour
     {
         gameObject.AddComponent<LookAtTarget>();
     }
+
+    public abstract void ITakeDamage(int damage);
 }
 
 /*
