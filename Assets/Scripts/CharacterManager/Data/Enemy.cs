@@ -2,12 +2,14 @@
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class Enemy : CharacterBase
+public class Enemy : CharacterBase , IMoveable
 {
     private void Start()
     {
         //VirtualMethodTest(1, "Enemy is created");
         AddLookAtTarget();
+        DEBUG_AddMoveComponent();
+
         gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }
 
@@ -41,6 +43,11 @@ public class Enemy : CharacterBase
     {
         Debug.Log($"{gameObject.name} have taken damage of {damage}");
         Health -= damage;
+    }
+
+    private void DEBUG_AddMoveComponent()
+    {
+        gameObject.AddComponent<MoveToTarget>();
     }
 
     //Attaches additional component to Enemy type GO, is this the right place for it?

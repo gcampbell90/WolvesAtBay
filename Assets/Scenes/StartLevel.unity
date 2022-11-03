@@ -152,8 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507ea5f8372ec364db608dd206df7f2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcCount: 0
-  enemyCount: 0
+  npcCount: 2
+  enemyCount: 5
   npc_Material: {fileID: 2100000, guid: 83b2942ba2b74af4f83876e754b68568, type: 2}
   enemy_Material: {fileID: 2100000, guid: 235177c5a2188bf4798835411c711ab0, type: 2}
 --- !u!4 &272937674
@@ -566,6 +566,7 @@ GameObject:
   - component: {fileID: 1475170872}
   - component: {fileID: 1475170876}
   - component: {fileID: 1475170877}
+  - component: {fileID: 1475170878}
   m_Layer: 0
   m_Name: DEBUG_Enemy
   m_TagString: Untagged
@@ -673,6 +674,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a64ca86635a3b694b9d66a3130293127, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1475170878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1475170871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cb4e0fa04d8506428ca3740eaa59e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1525004581
