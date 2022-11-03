@@ -13,7 +13,7 @@ public abstract class CharacterBase : MonoBehaviour
     //Mandatory Override
     protected abstract void MustBeOverridden();
 
-
+    
     /*
      * NOTE: You should use Awake to set up references between scripts, and use Start, which is called after all Awake calls are finished, to pass any information back and forth.
      */
@@ -33,9 +33,14 @@ public abstract class CharacterBase : MonoBehaviour
     }
 
     //This is an example of an method that can be optionally overriden by inherited members.
-    public virtual void VirtualMethodTest(int testInt, string testString)
+    //public virtual void VirtualMethodTest(int testInt, string testString)
+    //{
+    //    Debug.Log("This is an overriden(virtual) method call from the base.");
+    //}
+
+    public virtual void AddLookAtTarget()
     {
-        Debug.Log("This is an overriden(virtual) method call from the base.");
+        gameObject.AddComponent<LookAtTarget>();
     }
 }
 

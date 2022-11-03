@@ -30,7 +30,7 @@ public class CharacterFactory : MonoBehaviour
             testEnemy_character.ScriptComponent.Initialise(
                 health: 100,
                 speed: 5,
-                position: new Vector3(0, 0, 0),
+                position: new Vector3(-enemyCount + (i * 2), 0.5f, 50),
                 mat: enemy_Material
             );
         }
