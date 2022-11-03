@@ -24,10 +24,11 @@ public class MoveToTarget : MonoBehaviour
         var step = gameObject.GetComponent<CharacterBase>().Speed * Time.deltaTime; // calculate distance to move
         transform.position = Vector3.MoveTowards(transform.position, target.position, step);
 
-        if (Vector3.Distance(transform.position, target.position) < 0.001f)
-        {
-            target.position *= -1.0f;
-        }
+        //if (Vector3.Distance(transform.position, target.position) < 0.001f)
+        //{
+        //    //target.position *= -1.0f;
+        //    return;
+        //}
 
         //Debug.Log("Moving to Target" + step + " " + transform.position + " " + target.position);
 

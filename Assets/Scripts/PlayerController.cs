@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     //private Rigidbody rb;
 
     //float screenHalfWidthInWorldUnits
-    private void Awake()
+    private void Start()
     {
         speed = gameObject.GetComponent<CharacterBase>().Speed;
     }
