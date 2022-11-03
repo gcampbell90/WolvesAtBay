@@ -1,12 +1,16 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
-public class Enemy : CharacterBase
+public class Enemy : CharacterBase, ICanTarget
 {
 
     private void Start()
     {
-        VirtualMethod(1, "Enemy is created");
+        //VirtualMethodTest(1, "Enemy is created");
     }
+
+    #region OOP test methods
     //Public method to call classes protected method for layer of control/security.
     public void CallMustBeOverridden()
     {
@@ -21,10 +25,14 @@ public class Enemy : CharacterBase
 
     //Example of overridding a virtual method from the base when needed. Fetching/sending data to base methods?  
     //TODO: Find examples of actual useful implementations
-    public override void VirtualMethod(int testInt, string testString)
+    public override void VirtualMethodTest(int testInt, string testString)
     {
-        base.VirtualMethod(testInt, testString);
+        base.VirtualMethodTest(testInt, testString);
         Debug.Log($"Output: {testInt},{testString}. Overridden Virtual method called directly from class than base. I can also add to this implementation with or without calling the base method.\n Whenever that behaviour is required/useful is still to be figured out. ");
     }
 
+    //Attaches additional component to Enemy type GO, is this the right place for it?
+    
+    #endregion
 }
+

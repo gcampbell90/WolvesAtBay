@@ -7,6 +7,7 @@ using UnityEngine;
 public abstract class CharacterBase : MonoBehaviour
 {
     public string Name { get; set; }
+    public int Health { get; set; }
     public int Speed { get; set; }
 
     //Mandatory Override
@@ -22,21 +23,17 @@ public abstract class CharacterBase : MonoBehaviour
     //    Debug.Log("CharacterBase awake method - the monobehaviour is in the base class so all inherited members should also have inherit monobehaviour class");
     //}
 
-    /*
-     * TODO: 
-     * Interface? Will allow contract to be created and passed as a ref.
-     * Initialising a GO should be neccessary and enforced at code level.
-     */
-    public virtual void Initialise(int speed, Vector3 position, Material mat)
+    public virtual void Initialise(int health, int speed, Vector3 position, Material mat)
     {
         Name = gameObject.name;
         Speed = speed;
+        Health = health;
         gameObject.transform.position = position;
         gameObject.GetComponent<Renderer>().material = mat;
     }
 
     //This is an example of an method that can be optionally overriden by inherited members.
-    public virtual void VirtualMethod(int testInt, string testString)
+    public virtual void VirtualMethodTest(int testInt, string testString)
     {
         Debug.Log("This is an overriden(virtual) method call from the base.");
     }
@@ -60,5 +57,4 @@ public class CharacterBase<T> where T : CharacterBase
         //have his script component of type: newly created class of whatever character created.
         ScriptComponent = GameObject.AddComponent<T>();
     }
-
 }

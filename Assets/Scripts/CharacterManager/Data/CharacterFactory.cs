@@ -18,20 +18,21 @@ public class CharacterFactory : MonoBehaviour
         {
             CharacterBase<SmartNPC_Character> testSmartNPC_character = new CharacterBase<SmartNPC_Character>($"TestNPC_{i}");
             testSmartNPC_character.ScriptComponent.Initialise(
+                health: 100,
                 speed: 5,
                 position: new Vector3(-npcCount + (i * 2), 0.5f, 70),
                 mat: npc_Material
-                );
+            );
         }
         for (int i = 0; i < enemyCount; i++)
         {
-            CharacterBase<Enemy> testEnemy_character = new CharacterBase<Enemy>($"TestEnemy_{i}");
+            CharacterBase<Enemy> testEnemy_character = new CharacterBase<Enemy>($"TestEnemy");
             testEnemy_character.ScriptComponent.Initialise(
+                health: 100,
                 speed: 5,
-                position: new Vector3(-enemyCount + (i * 2), 0.5f, 50),
+                position: new Vector3(0, 0, 0),
                 mat: enemy_Material
-                );
-            testEnemy_character.ScriptComponent.CallMustBeOverridden();
+            );
         }
 
         //TODO: Update test Methods to accept newly created character to initialise instead of in awake method
@@ -39,16 +40,17 @@ public class CharacterFactory : MonoBehaviour
         //CreateEnemies();
     }
 
+    #region TestMethods
     private void CreateNPCs()
     {
         int posX = -10;
         foreach (var character in MockCharacterDB.NPC_CharacterList)
         {
             character.ScriptComponent.Initialise(
+                health: 100,
                 speed: 5,
                 position: new Vector3(posX, 0.5f, 70),
-                mat: npc_Material
-            );
+                mat: npc_Material);
             posX += 2;
         }
 
@@ -59,12 +61,15 @@ public class CharacterFactory : MonoBehaviour
         int posX = -5;
         foreach (var character in MockCharacterDB.Enemy_CharacterList)
         {
-            character.ScriptComponent.Initialise(
-                speed: 5,
-                position: new Vector3(posX, 0.5f, 50),
-                mat: enemy_Material
-            );
+            character.ScriptComponent
+                .Initialise(
+                    health: 100,
+                    speed: 5,
+                    position: new Vector3(posX, 0.5f, 50),
+                    mat: enemy_Material
+                );
             posX += 5;
         }
     }
+    #endregion
 }
