@@ -4,23 +4,23 @@ using UnityEngine;
 
 public class Player : CharacterBase
 {
-    public int speed = 10;
-    // Start is called before the first frame update
+    //public int speed = 10;
+    //// Start is called before the first frame update
     private void Awake()
     {
-        Speed = speed;
+        Speed = 10;
     }
 
-    void Start()
-    {
-        //gameObject.GetComponent<IKillable>().ITakeDamage(5);
-    }
+    //void Start()
+    //{
+    //    //gameObject.GetComponent<IKillable>().ITakeDamage(5);
+    //}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    //// Update is called once per frame
+    //void Update()
+    //{
+
+    //}
 
     public override void ITakeDamage(int damage)
     {
@@ -28,8 +28,11 @@ public class Player : CharacterBase
         Health -= damage;
     }
 
-    protected override void MustBeOverridden()
+
+    public override void OnTriggerEnter(Collider collider)
     {
-        throw new System.NotImplementedException();
+        Debug.Log($"{gameObject.name} have taken damage from {collider}");
+        ITakeDamage(10);
+        //throw new System.NotImplementedException();
     }
 }

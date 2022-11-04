@@ -2,29 +2,23 @@
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class Enemy : CharacterBase , IMoveable
+public class Enemy : CharacterBase
 {
     private void Start()
     {
         //VirtualMethodTest(1, "Enemy is created");
         AddLookAtTarget();
-        DEBUG_AddMoveComponent();
+        //DEBUG_AddMoveComponent();
 
         gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }
 
     #region OOP test methods
     //Public method to call classes protected method for layer of control/security.
-    public void CallMustBeOverridden()
-    {
-        MustBeOverridden();
-    }
-
-    protected override void MustBeOverridden()
-    {
-        Debug.Log($"This is a mandatory override method for {name}- this method should have no implementation in the base class as its inheriting members will need to provide this functionality.");
-        //throw new System.NotImplementedException();
-    }
+    //public void CallMustBeOverridden()
+    //{
+    //    MustBeOverridden();
+    //}
 
     //Example of overridding a virtual method from the base when needed. Fetching/sending data to base methods?  
     //TODO: Find examples of actual useful implementations
@@ -48,6 +42,11 @@ public class Enemy : CharacterBase , IMoveable
     private void DEBUG_AddMoveComponent()
     {
         gameObject.AddComponent<MoveToTarget>();
+    }
+
+    public override void OnTriggerEnter(Collider collider)
+    {
+        ITakeDamage(5);
     }
 
     //Attaches additional component to Enemy type GO, is this the right place for it?

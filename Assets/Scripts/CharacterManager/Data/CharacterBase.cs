@@ -10,8 +10,8 @@ public abstract class CharacterBase : MonoBehaviour, IKillable
     public int Health { get; set; }
     public int Speed { get; set; }
 
-    //Mandatory Override
-    protected abstract void MustBeOverridden();
+    //Mandatory Override example
+    //protected abstract void MustBeOverridden();
 
     
     /*
@@ -44,6 +44,8 @@ public abstract class CharacterBase : MonoBehaviour, IKillable
     }
 
     public abstract void ITakeDamage(int damage);
+
+    public abstract void OnTriggerEnter(Collider collider);
 }
 
 /*

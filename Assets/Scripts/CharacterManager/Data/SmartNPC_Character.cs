@@ -9,10 +9,6 @@ public class SmartNPC_Character : CharacterBase
         Debug.Log("I'm a Smart Npc Created called " + this.name + ". This component was added to the new GO at runtime and I was called!");
         AddLookAtTarget();
     }
-    protected override void MustBeOverridden()
-    {
-        throw new NotImplementedException();
-    }
 
     public override void AddLookAtTarget()
     {
@@ -24,4 +20,8 @@ public class SmartNPC_Character : CharacterBase
         throw new NotImplementedException();
     }
 
+    public override void OnTriggerEnter(Collider collider)
+    {
+        throw new NotImplementedException();
+    }
 }

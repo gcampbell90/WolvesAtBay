@@ -20,7 +20,7 @@ public class CharacterFactory : MonoBehaviour
             testSmartNPC_character.ScriptComponent.Initialise(
                 health: 100,
                 speed: 5,
-                position: new Vector3(-npcCount + (i * 2), 0.5f, 70),
+                position: new Vector3(-npcCount + (i * 2), 0.5f, 20),
                 mat: npc_Material
             );
         }
@@ -29,8 +29,8 @@ public class CharacterFactory : MonoBehaviour
             CharacterBase<Enemy> testEnemy_character = new CharacterBase<Enemy>($"TestEnemy");
             testEnemy_character.ScriptComponent.Initialise(
                 health: 100,
-                speed: 5,
-                position: new Vector3(-enemyCount + (i * 2), 0.5f, 50),
+                speed: 2,
+                position: new Vector3(-enemyCount + (i * 2), 0.5f, 15),
                 mat: enemy_Material
             );
         }
