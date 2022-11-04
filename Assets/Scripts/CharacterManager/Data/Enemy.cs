@@ -2,12 +2,20 @@
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
+[RequireComponent(typeof(Rigidbody))]
 public class Enemy : CharacterBase
 {
     private void Start()
     {
+        var rb = GetComponent<Rigidbody>();
+        rb.mass = 0f;
+
+        var col = GetComponent<Collider>();
+        col.isTrigger = false;
+
+        //rb.useGravity = false;
         //VirtualMethodTest(1, "Enemy is created");
-        AddLookAtTarget();
+        //AddLookAtTarget();
         //DEBUG_AddMoveComponent();
 
         //gameObject.GetComponent<IKillable>().ITakeDamage(5);
@@ -44,9 +52,9 @@ public class Enemy : CharacterBase
         gameObject.AddComponent<MoveToTarget>();
     }
 
-    public override void OnTriggerEnter(Collider collider)
+    public override void OnCollisionEnter(Collision collision)
     {
-        Debug.Log($"{gameObject.name} have taken damage from {collider}");
+        Debug.Log($"{gameObject.name} have been hit from {collision}");
 
         ITakeDamage(5);
     }

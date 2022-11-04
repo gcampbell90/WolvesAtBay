@@ -29,9 +29,9 @@ public class Player : CharacterBase
     }
 
 
-    public override void OnTriggerEnter(Collider collider)
+    public override void OnCollisionEnter(Collision collision)
     {
-        ITakeDamage(10);
+        //ITakeDamage(10);
         //throw new System.NotImplementedException();
     }
 }

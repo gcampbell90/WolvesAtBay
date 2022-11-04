@@ -30,6 +30,7 @@ public abstract class CharacterBase : MonoBehaviour, IKillable
         Health = health;
         gameObject.transform.position = position;
         gameObject.GetComponent<Renderer>().material = mat;
+        gameObject.GetComponent<BoxCollider>().isTrigger = true;
     }
 
     //This is an example of an method that can be optionally overriden by inherited members.
@@ -45,7 +46,7 @@ public abstract class CharacterBase : MonoBehaviour, IKillable
 
     public abstract void ITakeDamage(int damage);
 
-    public abstract void OnTriggerEnter(Collider collider);
+    public abstract void OnCollisionEnter(Collision collision);
 }
 
 /*

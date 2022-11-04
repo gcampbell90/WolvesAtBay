@@ -20,7 +20,7 @@ public class SmartNPC_Character : CharacterBase
         throw new NotImplementedException();
     }
 
-    public override void OnTriggerEnter(Collider collider)
+    public override void OnCollisionEnter(Collision collision)
     {
         throw new NotImplementedException();
     }
