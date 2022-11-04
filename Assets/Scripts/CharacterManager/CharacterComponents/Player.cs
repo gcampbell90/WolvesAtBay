@@ -31,7 +31,6 @@ public class Player : CharacterBase
 
     public override void OnTriggerEnter(Collider collider)
     {
-        Debug.Log($"{gameObject.name} have taken damage from {collider}");
         ITakeDamage(10);
         //throw new System.NotImplementedException();
     }

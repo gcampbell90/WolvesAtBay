@@ -10,7 +10,7 @@ public class Enemy : CharacterBase
         AddLookAtTarget();
         //DEBUG_AddMoveComponent();
 
-        gameObject.GetComponent<IKillable>().ITakeDamage(5);
+        //gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }
 
     #region OOP test methods
@@ -35,7 +35,7 @@ public class Enemy : CharacterBase
 
     public override void ITakeDamage(int damage)
     {
-        Debug.Log($"{gameObject.name} have taken damage of {damage}");
+        Debug.Log($"{gameObject.name} Damage: {damage}");
         Health -= damage;
     }
 
@@ -46,6 +46,8 @@ public class Enemy : CharacterBase
 
     public override void OnTriggerEnter(Collider collider)
     {
+        Debug.Log($"{gameObject.name} have taken damage from {collider}");
+
         ITakeDamage(5);
     }
 
