@@ -66,22 +66,23 @@ public class Enemy : CharacterBase
         if(Health <= 0)
         {
             Debug.Log($"{name} Killed");
-            Destroy(gameObject);
+            GetComponent<IKillable>().Destroy();
         }
 
-        if(Health <= 80)
-        {
-            DropWeapon();
-        }
+        ////Testing other behaviours
+        //if(Health <= 80)
+        //{
+        //    DropWeapon();
+        //}
     }
 
-    private void DropWeapon()
-    {
-        var weapon = transform.GetChild(0);
-        var rb = weapon.GetComponentInChildren<Rigidbody>();
-        rb.transform.SetParent(null);
-        rb.useGravity = true;
-    }
+    //private void DropWeapon()
+    //{
+    //    var weapon = transform.GetChild(0);
+    //    var rb = weapon.GetComponentInChildren<Rigidbody>();
+    //    rb.transform.SetParent(null);
+    //    rb.useGravity = true;
+    //}
 
     private void DEBUG_AddMoveComponent()
     {
@@ -90,9 +91,12 @@ public class Enemy : CharacterBase
 
     public override void OnCollisionEnter(Collision collision)
     {
-        //Debug.Log($"{gameObject.name} has been hit by {collision.gameObject.name}");
+        if (collision.gameObject.name != "Sword") return;
+        if (collision.gameObject.tag != "Player") return;
+        Debug.Log("Player Hit! " + collision.gameObject.tag);
 
-        ITakeDamage(5);
+        //replace damage with weapon/player strength/damage
+        ITakeDamage(20);
     }
 
     #endregion

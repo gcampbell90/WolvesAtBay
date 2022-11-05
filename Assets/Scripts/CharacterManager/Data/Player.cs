@@ -9,6 +9,7 @@ public class Player : CharacterBase
     private void Awake()
     {
         Speed = 10;
+        Health = 100;
     }
 
     //void Start()
@@ -26,12 +27,18 @@ public class Player : CharacterBase
     {
         Debug.Log($"{gameObject.name} have taken damage of {damage}");
         Health -= damage;
+        if(Health <= 0)
+        {
+            Destroy(gameObject);
+            Debug.Log("GameOver");
+        }
     }
 
 
     public override void OnCollisionEnter(Collision collision)
     {
-        //ITakeDamage(10);
+        if (collision.gameObject.name != "Sword") return;
+        ITakeDamage(10);
         //throw new System.NotImplementedException();
     }
 }

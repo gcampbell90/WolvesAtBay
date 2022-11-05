@@ -21,13 +21,15 @@ public class MoveToTarget : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(GameObject.FindGameObjectWithTag("Player") == null) { return; }
+
         MoveTo();
     }
     public void MoveTo()
     {
         target = GameObject.FindGameObjectWithTag("Player").transform;
 
-        if (Vector3.Distance(transform.position, target.position) < 0.1f)
+        if (Vector3.Distance(transform.position, target.position) < 4f)
         {
             return;
         }

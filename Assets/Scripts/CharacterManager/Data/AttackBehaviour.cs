@@ -9,32 +9,18 @@ public class AttackBehaviour : MonoBehaviour
     //WeaponInfo 
     public Transform Pivot { get; set; }
     float range;
-
     //TODO implement into attack speed?
     int _speed;
+    public Rigidbody WeaponRB { get; set; }
+    //coroutine check
+    bool isRunning;
 
     public Transform target;
-    public Rigidbody WeaponRB { get; set; }
+
+
     private void Awake()
     {
-
-        if (gameObject.GetComponentInChildren<Transform>().childCount <= 0)
-        {
-            Pivot = new GameObject("WeaponPivot").transform;
-            GameObject sword = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            var rb = sword.AddComponent<Rigidbody>();
-            rb.useGravity = false;
-
-            Pivot.transform.SetParent(transform, false);
-            sword.transform.SetParent(Pivot, false);
-
-            sword.transform.localPosition = new Vector3(0, 0, 2);
-            sword.transform.localScale = new Vector3(0.3f, 0.3f, 2.5f);
-        }
-        else
-        {
-            Pivot = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
-        }
+        AttachWeaponObjects();
 
         range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
         WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
@@ -63,7 +49,29 @@ public class AttackBehaviour : MonoBehaviour
 
     }
 
-    bool isRunning;
+    void AttachWeaponObjects()
+    {
+        if (gameObject.GetComponentInChildren<Transform>().childCount <= 0)
+        {
+            Pivot = new GameObject("WeaponPivot").transform;
+            GameObject sword = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            sword.name = "Sword";
+            var rb = sword.AddComponent<Rigidbody>();
+            rb.useGravity = false;
+            rb.isKinematic = true;
+
+            Pivot.transform.SetParent(transform, false);
+            sword.transform.SetParent(Pivot, false);
+
+            sword.transform.localPosition = new Vector3(0, 0, 2);
+            sword.transform.localScale = new Vector3(0.3f, 0.3f, 2.5f);
+        }
+        else
+        {
+            Pivot = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
+        }
+    }
+
     private IEnumerator AttackMove()
     {
         if (isRunning)
