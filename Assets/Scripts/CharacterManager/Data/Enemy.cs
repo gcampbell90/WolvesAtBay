@@ -1,30 +1,50 @@
-﻿using Unity.VisualScripting;
+﻿using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class Enemy : CharacterBase , IMoveable
+[RequireComponent(typeof(Rigidbody))]
+public class Enemy : CharacterBase
 {
+    private void Awake()
+    {
+        Speed = 5;
+        Health = 20;
+    }
+
     private void Start()
     {
+
+        var rb = GetComponent<Rigidbody>();
+        rb.mass = 0f;
+
+        var col = GetComponent<Collider>();
+        col.isTrigger = false;
+
+        transform.rotation = Quaternion.Euler(new Vector3(0,180,0));
+        //rb.useGravity = false;
         //VirtualMethodTest(1, "Enemy is created");
+
+
+        //Move component and Attack component both getting ref to player pos
+        //TODO: fix inefficient method(s)
         AddLookAtTarget();
         DEBUG_AddMoveComponent();
+        gameObject.AddComponent<AttackBehaviour>();
 
-        gameObject.GetComponent<IKillable>().ITakeDamage(5);
+        // also has ref to player pos
+
+
+
+        //gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }
 
     #region OOP test methods
     //Public method to call classes protected method for layer of control/security.
-    public void CallMustBeOverridden()
-    {
-        MustBeOverridden();
-    }
-
-    protected override void MustBeOverridden()
-    {
-        Debug.Log($"This is a mandatory override method for {name}- this method should have no implementation in the base class as its inheriting members will need to provide this functionality.");
-        //throw new System.NotImplementedException();
-    }
+    //public void CallMustBeOverridden()
+    //{
+    //    MustBeOverridden();
+    //}
 
     //Example of overridding a virtual method from the base when needed. Fetching/sending data to base methods?  
     //TODO: Find examples of actual useful implementations
@@ -41,16 +61,43 @@ public class Enemy : CharacterBase , IMoveable
 
     public override void ITakeDamage(int damage)
     {
-        Debug.Log($"{gameObject.name} have taken damage of {damage}");
+        //Debug.Log($"{gameObject.name} Damage: {damage}");
         Health -= damage;
+        if(Health <= 0)
+        {
+            Debug.Log($"{name} Killed");
+            GetComponent<IKillable>().Destroy();
+        }
+
+        ////Testing other behaviours
+        //if(Health <= 80)
+        //{
+        //    DropWeapon();
+        //}
     }
+
+    //private void DropWeapon()
+    //{
+    //    var weapon = transform.GetChild(0);
+    //    var rb = weapon.GetComponentInChildren<Rigidbody>();
+    //    rb.transform.SetParent(null);
+    //    rb.useGravity = true;
+    //}
 
     private void DEBUG_AddMoveComponent()
     {
         gameObject.AddComponent<MoveToTarget>();
     }
 
-    //Attaches additional component to Enemy type GO, is this the right place for it?
+    public override void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.name != "Sword") return;
+        if (collision.gameObject.tag != "Player") return;
+        Debug.Log("Player Hit! " + collision.gameObject.tag);
+
+        //replace damage with weapon/player strength/damage
+        ITakeDamage(20);
+    }
 
     #endregion
 }

@@ -10,19 +10,15 @@ public abstract class CharacterBase : MonoBehaviour, IKillable
     public int Health { get; set; }
     public int Speed { get; set; }
 
-    //Mandatory Override
-    protected abstract void MustBeOverridden();
-
-    
     /*
      * NOTE: You should use Awake to set up references between scripts, and use Start, which is called after all Awake calls are finished, to pass any information back and forth.
      */
-
     //void Awake()
     //{
     //    Debug.Log("CharacterBase awake method - the monobehaviour is in the base class so all inherited members should also have inherit monobehaviour class");
     //}
 
+    //Initialisation
     public virtual void Initialise(int health, int speed, Vector3 position, Material mat)
     {
         Name = gameObject.name;
@@ -30,20 +26,33 @@ public abstract class CharacterBase : MonoBehaviour, IKillable
         Health = health;
         gameObject.transform.position = position;
         gameObject.GetComponent<Renderer>().material = mat;
+        //gameObject.GetComponent<BoxCollider>().isTrigger = true;
     }
 
+    #region Behaviours
+    //Adding Behaviour Components and abstract behaviours - how to decide to limit monobehaviour count?
+    public virtual void AddLookAtTarget()
+    {
+        gameObject.AddComponent<LookAtTarget>();
+    }
+
+    //IKillable interface methods
+    public abstract void OnCollisionEnter(Collision collision);
+    public abstract void ITakeDamage(int damage);
+    public void Destroy()
+    {
+        Destroy(gameObject);
+    }
     //This is an example of an method that can be optionally overriden by inherited members.
     //public virtual void VirtualMethodTest(int testInt, string testString)
     //{
     //    Debug.Log("This is an overriden(virtual) method call from the base.");
     //}
 
-    public virtual void AddLookAtTarget()
-    {
-        gameObject.AddComponent<LookAtTarget>();
-    }
+    //Mandatory Override example
+    //protected abstract void MustBeOverridden();
 
-    public abstract void ITakeDamage(int damage);
+    #endregion
 }
 
 /*
