@@ -9,9 +9,19 @@ namespace SceneManagerSystem
     public class SceneController : MonoBehaviour
     {
         public ScenesData scriptableObject;
+        public int currLevelIndex;
 
-        //TODO: Move logic to separate method to call in 'awake' function - as it is assigning references between other scripts(from an SO in this case) and should be done in awake than start
         void Awake()
+        {
+            CreateSceneID();
+        }
+
+        private void Start()
+        {
+            currLevelIndex = 0;
+        }
+
+        public void CreateSceneID()
         {
             //Create Scene IDs
             var myObject = scriptableObject.levels;
@@ -22,7 +32,13 @@ namespace SceneManagerSystem
 
                 Debug.Log($"Scene controller created reference to scene: ID: {level.Id} Name: {level.name}");
             }
-            LoadSceneAsync(1);
+            //LoadSceneAsync(1);
+        }
+
+        public void NextLevelTriggered()
+        {
+            currLevelIndex++;
+            LoadSceneAsync(currLevelIndex);
         }
 
         public void LoadSceneAsync(int id)
