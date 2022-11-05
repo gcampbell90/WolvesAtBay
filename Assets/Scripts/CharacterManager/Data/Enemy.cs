@@ -1,4 +1,5 @@
-﻿using Unity.VisualScripting;
+﻿using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -20,6 +21,7 @@ public class Enemy : CharacterBase
         var col = GetComponent<Collider>();
         col.isTrigger = false;
 
+        transform.rotation = Quaternion.Euler(new Vector3(0,180,0));
         //rb.useGravity = false;
         //VirtualMethodTest(1, "Enemy is created");
 
@@ -29,6 +31,7 @@ public class Enemy : CharacterBase
         AddLookAtTarget();
         DEBUG_AddMoveComponent();
         gameObject.AddComponent<AttackBehaviour>();
+
         // also has ref to player pos
 
 
@@ -65,6 +68,19 @@ public class Enemy : CharacterBase
             Debug.Log($"{name} Killed");
             Destroy(gameObject);
         }
+
+        if(Health <= 80)
+        {
+            DropWeapon();
+        }
+    }
+
+    private void DropWeapon()
+    {
+        var weapon = transform.GetChild(0);
+        var rb = weapon.GetComponentInChildren<Rigidbody>();
+        rb.transform.SetParent(null);
+        rb.useGravity = true;
     }
 
     private void DEBUG_AddMoveComponent()

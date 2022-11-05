@@ -14,7 +14,7 @@ public class AttackBehaviour : MonoBehaviour
     int _speed;
 
     public Transform target;
-
+    public Rigidbody WeaponRB { get; set; }
     private void Awake()
     {
 
@@ -22,6 +22,8 @@ public class AttackBehaviour : MonoBehaviour
         {
             Pivot = new GameObject("WeaponPivot").transform;
             GameObject sword = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var rb = sword.AddComponent<Rigidbody>();
+            rb.useGravity = false;
 
             Pivot.transform.SetParent(transform, false);
             sword.transform.SetParent(Pivot, false);
@@ -35,7 +37,7 @@ public class AttackBehaviour : MonoBehaviour
         }
 
         range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
-
+        WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
         //Debug.Log($"Attack Behaviour Component - Range: {range}");
     }
     void Start()
@@ -54,8 +56,6 @@ public class AttackBehaviour : MonoBehaviour
         if (_distance < range + 5f)
         {
             StartCoroutine(AttackMove());
-
-
         }
         //Debug.Log($"Attack Behaviour Component"
         //    + $" - Range: {_distance}"
