@@ -5,8 +5,14 @@ using static UnityEngine.GraphicsBuffer;
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : CharacterBase
 {
+    private void Awake()
+    {
+        Speed = 5;
+    }
+
     private void Start()
     {
+
         var rb = GetComponent<Rigidbody>();
         rb.mass = 0f;
 
@@ -16,7 +22,14 @@ public class Enemy : CharacterBase
         //rb.useGravity = false;
         //VirtualMethodTest(1, "Enemy is created");
         //AddLookAtTarget();
-        //DEBUG_AddMoveComponent();
+
+        //Move component and Attack component both getting ref to player pos
+        //TODO: fix inefficient method
+        DEBUG_AddMoveComponent();
+        //gameObject.AddComponent<AttackBehaviour>();
+        // also has ref to player pos
+
+
 
         //gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }
@@ -54,12 +67,10 @@ public class Enemy : CharacterBase
 
     public override void OnCollisionEnter(Collision collision)
     {
-        Debug.Log($"{gameObject.name} have been hit from {collision}");
+        Debug.Log($"{gameObject.name} has been hit by {collision.gameObject.name}");
 
         ITakeDamage(5);
     }
-
-    //Attaches additional component to Enemy type GO, is this the right place for it?
 
     #endregion
 }

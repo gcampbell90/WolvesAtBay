@@ -32,22 +32,12 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown("space"))
         {
             StartCoroutine(AttackMove());
-            //Attack();
             //print("space key was pressed");
         }
 
     }
 
     //TODO: Turn into animation call/method...abstract away from player controller.
-    private void Attack()
-    {
-        float rot = Pivot.rotation.y > 0 ? -45 : 45;
-        Pivot.rotation = Quaternion.Euler(new Vector3(0, rot, 0));
-        //Debug.Log(rot);
-        //yield return null;
-    }
-
-    bool isRunning;
     private IEnumerator AttackMove()
     {
         // Just make the animation interval configurable for easier modification later
