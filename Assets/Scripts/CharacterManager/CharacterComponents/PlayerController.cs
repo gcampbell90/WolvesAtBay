@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         Pivot = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
+        Pivot.rotation = Quaternion.Euler(0, -45, 0);
     }
     private void Start()
     {
@@ -28,7 +29,7 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         gameObject.transform.position += move * Time.deltaTime * speed;
-
+        transform.rotation = Quaternion.LookRotation(move);
         if (Input.GetKeyDown("space"))
         {
             StartCoroutine(AttackMove());
@@ -41,15 +42,15 @@ public class PlayerController : MonoBehaviour
     private IEnumerator AttackMove()
     {
         // Just make the animation interval configurable for easier modification later
-        float duration = 0.2f;
-        float rot = Pivot.localRotation.y > 0 ? -45 : 45;
+        float duration = 0.1f;
+        float rot = 25;
         float progress = 0f;
         // Loop until instructed otherwise
         while (progress <= 1f)
         {
 
             // Do some nice animation
-            Pivot.localRotation = Quaternion.Slerp(Pivot.localRotation, Quaternion.Euler(new Vector3(0, rot, 0)), progress);
+            Pivot.localRotation = Quaternion.Slerp(Quaternion.Euler(0, -45, 0), Quaternion.Euler(0, rot, 0), progress);
             progress += Time.deltaTime / duration;
 
             // Make the coroutine wait for a moment

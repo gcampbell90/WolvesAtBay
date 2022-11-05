@@ -9,7 +9,7 @@ public class Player : CharacterBase
     private void Awake()
     {
         Speed = 10;
-        Health = 100;
+        Health = 1000;
     }
 
     //void Start()
@@ -38,7 +38,7 @@ public class Player : CharacterBase
     public override void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.name != "Sword") return;
-        ITakeDamage(10);
+        ITakeDamage(2);
         //throw new System.NotImplementedException();
     }
 }
