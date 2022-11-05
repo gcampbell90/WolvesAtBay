@@ -14,6 +14,8 @@ public class LookAtTarget : MonoBehaviour
     }
     public void LookAt()
     {
+        if (GameObject.FindGameObjectWithTag("Player") == null) { return; }
+
         target = GameObject.FindGameObjectWithTag("Player").transform;
 
         transform.LookAt(target);

@@ -14,9 +14,13 @@ public class Enemy : CharacterBase
 
     private void Start()
     {
-
+        //place into Enemy layer for physics etc
+        gameObject.layer = 7;
         var rb = GetComponent<Rigidbody>();
-        rb.mass = 0f;
+        rb.mass = 50f;
+        rb.constraints = RigidbodyConstraints.FreezePositionY;
+        rb.constraints = RigidbodyConstraints.FreezeRotationX;
+        rb.constraints = RigidbodyConstraints.FreezeRotationZ;
 
         var col = GetComponent<Collider>();
         col.isTrigger = false;
@@ -93,10 +97,10 @@ public class Enemy : CharacterBase
     {
         if (collision.gameObject.name != "Sword") return;
         if (collision.gameObject.tag != "Player") return;
-        Debug.Log("Player Hit! " + collision.gameObject.tag);
+        //Debug.Log("Player Hit! " + collision.gameObject.tag);
 
         //replace damage with weapon/player strength/damage
-        ITakeDamage(20);
+        ITakeDamage(50);
     }
 
     #endregion
