@@ -26,7 +26,7 @@ public class CharacterFactory : MonoBehaviour
         }
         for (int i = 0; i < enemyCount; i++)
         {
-            CharacterBase<Enemy> testEnemy_character = new CharacterBase<Enemy>($"TestEnemy");
+            CharacterBase<Enemy> testEnemy_character = new CharacterBase<Enemy>($"TestEnemy_{i}");
             testEnemy_character.ScriptComponent.Initialise(
                 health: 100,
                 speed: 2,

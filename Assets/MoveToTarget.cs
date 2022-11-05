@@ -10,8 +10,9 @@ public class MoveToTarget : MonoBehaviour
 
     private void Awake()
     {
+
         _speed = gameObject.GetComponent<CharacterBase>().Speed;
-        Debug.Log($"Speed = {_speed}. if zero character base not set.");
+        //Debug.Log($"Move Speed = {_speed}. if zero character base not set.");
 
         if(_speed <= 0)
             _speed = 5;
@@ -26,16 +27,17 @@ public class MoveToTarget : MonoBehaviour
     {
         target = GameObject.FindGameObjectWithTag("Player").transform;
 
+        if (Vector3.Distance(transform.position, target.position) < 0.1f)
+        {
+            return;
+        }
+
+
         // Move our position a step closer to the target.
         var step = _speed * Time.deltaTime; // calculate distance to move
         transform.position = Vector3.MoveTowards(transform.position, target.position, step);
 
-        //if (Vector3.Distance(transform.position, target.position) < 0.001f)
-        //{
-        //    //target.position *= -1.0f;
-        //    return;
-        //}
-
+      
         //Debug.Log("Moving to Target" + step + " " + transform.position + " " + target.position);
 
     }

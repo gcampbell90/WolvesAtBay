@@ -12,7 +12,7 @@ public class SmartNPC_Character : CharacterBase
 
     public override void AddLookAtTarget()
     {
-        Debug.Log("Add another component Look at something else");
+        //Debug.Log("Add another component Look at something else");
     }
 
     public override void ITakeDamage(int damage)

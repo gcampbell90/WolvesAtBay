@@ -8,6 +8,7 @@ public class Enemy : CharacterBase
     private void Awake()
     {
         Speed = 5;
+        Health = 20;
     }
 
     private void Start()
@@ -21,12 +22,13 @@ public class Enemy : CharacterBase
 
         //rb.useGravity = false;
         //VirtualMethodTest(1, "Enemy is created");
-        //AddLookAtTarget();
+
 
         //Move component and Attack component both getting ref to player pos
-        //TODO: fix inefficient method
+        //TODO: fix inefficient method(s)
+        AddLookAtTarget();
         DEBUG_AddMoveComponent();
-        //gameObject.AddComponent<AttackBehaviour>();
+        gameObject.AddComponent<AttackBehaviour>();
         // also has ref to player pos
 
 
@@ -56,8 +58,13 @@ public class Enemy : CharacterBase
 
     public override void ITakeDamage(int damage)
     {
-        Debug.Log($"{gameObject.name} Damage: {damage}");
+        //Debug.Log($"{gameObject.name} Damage: {damage}");
         Health -= damage;
+        if(Health <= 0)
+        {
+            Debug.Log($"{name} Killed");
+            Destroy(gameObject);
+        }
     }
 
     private void DEBUG_AddMoveComponent()
@@ -67,7 +74,7 @@ public class Enemy : CharacterBase
 
     public override void OnCollisionEnter(Collision collision)
     {
-        Debug.Log($"{gameObject.name} has been hit by {collision.gameObject.name}");
+        //Debug.Log($"{gameObject.name} has been hit by {collision.gameObject.name}");
 
         ITakeDamage(5);
     }

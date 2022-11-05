@@ -17,8 +17,25 @@ public class AttackBehaviour : MonoBehaviour
 
     private void Awake()
     {
-        Pivot = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
+
+        if (gameObject.GetComponentInChildren<Transform>().childCount <= 0)
+        {
+            Pivot = new GameObject("WeaponPivot").transform;
+            GameObject sword = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+            Pivot.transform.SetParent(transform, false);
+            sword.transform.SetParent(Pivot, false);
+
+            sword.transform.localPosition = new Vector3(0, 0, 2);
+            sword.transform.localScale = new Vector3(0.3f, 0.3f, 2.5f);
+        }
+        else
+        {
+            Pivot = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
+        }
+
         range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
+
         //Debug.Log($"Attack Behaviour Component - Range: {range}");
     }
     void Start()
@@ -33,11 +50,11 @@ public class AttackBehaviour : MonoBehaviour
 
         target = GameObject.FindGameObjectWithTag("Player").transform;
         var _distance = Vector3.Distance(transform.position, target.position);
-        if (_distance < range)
+
+        if (_distance < range + 5f)
         {
             StartCoroutine(AttackMove());
 
-            //Debug.Log($"Attacking");
 
         }
         //Debug.Log($"Attack Behaviour Component"
