@@ -6,6 +6,9 @@ using static UnityEngine.GraphicsBuffer;
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : CharacterBase
 {
+    [SerializeField]
+    GMLevelAbstract gmLevelAbstract;
+
     private void Awake()
     {
         Speed = 5;
@@ -65,6 +68,8 @@ public class Enemy : CharacterBase
         Health -= damage;
         if(Health <= 0)
         {
+            gmLevelAbstract.EnemyKilled();
+            gmLevelAbstract.CheckIfAllEnemiesKilled();
             Debug.Log($"{name} Killed");
             GetComponent<IKillable>().Destroy();
         }

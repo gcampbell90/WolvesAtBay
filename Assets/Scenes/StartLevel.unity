@@ -1299,6 +1299,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34b471293a6e489428514d75454d6daa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gmLevelAbstract: {fileID: 0}
 --- !u!114 &1475170877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1356,7 +1357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f83b61c5663b154ea626f721e42e995, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TotalEnemies: 5
+  TotalEnemies: 1
   TotalEnemiesKilled: 0
   NextLevelTrigger: {fileID: 1372533524}
   charFactory: {fileID: 272937673}
