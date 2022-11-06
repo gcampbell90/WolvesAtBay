@@ -6,6 +6,7 @@ public class CharacterFactory : MonoBehaviour
 {
     public int npcCount;
     public int enemyCount;
+    public int spearmanCount;
     public Material npc_Material;
     public Material enemy_Material;
 
@@ -24,13 +25,34 @@ public class CharacterFactory : MonoBehaviour
                 mat: npc_Material
             );
         }
+        //for (int i = 0; i < enemyCount; i++)
+        //{
+        //    CharacterBase<Enemy> testEnemy_character = new CharacterBase<Enemy>($"TestEnemy_{i}");
+        //    testEnemy_character.ScriptComponent.Initialise(
+        //        health: 100,
+        //        speed: 2,
+        //        position: new Vector3(-enemyCount + (i * 2), 0.5f, 15),
+        //        mat: enemy_Material
+        //    );
+        //}
         for (int i = 0; i < enemyCount; i++)
         {
-            CharacterBase<Enemy> testEnemy_character = new CharacterBase<Enemy>($"TestEnemy_{i}");
-            testEnemy_character.ScriptComponent.Initialise(
+            CharacterBase<Swordsman> testSwordsman_character = new CharacterBase<Swordsman>($"TestSwordsman_{i}");
+            testSwordsman_character.ScriptComponent.Initialise(
                 health: 100,
                 speed: 2,
                 position: new Vector3(-enemyCount + (i * 2), 0.5f, 15),
+                mat: enemy_Material
+            );
+        }
+
+        for (int i = 0; i < spearmanCount; i++)
+        {
+            CharacterBase<Spearman> testSpearman_character = new CharacterBase<Spearman>($"TestSpearman_{i}");
+            testSpearman_character.ScriptComponent.Initialise(
+                health: 100,
+                speed: 2,
+                position: new Vector3(-enemyCount + (i * 2), 0.5f, 10),
                 mat: enemy_Material
             );
         }

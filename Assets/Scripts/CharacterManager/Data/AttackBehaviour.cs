@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
@@ -54,22 +55,58 @@ public class AttackBehaviour : MonoBehaviour
         if (gameObject.GetComponentInChildren<Transform>().childCount <= 0)
         {
             Pivot = new GameObject("WeaponPivot").transform;
-            GameObject sword = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            sword.name = "Sword";
-            var rb = sword.AddComponent<Rigidbody>();
-            rb.useGravity = false;
-            rb.isKinematic = true;
-
             Pivot.transform.SetParent(transform, false);
-            sword.transform.SetParent(Pivot, false);
 
-            sword.transform.localPosition = new Vector3(0, 0, 2);
-            sword.transform.localScale = new Vector3(0.3f, 0.3f, 2.5f);
+
+            if (gameObject.GetComponent<Swordsman>() != null)
+            {
+                AttachSword();
+                Debug.Log("Attaching Sword " + gameObject.GetComponent<Enemy>());
+
+            }
+            else if (gameObject.GetComponent<Spearman>() != null)
+            {
+                AttachSpear();
+                Debug.Log("Attaching Spear " + gameObject.GetComponent<Spearman>());
+            }
+            else
+            {
+                Debug.Log("Not attaching weapon");
+
+            }
         }
         else
         {
             Pivot = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
         }
+    }
+
+    private void AttachSpear()
+    {
+        //attaches and sets up a "sword" object
+        GameObject spear = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        spear.name = "Spear";
+        var rb = spear.AddComponent<Rigidbody>();
+        rb.useGravity = false;
+        rb.isKinematic = true;
+
+        spear.transform.SetParent(Pivot, false);
+        spear.transform.localPosition = new Vector3(0, 0, 3);
+        spear.transform.localScale = new Vector3(0.1f, 0.1f, 4f);
+    }
+
+    private void AttachSword()
+    {
+        //attaches and sets up a "sword" object
+        GameObject sword = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        sword.name = "Sword";
+        var rb = sword.AddComponent<Rigidbody>();
+        rb.useGravity = false;
+        rb.isKinematic = true;
+
+        sword.transform.SetParent(Pivot, false);
+        sword.transform.localPosition = new Vector3(0, 0, 2);
+        sword.transform.localScale = new Vector3(0.3f, 0.3f, 2.5f);
     }
 
     private IEnumerator AttackMove()

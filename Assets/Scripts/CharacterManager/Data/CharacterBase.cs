@@ -74,3 +74,6 @@ public class CharacterBase<T> where T : CharacterBase
         ScriptComponent = GameObject.AddComponent<T>();
     }
 }
+
+
+
