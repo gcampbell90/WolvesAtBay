@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-//using UnityEngine.Events;
+using UnityEngine.Events;
 
 namespace SceneManagerSystem
 {
@@ -15,18 +15,18 @@ namespace SceneManagerSystem
         //Settings specific to level only
         [Header("Level specific")]
         public int enemyCount;
-        //[SerializeField]
-        //Collider sceneTriggerCollider;
-        //[SerializeField]
-        //private UnityEvent LevelTriggeredEvent = new UnityEvent();
 
-        //void OnTriggerEnter(Collider triggerCollider)
+        //[SerializeField]
+        //GameObject ColliderObject;
+        //Collider sceneTriggerCollider;
+
+
+        //private void Awake()
         //{
-        //    if (triggerCollider.tag == "Player")
-        //    {
-        //        LevelTriggeredEvent.Invoke();
-        //    }
+        //    sceneTriggerCollider = ColliderObject.GetComponent<Collider>();
         //}
+
+
     }
 
     public enum LevelType

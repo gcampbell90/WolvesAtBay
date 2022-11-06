@@ -9,17 +9,13 @@ namespace SceneManagerSystem
     public class SceneController : MonoBehaviour
     {
         public ScenesData scriptableObject;
-        public int currLevelIndex;
+        //public int currLevelIndex;
 
         void Awake()
         {
             CreateSceneID();
         }
 
-        private void Start()
-        {
-            currLevelIndex = 0;
-        }
 
         public void CreateSceneID()
         {
@@ -35,11 +31,11 @@ namespace SceneManagerSystem
             //LoadSceneAsync(1);
         }
 
-        public void NextLevelTriggered()
-        {
-            currLevelIndex++;
-            LoadSceneAsync(currLevelIndex);
-        }
+        //public void NextLevelTriggered()
+        //{
+        //    currLevelIndex++;
+        //    LoadSceneAsync(currLevelIndex);
+        //}
 
         public void LoadSceneAsync(int id)
         {
