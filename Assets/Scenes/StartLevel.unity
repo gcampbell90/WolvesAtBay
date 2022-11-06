@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcCount: 0
-  enemyCount: 10
+  enemyCount: 20
   npc_Material: {fileID: 2100000, guid: 83b2942ba2b74af4f83876e754b68568, type: 2}
   enemy_Material: {fileID: 2100000, guid: 235177c5a2188bf4798835411c711ab0, type: 2}
 --- !u!4 &272937674
