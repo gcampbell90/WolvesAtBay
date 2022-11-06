@@ -100,7 +100,7 @@ public class Enemy : CharacterBase
         //Debug.Log("Player Hit! " + collision.gameObject.tag);
 
         //replace damage with weapon/player strength/damage
-        ITakeDamage(50);
+        ITakeDamage(10);
     }
 
     #endregion
