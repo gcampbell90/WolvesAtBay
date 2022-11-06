@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerController))]
-[RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(BoxCollider))]
 public class Player : CharacterBase
 {
     //public int speed = 10;
@@ -40,8 +40,9 @@ public class Player : CharacterBase
 
     public override void OnCollisionEnter(Collision collision)
     {
+        Debug.Log($"Collision on {gameObject.name} from {collision.gameObject.name}");
         if (collision.gameObject.name != "Sword") return;
-        ITakeDamage(2);
+        ITakeDamage(10);
         //throw new System.NotImplementedException();
     }
 }
