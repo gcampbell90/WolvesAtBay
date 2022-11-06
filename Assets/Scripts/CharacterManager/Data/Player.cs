@@ -43,6 +43,8 @@ public class Player : CharacterBase
         Debug.Log($"Collision on {gameObject.name} from {collision.gameObject.name}");
         if (collision.gameObject.name != "Sword") return;
         ITakeDamage(10);
+        gameObject.GetComponent<Rigidbody>().isKinematic = true;
+        gameObject.GetComponent<Rigidbody>().isKinematic = false;
         //throw new System.NotImplementedException();
     }
 }

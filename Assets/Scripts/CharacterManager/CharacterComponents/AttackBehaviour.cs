@@ -68,7 +68,7 @@ public class AttackBehaviour : MonoBehaviour
             sword.transform.localPosition = new Vector3(0, 0, 2);
             sword.transform.localScale = new Vector3(0.3f, 0.3f, 2f);
 
-            sword.layer = 7;
+            sword.layer = 10;
         }
         else
         {
