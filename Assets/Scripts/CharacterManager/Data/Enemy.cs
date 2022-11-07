@@ -13,6 +13,7 @@ public class Enemy : CharacterBase
     {
         Speed = 5;
         Health = 20;
+        gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
     }
 
     private void Start()
