@@ -6,16 +6,20 @@ using static UnityEngine.GraphicsBuffer;
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : CharacterBase
 {
+    public delegate void DeathEvent();
+    public static event DeathEvent event_death;
+
     //[SerializeField]
     //GMLevelAbstract gmLevelAbstract;
     private void OnEnable()
     {
-        GMLevelAbstract.event_death += EnemyDeath;
+        //GMLevelAbstract.event_death += EnemyDeath;
     }
 
     private void OnDisable()
     {
-        GMLevelAbstract.event_death -= EnemyDeath;
+        //GMLevelAbstract.event_death -= EnemyDeath
+        event_death?.Invoke();
     }
 
     private void Awake()
@@ -95,8 +99,8 @@ public class Enemy : CharacterBase
         Debug.Log($"{name} Killed");
         GetComponent<IKillable>().Destroy();
 
-        var gm = GameObject.FindObjectOfType<GMLevelAbstract>();
-        gm.GetComponent<GMLevelAbstract>().EnemyKilled();
+        //var gm = GameObject.FindObjectOfType<GMLevelAbstract>();
+        //gm.GetComponent<GMLevelAbstract>().EnemyKilled();
 
     }
 

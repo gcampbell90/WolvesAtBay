@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -39,8 +40,23 @@ namespace SceneManagerSystem
 
         public void LoadSceneAsync(int id)
         {
+            StartCoroutine(LoadingSceneAsync(id));
+        }
+
+        public IEnumerator LoadingSceneAsync(int id)
+        {
             string sceneName = scriptableObject.levels[id].name;
-            SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+
+            AsyncOperation sceneLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+
+            while (sceneLoad.progress != 1f)
+            {
+                Debug.Log("Waiting..." + sceneLoad.progress);
+                yield return null;
+            }
+
+            var myScene = SceneManager.GetSceneByName(sceneName);
+            SceneManager.SetActiveScene(myScene);
         }
     }
 }

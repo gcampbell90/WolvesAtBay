@@ -6,29 +6,38 @@ public class GMLevelAbstract : MonoBehaviour
 {
     protected GameManager GM;
 
-    [SerializeField] protected int totalSpearmen;
-    [SerializeField] protected int totalSwordsmen;
+    public int TotalSwordsmen { get; set; }
+    public int TotalSpearmen { get; set; }
+
     protected int TotalEnemies;
 
-    [SerializeField] protected int TotalEnemiesKilled = 0;
+    protected int TotalEnemiesKilled = 0;
 
     [SerializeField]
     GameObject NextLevelTrigger; //The collider that will act as a trigger at the end of each level to allow the player to advance
 
-    public delegate void DeathEvent();
-    public static event DeathEvent event_death;
+    private void OnEnable()
+    {
+        Enemy.event_death += EnemyKilled;
+    }
+    private void OnDisable()
+    {
+        Enemy.event_death -= EnemyKilled;
+    }
 
     protected void Awake()
     {
         GM = GameManager.Instance;
 
-        TotalEnemies = totalSpearmen + totalSwordsmen;
+        TotalEnemies = TotalSpearmen + TotalSwordsmen;
 
     }
 
     public void CompleteGameState()
     {
         NextLevelTrigger.SetActive(true);
+        Destroy(this);
+        OnCompletion();
     }
 
     public void CheckIfAllEnemiesKilled()
@@ -45,18 +54,6 @@ public class GMLevelAbstract : MonoBehaviour
         CheckIfAllEnemiesKilled();
         Debug.Log("GM EnemyKilled");
         //Play potential audio effect/particle effect here?
-    }
-
-    public void CheckIfComplete()
-    {
-        if (TotalEnemiesKilled == TotalEnemies)
-        {
-            OnCompletion();
-        }
-        else
-        {
-            return;
-        }
     }
 
     public virtual void OnCompletion() { }

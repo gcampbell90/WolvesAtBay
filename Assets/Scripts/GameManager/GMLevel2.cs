@@ -6,16 +6,27 @@ public class GMLevel2 : GMLevelAbstract
     [SerializeField]
     CharacterFactory charFactory;
 
+    [SerializeField] private int SwordsmenCount;
+    [SerializeField] private int SpearmenCount;
+
     private void Awake()
     {
+        TotalSwordsmen = SwordsmenCount;
+        TotalSpearmen = SpearmenCount;
+
         base.Awake();
 
-        charFactory.spearmanCount += TotalEnemies;
-        charFactory.swordsmanCount += TotalEnemies;
+        charFactory.swordsmanCount = TotalSwordsmen;
+        charFactory.spearmanCount = TotalSpearmen;
+
+        charFactory.SpawnCharacters();
+
     }
 
     public override void OnCompletion()
     {
-        //GM.Level2TotalEnemiesKilled = TotalEnemiesKilled;
+        Debug.Log("Level Completed");
+
+        GM.Level2TotalEnemiesKilled = TotalEnemiesKilled;
     }
 }

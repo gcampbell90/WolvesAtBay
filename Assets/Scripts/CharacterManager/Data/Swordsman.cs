@@ -11,10 +11,9 @@ public class Swordsman : Enemy
 
     private void Awake()
     {
+
         Speed = 5;
         Health = 20;
-
-        gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
 
         gameObject.layer = 7;
 
