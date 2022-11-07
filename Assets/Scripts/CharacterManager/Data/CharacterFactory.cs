@@ -16,7 +16,7 @@ public class CharacterFactory : MonoBehaviour
     /*
      * Should go into a start method rather? Or is awake fine for initialisation?
      */
-    private void Awake()
+    private void Start()
     {
         //for (int i = 0; i < npcCount; i++)
         //{

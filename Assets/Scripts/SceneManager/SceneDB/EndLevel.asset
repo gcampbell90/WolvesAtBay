@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 581d0e146ae9313429bda31320c1996d, type: 3}
   m_Name: EndLevel
   m_EditorClassIdentifier: 
-  sceneName: 
+  sceneName: End
   levelType: 0
+  enemyCount: 18
