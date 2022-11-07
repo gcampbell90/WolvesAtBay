@@ -30,7 +30,7 @@ public class Player : CharacterBase
     {
         Debug.Log($"{gameObject.name} have taken damage of {damage}");
         Health -= damage;
-        if(Health <= 0)
+        if (Health <= 0)
         {
             Destroy(gameObject);
             Debug.Log("GameOver");
@@ -41,10 +41,13 @@ public class Player : CharacterBase
     public override void OnCollisionEnter(Collision collision)
     {
         Debug.Log($"Collision on {gameObject.name} from {collision.gameObject.name}");
-        if (collision.gameObject.name != "Sword") return;
-        ITakeDamage(10);
-        gameObject.GetComponent<Rigidbody>().isKinematic = true;
-        gameObject.GetComponent<Rigidbody>().isKinematic = false;
-        //throw new System.NotImplementedException();
+        if (collision.gameObject.name != "Sword" && collision.gameObject.name != "Spear") return;
+        { 
+            ITakeDamage(5);
+            gameObject.GetComponent<Rigidbody>().isKinematic = true;
+            gameObject.GetComponent<Rigidbody>().isKinematic = false;
+            //throw new System.NotImplementedException();
+        }
+
     }
 }

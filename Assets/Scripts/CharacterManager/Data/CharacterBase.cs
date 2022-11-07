@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -9,24 +10,32 @@ public abstract class CharacterBase : MonoBehaviour, IKillable
     public string Name { get; set; }
     public int Health { get; set; }
     public int Speed { get; set; }
+    public GameObject Model { get; set; }
 
     /*
      * NOTE: You should use Awake to set up references between scripts, and use Start, which is called after all Awake calls are finished, to pass any information back and forth.
      */
-    //void Awake()
-    //{
-    //    Debug.Log("CharacterBase awake method - the monobehaviour is in the base class so all inherited members should also have inherit monobehaviour class");
-    //}
+    void Awake()
+    {
+        Debug.Log("CharacterBase awake method - the monobehaviour is in the base class so all inherited members should also have inherit monobehaviour class");
+    }
 
     //Initialisation
-    public virtual void Initialise(int health, int speed, Vector3 position, Material mat)
+    public virtual void Initialise(int health, int speed, Vector3 position)
     {
+        //Model = model;
+        //Debug.Log(Model.name +" Setting mesh and materials");
+        //var mf = gameObject.AddComponent<MeshFilter>();
+        //mf.mesh = model.GetComponent<MeshFilter>().sharedMesh;
+
+        //var mr = gameObject.AddComponent<MeshRenderer>();
+        //mr = model.GetComponent<MeshRenderer>();
+        //mr.materials = model.GetComponent<MeshRenderer>().sharedMaterials;
+
         Name = gameObject.name;
         Speed = speed;
         Health = health;
         gameObject.transform.position = position;
-        gameObject.GetComponent<Renderer>().material = mat;
-        //gameObject.GetComponent<BoxCollider>().isTrigger = true;
     }
 
     #region Behaviours
@@ -63,14 +72,15 @@ public class CharacterBase<T> where T : CharacterBase
 {
     public GameObject GameObject;
     public T ScriptComponent;
-    public CharacterBase(string name)
+    public CharacterBase(string name, GameObject CharacterModel)
     {
         //Setting CharacterBase gameObject as a primitive, will replace with a full mesh, model struct
-        GameObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        GameObject.name = name;
-
+        GameObject = CharacterModel;
         //setting abitrary script to show how compenents can be added per entity, in this case base will always
         //have his script component of type: newly created class of whatever character created.
         ScriptComponent = GameObject.AddComponent<T>();
+
     }
 }
+
+
