@@ -44,7 +44,7 @@ public class CharacterFactory : MonoBehaviour
             testSwordsman_character.ScriptComponent.Initialise(
                 health: 100,
                 speed: 2,
-                position: new Vector3(-swordsmanCount + (i * 2), 0.5f, 15));
+                position: transform.position + new Vector3(-swordsmanCount + (i * 2), 0.5f, 15));
         }
 
         for (int i = 0; i < spearmanCount; i++)
@@ -54,7 +54,7 @@ public class CharacterFactory : MonoBehaviour
             testSpearman_character.ScriptComponent.Initialise(
                 health: 100,
                 speed: 2,
-                position: new Vector3(-spearmanCount + (i * 2), 0.5f, 10)                
+                position: transform.position + new Vector3(-spearmanCount + (i * 2), 0.5f, 10)                
                 //mat: enemy_Material
             );
         }
