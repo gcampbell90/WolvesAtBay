@@ -29,7 +29,7 @@ public class MoveToTarget : MonoBehaviour
     {
         target = GameObject.FindGameObjectWithTag("Player").transform;
 
-        if (Vector3.Distance(transform.position, target.position) < 4f)
+        if (Vector3.Distance(transform.position, target.position) < 3f)
         {
             return;
         }

@@ -7,8 +7,8 @@ public class PlayerController : MonoBehaviour
 {
     private int speed; //Speed of the player cube
 
-    public float mapHeight = 5f; //width of the movable area
-    public float mapWidth = 5f; //width of the movable area
+    //public float mapHeight = 5f; //width of the movable area
+    //public float mapWidth = 5f; //width of the movable area
     //public event System.Action OnCubeDeath; //cube death event
 
     //private Rigidbody rb;
@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         Pivot = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
+        Pivot.rotation = Quaternion.Euler(0, -70, 0);
     }
     private void Start()
     {
@@ -26,10 +27,21 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        //Keyboard input and player movement via transform
         Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         gameObject.transform.position += move * Time.deltaTime * speed;
 
-        if (Input.GetKeyDown("space"))
+        //Mouse Input
+        var cam = Camera.main;
+        Vector3 point = cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1));
+        // Using some math to calculate the point of intersection between the line going through the camera and the mouse position with the XZ-Plane
+        float t = cam.transform.position.y / (cam.transform.position.y - point.y);
+        Vector3 finalPoint = new Vector3(t * (point.x - cam.transform.position.x) + cam.transform.position.x, 1, t * (point.z - cam.transform.position.z) + cam.transform.position.z);
+        
+        //Rotating the object to that point
+        transform.LookAt(finalPoint, Vector3.up);
+
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             StartCoroutine(AttackMove());
             //print("space key was pressed");
@@ -41,20 +53,22 @@ public class PlayerController : MonoBehaviour
     private IEnumerator AttackMove()
     {
         // Just make the animation interval configurable for easier modification later
-        float duration = 0.2f;
-        float rot = Pivot.localRotation.y > 0 ? -45 : 45;
+        float duration = 0.1f;
+        float rot = 40;
         float progress = 0f;
         // Loop until instructed otherwise
         while (progress <= 1f)
         {
 
             // Do some nice animation
-            Pivot.localRotation = Quaternion.Slerp(Pivot.localRotation, Quaternion.Euler(new Vector3(0, rot, 0)), progress);
+            Pivot.localRotation = Quaternion.Slerp(Quaternion.Euler(0, -70, 0), Quaternion.Euler(0, rot, 0), progress);
             progress += Time.deltaTime / duration;
 
             // Make the coroutine wait for a moment
             yield return null;
         }
+
+        Pivot.localRotation = Quaternion.Euler(0, -70, 0);
     }
 
     //void OnTriggerEnter(Collider triggerCollider)

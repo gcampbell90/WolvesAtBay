@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+//using static UnityEditor.Experimental.GraphView.GraphView;
+//using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(Rigidbody))]
 public class AttackBehaviour : MonoBehaviour
@@ -35,7 +36,7 @@ public class AttackBehaviour : MonoBehaviour
     //Check every frame if player is in range of weapon, if so, attack.
     private void Update()
     {
-
+        if(GameObject.FindGameObjectWithTag("Player") == null) { return; }
         target = GameObject.FindGameObjectWithTag("Player").transform;
         var _distance = Vector3.Distance(transform.position, target.position);
 
@@ -59,12 +60,15 @@ public class AttackBehaviour : MonoBehaviour
             var rb = sword.AddComponent<Rigidbody>();
             rb.useGravity = false;
             rb.isKinematic = true;
+  
 
             Pivot.transform.SetParent(transform, false);
             sword.transform.SetParent(Pivot, false);
 
             sword.transform.localPosition = new Vector3(0, 0, 2);
-            sword.transform.localScale = new Vector3(0.3f, 0.3f, 2.5f);
+            sword.transform.localScale = new Vector3(0.3f, 0.3f, 2f);
+
+            sword.layer = 10;
         }
         else
         {
