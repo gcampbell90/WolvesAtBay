@@ -144,7 +144,7 @@ public class AttackBehaviour : MonoBehaviour
 
         isRunning = true;
         // Just make the animation interval configurable for easier modification later
-        float duration = 2f;
+        float duration = 1f;
         //float rot = Pivot.localRotation.y > 0 ? -45 : 45;
         float progress = 0f;
         // Loop until instructed otherwise

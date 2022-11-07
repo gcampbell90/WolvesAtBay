@@ -9,7 +9,8 @@ public class GMLevel1 : GMLevelAbstract
 
     private void Awake()
     {
-        charFactory.enemyCount = TotalEnemies;
+        charFactory.spearmanCount += TotalEnemies;
+        charFactory.swordsmanCount += TotalEnemies;
     }
     public override void OnCompletion()
     {

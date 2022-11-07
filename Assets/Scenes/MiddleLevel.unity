@@ -261,7 +261,7 @@ PrefabInstance:
     - target: {fileID: 7729363230004317790, guid: 07ad2005d9608d34484c5e87e239a9e6,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7729363230004317791, guid: 07ad2005d9608d34484c5e87e239a9e6,
         type: 3}
@@ -356,9 +356,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcCount: 0
-  enemyCount: 0
+  swordsmanCount: 0
+  spearmanCount: 0
   npc_Material: {fileID: 2100000, guid: 83b2942ba2b74af4f83876e754b68568, type: 2}
   enemy_Material: {fileID: 2100000, guid: 235177c5a2188bf4798835411c711ab0, type: 2}
+  swordsManGO: {fileID: 919132149155446097, guid: 32da9ca90c5d51945ae3a31a0ee66e3c,
+    type: 3}
+  spearManGO: {fileID: 919132149155446097, guid: ead56138361754e44bf93840805e83f3,
+    type: 3}
 --- !u!4 &1066436549
 Transform:
   m_ObjectHideFlags: 0
@@ -554,7 +559,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1809451979
 MonoBehaviour:
   m_ObjectHideFlags: 0

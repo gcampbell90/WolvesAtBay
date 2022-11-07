@@ -32,7 +32,7 @@ public class Spearman : Enemy
         //Move component and Attack component both getting ref to player pos
         //TODO: fix inefficient method(s)
         AddLookAtTarget();
-        //DEBUG_AddMoveComponent();
+        DEBUG_AddMoveComponent();
         gameObject.AddComponent<AttackBehaviour>();
 
         //gameObject.GetComponent<IKillable>().ITakeDamage(5);
