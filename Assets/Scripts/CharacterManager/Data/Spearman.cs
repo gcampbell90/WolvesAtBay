@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(BoxCollider))]
 public class Spearman : Enemy
 {
     private void Awake()
     {
         Speed = 5;
         Health = 20;
+
+        gameObject.layer = 7;
+
     }
 
     private void Start()
@@ -28,7 +32,7 @@ public class Spearman : Enemy
         //Move component and Attack component both getting ref to player pos
         //TODO: fix inefficient method(s)
         AddLookAtTarget();
-        DEBUG_AddMoveComponent();
+        //DEBUG_AddMoveComponent();
         gameObject.AddComponent<AttackBehaviour>();
 
         //gameObject.GetComponent<IKillable>().ITakeDamage(5);
@@ -56,7 +60,7 @@ public class Spearman : Enemy
 
     public override void ITakeDamage(int damage)
     {
-        //Debug.Log($"{gameObject.name} Damage: {damage}");
+        Debug.Log($"{gameObject.name} Damage: {damage}");
         Health -= damage;
         if (Health <= 0)
         {
@@ -88,7 +92,7 @@ public class Spearman : Enemy
     {
         if (collision.gameObject.name != "Sword") return;
         if (collision.gameObject.tag != "Player") return;
-        Debug.Log("Player Hit! " + collision.gameObject.tag);
+        Debug.Log("Hit! " + collision.gameObject.tag);
 
         //replace damage with weapon/player strength/damage
         ITakeDamage(20);

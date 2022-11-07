@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(BoxCollider))]
+
 public class Swordsman : Enemy
 {
     private void Awake()
     {
         Speed = 5;
         Health = 20;
+
+        gameObject.layer = 7;
+
     }
 
     private void Start()

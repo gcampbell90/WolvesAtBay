@@ -5,26 +5,28 @@ using UnityEngine;
 public class CharacterFactory : MonoBehaviour
 {
     public int npcCount;
-    public int enemyCount;
+    public int swordsmanCount;
     public int spearmanCount;
     public Material npc_Material;
     public Material enemy_Material;
+
+    public GameObject swordsManGO;
+    public GameObject spearManGO;
 
     /*
      * Should go into a start method rather? Or is awake fine for initialisation?
      */
     private void Awake()
     {
-        for (int i = 0; i < npcCount; i++)
-        {
-            CharacterBase<SmartNPC_Character> testSmartNPC_character = new CharacterBase<SmartNPC_Character>($"TestNPC_{i}");
-            testSmartNPC_character.ScriptComponent.Initialise(
-                health: 100,
-                speed: 5,
-                position: new Vector3(-npcCount + (i * 2), 0.5f, 20),
-                mat: npc_Material
-            );
-        }
+        //for (int i = 0; i < npcCount; i++)
+        //{
+        //    CharacterBase<SmartNPC_Character> testSmartNPC_character = new CharacterBase<SmartNPC_Character>($"TestNPC_{i}", GameObject.CreatePrimitive(PrimitiveType.Cube));
+        //    testSmartNPC_character.ScriptComponent.Initialise(
+        //        health: 100,
+        //        speed: 5,
+        //        position: new Vector3(-npcCount + (i * 2), 0.5f, 20));
+
+        //}
         //for (int i = 0; i < enemyCount; i++)
         //{
         //    CharacterBase<Enemy> testEnemy_character = new CharacterBase<Enemy>($"TestEnemy_{i}");
@@ -35,25 +37,25 @@ public class CharacterFactory : MonoBehaviour
         //        mat: enemy_Material
         //    );
         //}
-        for (int i = 0; i < enemyCount; i++)
+        for (int i = 0; i < swordsmanCount; i++)
         {
-            CharacterBase<Swordsman> testSwordsman_character = new CharacterBase<Swordsman>($"TestSwordsman_{i}");
+            var _swordsManGO = Instantiate(swordsManGO);
+            CharacterBase<Swordsman> testSwordsman_character = new CharacterBase<Swordsman>($"TestSwordsman_{i}", _swordsManGO);
             testSwordsman_character.ScriptComponent.Initialise(
                 health: 100,
                 speed: 2,
-                position: new Vector3(-enemyCount + (i * 2), 0.5f, 15),
-                mat: enemy_Material
-            );
+                position: new Vector3(-swordsmanCount + (i * 2), 0.5f, 15));
         }
 
         for (int i = 0; i < spearmanCount; i++)
         {
-            CharacterBase<Spearman> testSpearman_character = new CharacterBase<Spearman>($"TestSpearman_{i}");
+            var _spearManGO = Instantiate(spearManGO);
+            CharacterBase<Spearman> testSpearman_character = new CharacterBase<Spearman>($"TestSpearman_{i}", _spearManGO);
             testSpearman_character.ScriptComponent.Initialise(
                 health: 100,
                 speed: 2,
-                position: new Vector3(-enemyCount + (i * 2), 0.5f, 10),
-                mat: enemy_Material
+                position: new Vector3(-spearmanCount + (i * 2), 0.5f, 10)                
+                //mat: enemy_Material
             );
         }
 
@@ -63,35 +65,32 @@ public class CharacterFactory : MonoBehaviour
     }
 
     #region TestMethods
-    private void CreateNPCs()
-    {
-        int posX = -10;
-        foreach (var character in MockCharacterDB.NPC_CharacterList)
-        {
-            character.ScriptComponent.Initialise(
-                health: 100,
-                speed: 5,
-                position: new Vector3(posX, 0.5f, 70),
-                mat: npc_Material);
-            posX += 2;
-        }
+    //private void CreateNPCs()
+    //{
+    //    int posX = -10;
+    //    foreach (var character in MockCharacterDB.NPC_CharacterList)
+    //    {
+    //        character.ScriptComponent.Initialise(
+    //            health: 100,
+    //            speed: 5,
+    //            position: new Vector3(posX, 0.5f, 70));
+    //        posX += 2;
+    //    }
 
-    }
+    //}
 
-    private void CreateEnemies()
-    {
-        int posX = -5;
-        foreach (var character in MockCharacterDB.Enemy_CharacterList)
-        {
-            character.ScriptComponent
-                .Initialise(
-                    health: 100,
-                    speed: 5,
-                    position: new Vector3(posX, 0.5f, 50),
-                    mat: enemy_Material
-                );
-            posX += 5;
-        }
-    }
+    //private void CreateEnemies()
+    //{
+    //    int posX = -5;
+    //    foreach (var character in MockCharacterDB.Enemy_CharacterList)
+    //    {
+    //        character.ScriptComponent
+    //            .Initialise(
+    //                health: 100,
+    //                speed: 5,
+    //                position: new Vector3(posX, 0.5f, 50));
+    //        posX += 5;
+    //    }
+    //}
     #endregion
 }

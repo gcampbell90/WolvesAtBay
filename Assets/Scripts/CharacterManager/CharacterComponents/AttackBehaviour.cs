@@ -18,6 +18,9 @@ public class AttackBehaviour : MonoBehaviour
 
     public Transform target;
 
+    //Delegate to hold attack animation type - should eventually be managed by weapon system
+    public delegate IEnumerator AttackBehaviourDelegate();
+    public AttackBehaviourDelegate mydelegate;
 
     private void Awake()
     {
@@ -34,7 +37,7 @@ public class AttackBehaviour : MonoBehaviour
     }
 
     //Check every frame if player is in range of weapon, if so, attack.
-    private void Update()
+    private void FixedUpdate()
     {
         if(GameObject.FindGameObjectWithTag("Player") == null) { return; }
         target = GameObject.FindGameObjectWithTag("Player").transform;
@@ -42,7 +45,7 @@ public class AttackBehaviour : MonoBehaviour
 
         if (_distance < range + 5f)
         {
-            StartCoroutine(AttackMove());
+            StartCoroutine(mydelegate());
         }
         //Debug.Log($"Attack Behaviour Component"
         //    + $" - Range: {_distance}"
@@ -55,28 +58,62 @@ public class AttackBehaviour : MonoBehaviour
         if (gameObject.GetComponentInChildren<Transform>().childCount <= 0)
         {
             Pivot = new GameObject("WeaponPivot").transform;
-            GameObject sword = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            sword.name = "Sword";
-            var rb = sword.AddComponent<Rigidbody>();
-            rb.useGravity = false;
-            rb.isKinematic = true;
-  
 
-            Pivot.transform.SetParent(transform, false);
-            sword.transform.SetParent(Pivot, false);
+            if(gameObject.GetComponent<Swordsman>() != null)
+            {
+                AttachSword();
+                mydelegate += SwordAttackMove;
 
-            sword.transform.localPosition = new Vector3(0, 0, 2);
-            sword.transform.localScale = new Vector3(0.3f, 0.3f, 2f);
-
-            sword.layer = 10;
+            }else if(gameObject.GetComponent<Spearman>() != null)
+            {
+                AttachSpear();
+                mydelegate += SpearAttackMove;
+            }
         }
         else
         {
             Pivot = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
         }
+        Pivot.transform.SetParent(transform, false);
+
     }
 
-    private IEnumerator AttackMove()
+    private void AttachSword()
+    {
+        Pivot.transform.localPosition = new Vector3(0.7f, 0, 0.9f);
+
+        GameObject sword = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        sword.name = "Sword";
+        var rb = sword.AddComponent<Rigidbody>();
+        rb.useGravity = false;
+        rb.isKinematic = true;
+
+        sword.transform.SetParent(Pivot, false);
+
+        sword.transform.localPosition = new Vector3(0, 0, 1);
+        sword.transform.localScale = new Vector3(0.3f, 0.3f, 2f);
+
+        sword.layer = 10;
+    }
+    private void AttachSpear()
+    {
+        //Pivot.transform.localPosition = new Vector3(0, 0, 0.9f);
+
+        GameObject spear = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        spear.name = "Spear";
+        var rb = spear.AddComponent<Rigidbody>();
+        rb.useGravity = false;
+        rb.isKinematic = true;
+
+        spear.transform.SetParent(Pivot, false);
+
+        spear.transform.localPosition = new Vector3(0.55f, -0.3f, 1);
+        spear.transform.localScale = new Vector3(0.1f, 0.1f,5);
+
+        spear.layer = 10;
+    }
+
+    private IEnumerator SwordAttackMove()
     {
         if (isRunning)
             yield break;
@@ -87,7 +124,7 @@ public class AttackBehaviour : MonoBehaviour
         float rot = Pivot.localRotation.y > 0 ? -45 : 45;
         float progress = 0f;
         // Loop until instructed otherwise
-        while (progress <= 1f)
+        while (progress <= duration)
         {
 
             // Do some nice animation
@@ -97,6 +134,45 @@ public class AttackBehaviour : MonoBehaviour
             // Make the coroutine wait for a moment
             yield return null;
         }
+
+        isRunning = false;
+    }
+    private IEnumerator SpearAttackMove()
+    {
+        if (isRunning)
+            yield break;
+
+        isRunning = true;
+        // Just make the animation interval configurable for easier modification later
+        float duration = 2f;
+        //float rot = Pivot.localRotation.y > 0 ? -45 : 45;
+        float progress = 0f;
+        // Loop until instructed otherwise
+
+        while (progress <= duration/2)
+        {
+
+            // Do some nice animation
+            Pivot.localPosition = Vector3.Lerp(Vector3.zero, Vector3.forward, progress);
+            progress += Time.deltaTime / duration;
+
+            // Make the coroutine wait for a moment
+            yield return null;
+        }
+        transform.GetChild(0).GetComponentInChildren<BoxCollider>().enabled = true;
+        yield return new WaitForFixedUpdate();
+
+        while (progress <= duration/2)
+        {
+
+            // Do some nice animation
+            Pivot.localPosition = Vector3.Lerp(Vector3.forward, Vector3.zero, progress);
+            progress += Time.deltaTime / duration;
+
+            // Make the coroutine wait for a moment
+            yield return null;
+        }
+        transform.GetChild(0).GetComponentInChildren<BoxCollider>().enabled = false;
 
         isRunning = false;
     }
