@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00bfdf28061011a419a5bd96ec5a703a, type: 3}
   m_Name: MainMenu
   m_EditorClassIdentifier: 
-  sceneName: 
+  sceneName: Menu
   levelType: 0

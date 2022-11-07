@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(PlayerController))]
+[RequireComponent(typeof(BoxCollider))]
 public class Player : CharacterBase
 {
     //public int speed = 10;
@@ -9,7 +12,7 @@ public class Player : CharacterBase
     private void Awake()
     {
         Speed = 10;
-        Health = 100;
+        Health = 1000;
     }
 
     //void Start()
@@ -37,8 +40,11 @@ public class Player : CharacterBase
 
     public override void OnCollisionEnter(Collision collision)
     {
+        Debug.Log($"Collision on {gameObject.name} from {collision.gameObject.name}");
         if (collision.gameObject.name != "Sword") return;
         ITakeDamage(10);
+        gameObject.GetComponent<Rigidbody>().isKinematic = true;
+        gameObject.GetComponent<Rigidbody>().isKinematic = false;
         //throw new System.NotImplementedException();
     }
 }
