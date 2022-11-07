@@ -7,10 +7,14 @@ using UnityEngine;
 
 public class Swordsman : Enemy
 {
+    GMLevelAbstract gmLevelAbstract;
+
     private void Awake()
     {
         Speed = 5;
         Health = 20;
+
+        gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
 
         gameObject.layer = 7;
 
@@ -61,13 +65,7 @@ public class Swordsman : Enemy
 
     public override void ITakeDamage(int damage)
     {
-        //Debug.Log($"{gameObject.name} Damage: {damage}");
-        Health -= damage;
-        if (Health <= 0)
-        {
-            Debug.Log($"{name} Killed");
-            GetComponent<IKillable>().Destroy();
-        }
+        base.ITakeDamage(damage);
 
         ////Testing other behaviours
         //if(Health <= 80)

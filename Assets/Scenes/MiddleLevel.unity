@@ -167,7 +167,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6016d26e1408d16488b8927d22f5b7e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TotalEnemies: 10
+  totalSpearmen: 5
+  totalSwordsmen: 5
   TotalEnemiesKilled: 0
   NextLevelTrigger: {fileID: 711924929}
   charFactory: {fileID: 1066436548}
@@ -261,7 +262,7 @@ PrefabInstance:
     - target: {fileID: 7729363230004317790, guid: 07ad2005d9608d34484c5e87e239a9e6,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7729363230004317791, guid: 07ad2005d9608d34484c5e87e239a9e6,
         type: 3}

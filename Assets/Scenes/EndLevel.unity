@@ -490,7 +490,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b75e2eaa01712dc4ab92754d5dbcd85b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TotalEnemies: 15
+  totalSpearmen: 5
+  totalSwordsmen: 5
   TotalEnemiesKilled: 0
   NextLevelTrigger: {fileID: 1205606553}
   charFactory: {fileID: 1115573919}

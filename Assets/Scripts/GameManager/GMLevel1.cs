@@ -9,8 +9,11 @@ public class GMLevel1 : GMLevelAbstract
 
     private void Awake()
     {
-        charFactory.spearmanCount += TotalEnemies;
-        charFactory.swordsmanCount += TotalEnemies;
+        //GM = GameManager.Instance;
+        base.Awake();
+
+        charFactory.spearmanCount += totalSpearmen;
+        charFactory.swordsmanCount += totalSwordsmen;
     }
     public override void OnCompletion()
     {

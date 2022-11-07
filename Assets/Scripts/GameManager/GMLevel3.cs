@@ -9,6 +9,8 @@ public class GMLevel3 : GMLevelAbstract
 
     private void Awake()
     {
+        base.Awake();
+
         charFactory.spearmanCount += TotalEnemies;
         charFactory.swordsmanCount += TotalEnemies;
     }

@@ -6,14 +6,24 @@ using static UnityEngine.GraphicsBuffer;
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : CharacterBase
 {
-    [SerializeField]
-    GMLevelAbstract gmLevelAbstract;
+    //[SerializeField]
+    //GMLevelAbstract gmLevelAbstract;
+    private void OnEnable()
+    {
+        GMLevelAbstract.event_death += EnemyDeath;
+    }
+
+    private void OnDisable()
+    {
+        GMLevelAbstract.event_death -= EnemyDeath;
+    }
 
     private void Awake()
     {
         Speed = 5;
         Health = 20;
-        gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
+
+        //gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
     }
 
     private void Start()
@@ -73,17 +83,21 @@ public class Enemy : CharacterBase
         Health -= damage;
         if(Health <= 0)
         {
-            gmLevelAbstract.EnemyKilled();
-            gmLevelAbstract.CheckIfAllEnemiesKilled();
-            Debug.Log($"{name} Killed");
-            GetComponent<IKillable>().Destroy();
+            EnemyDeath();
         }
+    }
 
-        ////Testing other behaviours
-        //if(Health <= 80)
-        //{
-        //    DropWeapon();
-        //}
+    private void EnemyDeath()
+    {
+        //gmLevelAbstract.EnemyKilled();
+        //gmLevelAbstract.CheckIfAllEnemiesKilled();
+
+        Debug.Log($"{name} Killed");
+        GetComponent<IKillable>().Destroy();
+
+        var gm = GameObject.FindObjectOfType<GMLevelAbstract>();
+        gm.GetComponent<GMLevelAbstract>().EnemyKilled();
+
     }
 
     //private void DropWeapon()

@@ -6,10 +6,15 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class Spearman : Enemy
 {
+
+    GMLevelAbstract gmLevelAbstract;
+
     private void Awake()
     {
         Speed = 5;
         Health = 20;
+
+        gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
 
         gameObject.layer = 7;
 
@@ -60,19 +65,7 @@ public class Spearman : Enemy
 
     public override void ITakeDamage(int damage)
     {
-        Debug.Log($"{gameObject.name} Damage: {damage}");
-        Health -= damage;
-        if (Health <= 0)
-        {
-            Debug.Log($"{name} Killed");
-            GetComponent<IKillable>().Destroy();
-        }
-
-        ////Testing other behaviours
-        //if(Health <= 80)
-        //{
-        //    DropWeapon();
-        //}
+        base.ITakeDamage(damage);
     }
 
     //private void DropWeapon()
