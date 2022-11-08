@@ -1,3 +1,4 @@
+using SceneManagerSystem;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,8 +6,8 @@ using UnityEngine.Events;
 
 public class DebugTriggerScript : MonoBehaviour
 {
+    [SerializeField][Range(0,2)] int sceneToLoad;
     [SerializeField]
-    private UnityEvent LevelTriggeredEvent = new UnityEvent();
     private bool collisionOccurred = false;
 
     void OnTriggerEnter(Collider triggerCollider)
@@ -14,7 +15,7 @@ public class DebugTriggerScript : MonoBehaviour
         if (collisionOccurred == false && triggerCollider.tag == "Player")
         {
             collisionOccurred = true;
-            LevelTriggeredEvent.Invoke();
+            GameManager.Instance.LoadScene(sceneToLoad);
         }
         else
         {

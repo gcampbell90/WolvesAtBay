@@ -36,7 +36,7 @@ public class GMLevelAbstract : MonoBehaviour
     public void CompleteGameState()
     {
         NextLevelTrigger.SetActive(true);
-        Destroy(this);
+        Destroy(gameObject);
         OnCompletion();
     }
 
