@@ -9,19 +9,19 @@ namespace SceneManagerSystem
 {
     public class SceneController : MonoBehaviour
     {
-        public ScenesData scriptableObject;
-        //public int currLevelIndex;
+        public static ScenesData SceneDataList { get; private set; }
 
-        void Awake()
+        public static void SetScenesData(ScenesData scenesData)
         {
-            CreateSceneID();
+            SceneDataList = scenesData;
+            CreateSceneIDs();
         }
 
 
-        public void CreateSceneID()
+        public static void CreateSceneIDs()
         {
             //Create Scene IDs
-            var myObject = scriptableObject.levels;
+            var myObject = SceneDataList.levels;
             int count = 0;
             foreach (var level in myObject)
             {
@@ -29,7 +29,6 @@ namespace SceneManagerSystem
 
                 Debug.Log($"Scene controller created reference to scene: ID: {level.Id} Name: {level.name}");
             }
-            //LoadSceneAsync(1);
         }
 
         //public void NextLevelTriggered()
@@ -38,14 +37,10 @@ namespace SceneManagerSystem
         //    LoadSceneAsync(currLevelIndex);
         //}
 
-        public void LoadSceneAsync(int id)
+        public static IEnumerator LoadSceneAsync(int id)
         {
-            StartCoroutine(LoadingSceneAsync(id));
-        }
-
-        public IEnumerator LoadingSceneAsync(int id)
-        {
-            string sceneName = scriptableObject.levels[id].name;
+            Debug.Log("Load Scene called");
+            string sceneName = SceneDataList.levels[id].name;
 
             AsyncOperation sceneLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
@@ -57,6 +52,11 @@ namespace SceneManagerSystem
 
             var myScene = SceneManager.GetSceneByName(sceneName);
             SceneManager.SetActiveScene(myScene);
+        }
+
+        public void LoadScene(int id)
+        {
+            StartCoroutine(SceneController.LoadSceneAsync(id));
         }
     }
 }
