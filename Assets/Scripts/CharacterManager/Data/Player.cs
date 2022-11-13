@@ -34,6 +34,7 @@ public class Player : CharacterBase
         {
             Destroy(gameObject);
             Debug.Log("GameOver");
+            EffectController.Instance.PlayDeathSound();
         }
     }
 

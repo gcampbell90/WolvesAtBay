@@ -53,9 +53,9 @@ public class EffectController : MonoBehaviour
         //RandomSwordSound();
     }
 
-    //public void PlayDeathSound()
-    //{
-    //    PlayRandomSound(deathSoundClips);
-    //    //RandomDeathSound();
-    //}
+    public void PlayDeathSound()
+    {
+        PlayRandomSound(deathSoundClips);
+        //RandomDeathSound();
+    }
 }
