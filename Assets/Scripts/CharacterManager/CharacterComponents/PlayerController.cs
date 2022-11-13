@@ -56,10 +56,13 @@ public class PlayerController : MonoBehaviour
         float duration = 0.1f;
         float rot = 40;
         float progress = 0f;
+
+        //Play the sword swing audio from the effect controller
+        EffectController.Instance.PlaySwordSound();
+
         // Loop until instructed otherwise
         while (progress <= 1f)
         {
-
             // Do some nice animation
             Pivot.localRotation = Quaternion.Slerp(Quaternion.Euler(0, -70, 0), Quaternion.Euler(0, rot, 0), progress);
             progress += Time.deltaTime / duration;
