@@ -54,6 +54,7 @@ public class GMLevelAbstract : MonoBehaviour
         CheckIfAllEnemiesKilled();
         Debug.Log("GM EnemyKilled");
         //Play potential audio effect/particle effect here?
+        EffectController.Instance.PlayDeathSound();
     }
 
     public virtual void OnCompletion() { }

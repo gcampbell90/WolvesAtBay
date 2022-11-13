@@ -419,9 +419,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 3e2a29e3b557e13428fd2b40fbcab3a6, type: 3}
   - {fileID: 8300000, guid: 942b1108a4f423840a015ddc5a54cd9b, type: 3}
   deathSoundClips:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 8300000, guid: 0539610c3ddd3ce4bb25a877f975a00a, type: 3}
+  - {fileID: 8300000, guid: db77cf61c84eabc47b37dc37c73d1ad3, type: 3}
+  - {fileID: 8300000, guid: 3bf75c61b20868b48bccd4a352d220a1, type: 3}
+  - {fileID: 8300000, guid: e0ab903d92988ba4880fb741c043ec0d, type: 3}
   minPitch: 0.95
   maxPitch: 1.05
   output: {fileID: 24300002, guid: 0a0779ca9b991d1448c311034ad42f49, type: 2}
