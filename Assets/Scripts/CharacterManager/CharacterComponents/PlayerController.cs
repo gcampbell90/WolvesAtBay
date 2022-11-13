@@ -22,6 +22,8 @@ public class PlayerController : MonoBehaviour
     }
     private void Start()
     {
+        //set particle system
+        EffectController.swordTrail = Pivot.GetComponentInChildren<ParticleSystem>();
         speed = gameObject.GetComponent<CharacterBase>().Speed;
     }
 
@@ -59,6 +61,7 @@ public class PlayerController : MonoBehaviour
 
         //Play the sword swing audio from the effect controller
         EffectController.Instance.PlaySwordSound();
+        EffectController.Instance.EnableSwordTrail();
 
         // Loop until instructed otherwise
         while (progress <= 1f)
@@ -70,6 +73,7 @@ public class PlayerController : MonoBehaviour
             // Make the coroutine wait for a moment
             yield return null;
         }
+        EffectController.Instance.DisableSwordTrail();
 
         Pivot.localRotation = Quaternion.Euler(0, -70, 0);
     }
