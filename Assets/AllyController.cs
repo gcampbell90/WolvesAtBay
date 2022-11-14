@@ -46,4 +46,11 @@ public class AllyController : MonoBehaviour
             ally.DefensiveFormationCommand();
         }
     }
+    public void ChargeCommand()
+    {
+        foreach (var ally in MyAllies)
+        {
+            ally.ChargeCommand();
+        }
+    }
 }

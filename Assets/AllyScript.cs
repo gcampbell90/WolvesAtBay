@@ -33,11 +33,18 @@ public class AllyScript : MonoBehaviour
     {
         if (isDefending)
         {
-            Debug.Log("Already running" + myRoutine);
-            return;
-            StopCoroutine(myRoutine);
+            Debug.Log("Already running" + myRoutine + "..stopping");
+            //StopCoroutine(myRoutine);
+            isDefending = false;
         }
-        myRoutine = StartCoroutine(Defend());
+        else
+        {
+            myRoutine = StartCoroutine(Defend());
+        }
+    }
+    public void ChargeCommand()
+    {
+        myRoutine = StartCoroutine(Charge());
     }
 
     public IEnumerator StayInFormation()
@@ -65,29 +72,61 @@ public class AllyScript : MonoBehaviour
 
     public IEnumerator Defend()
     {
-        Debug.Log("Defending");
         isDefending = true;
-
-        float _t = 0f;
-        float defendLine = 0f;
 
         Vector3 _originPos = new Vector3();
         _originPos = _follower.transform.localPosition;
 
         //move followers to correct pos
         var defensiveLine = _follower.transform.localPosition;
-        defensiveLine.z = 0f;
-        defensiveLine.y = 1f;
+        defensiveLine.x *= 0.85f;
+        defensiveLine.y = 0f;
+        defensiveLine.z /= 2f;
 
         _follower.transform.localPosition = defensiveLine;
-        while (_t < 2f)
+
+        while (isDefending)
         {
+            Debug.Log("Defending");
+
+            yield return null;
+        }
+        Debug.Log("Break Defense");
+
+
+        _follower.transform.localPosition = _originPos;
+        isDefending = false;
+
+    }
+
+    bool isCharging = false;
+    public IEnumerator Charge()
+    {
+        if (isCharging) yield break;
+        isCharging = true;
+
+        Vector3 _originPos = new Vector3();
+        _originPos = _follower.transform.localPosition;
+
+        //move followers to correct pos
+        var chargeLine = _follower.transform.localPosition;
+        chargeLine.y = 0f;
+
+        chargeLine.z = UnityEngine.Random.Range(-0.5f,1f);
+
+        _follower.transform.localPosition = chargeLine;
+
+        float _t = 0f;
+        while (_t < 1f)
+        {
+            Debug.Log("Charging");
             _t += Time.deltaTime;
             yield return null;
         }
-        _t = 0f;
+        Debug.Log("Reforming the line");
+
         _follower.transform.localPosition = _originPos;
-        isDefending = false;
+        isCharging = false;
 
     }
 }
