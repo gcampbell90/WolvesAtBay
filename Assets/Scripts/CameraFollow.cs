@@ -105,7 +105,7 @@ public class CameraFollow : MonoBehaviour
 
     float ClampVerticalAngle(float angle)
     {
-        return Mathf.Clamp(angle,-45, -maxVerticalAngleHorizon);
+        return Mathf.Clamp(angle,-35, -maxVerticalAngleHorizon);
     }
     float ClampHorizontalAngle(float angle)
     {
