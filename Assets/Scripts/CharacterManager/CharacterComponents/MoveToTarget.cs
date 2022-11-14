@@ -10,11 +10,17 @@ public class MoveToTarget : MonoBehaviour
 
     private void Awake()
     {
-
-        _speed = gameObject.GetComponent<CharacterBase>().Speed;
+        if (gameObject.GetComponent<CharacterBase>() == null)
+        {
+            _speed = 2;
+        }
+        else
+        {
+            _speed = gameObject.GetComponent<CharacterBase>().Speed;
+        }
         //Debug.Log($"Move Speed = {_speed}. if zero character base not set.");
 
-        if(_speed <= 0)
+        if (_speed <= 0)
             _speed = 5;
 
     }

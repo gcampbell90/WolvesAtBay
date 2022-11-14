@@ -11,7 +11,7 @@ public class Player : CharacterBase
     //// Start is called before the first frame update
     private void Awake()
     {
-        Speed = 10;
+        Speed = 2;
         Health = 1000;
     }
 
