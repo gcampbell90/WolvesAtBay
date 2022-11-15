@@ -57,6 +57,10 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(DefensiveMove());
             //print("space key was pressed");
         }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(ChangeDirection());
+        }
 
     }
 
@@ -106,7 +110,14 @@ public class PlayerController : MonoBehaviour
         ShieldPivot.gameObject.SetActive(false);
         SwordPivot.gameObject.SetActive(true);
     }
+
+    private IEnumerator ChangeDirection()
+    {
+        throw new NotImplementedException();
+    }
 }
+
+
 
 //void OnTriggerEnter(Collider triggerCollider)
 //{

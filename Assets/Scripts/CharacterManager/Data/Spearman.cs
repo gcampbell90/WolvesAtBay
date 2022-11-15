@@ -11,12 +11,14 @@ public class Spearman : Enemy
 
     private void Awake()
     {
+        base.Awake();
+
         Speed = 5;
         Health = 20;
 
         gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
-
-        gameObject.layer = 7;
+        gameObject.AddComponent<TargetingSystem>();
+        gameObject.AddComponent<AttackBehaviour>();
 
     }
 
@@ -36,9 +38,9 @@ public class Spearman : Enemy
 
         //Move component and Attack component both getting ref to player pos
         //TODO: fix inefficient method(s)
-        AddLookAtTarget();
+        //AddLookAtTarget();
         DEBUG_AddMoveComponent();
-        gameObject.AddComponent<AttackBehaviour>();
+        //gameObject.AddComponent<AttackBehaviour>();
 
         //gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }

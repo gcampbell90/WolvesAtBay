@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveToTarget : MonoBehaviour
+public partial class MoveToTarget : MonoBehaviour
 {
-    Transform target;
+    public Transform Target { get; set; }
     private int _speed;
     //TODO: Fix this inefficient method(s) 
 
@@ -33,9 +33,9 @@ public class MoveToTarget : MonoBehaviour
     }
     public void MoveTo()
     {
-        target = GameObject.FindGameObjectWithTag("Player").transform;
+        Target = GameObject.FindGameObjectWithTag("Player").transform;
 
-        if (Vector3.Distance(transform.position, target.position) < 3f)
+        if (Vector3.Distance(transform.position, Target.position) < 3f)
         {
             return;
         }
@@ -43,10 +43,11 @@ public class MoveToTarget : MonoBehaviour
 
         // Move our position a step closer to the target.
         var step = _speed * Time.deltaTime; // calculate distance to move
-        transform.position = Vector3.MoveTowards(transform.position, target.position, step);
+        transform.position = Vector3.MoveTowards(transform.position, Target.position, step);
 
-      
+
         //Debug.Log("Moving to Target" + step + " " + transform.position + " " + target.position);
 
     }
+  
 }

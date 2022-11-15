@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 //using static UnityEditor.Experimental.GraphView.GraphView;
 //using static UnityEngine.GraphicsBuffer;
 
@@ -32,15 +33,21 @@ public class AttackBehaviour : MonoBehaviour
     }
     void Start()
     {
-        _speed = gameObject.GetComponent<CharacterBase>().Speed;
+        transform.TryGetComponent(out CharacterBase component);
+        if (!component) _speed = 2; return;
+        _speed = component.Speed;
 
     }
 
     //Check every frame if player is in range of weapon, if so, attack.
     private void FixedUpdate()
     {
-        if(GameObject.FindGameObjectWithTag("Player") == null) { return; }
-        target = GameObject.FindGameObjectWithTag("Player").transform;
+        //if(GameObject.FindGameObjectWithTag("Player") == null) { return; }
+        transform.TryGetComponent(out TargetingSystem component);
+        if (!component) return;
+        target = component.Target;
+        target = GameObject.FindGameObjectWithTag("Enemy").transform;
+
         var _distance = Vector3.Distance(transform.position, target.position);
 
         if (_distance < range + 5f)
@@ -69,6 +76,11 @@ public class AttackBehaviour : MonoBehaviour
                 AttachSpear();
                 mydelegate += SpearAttackMove;
             }
+            else
+            {
+                AttachSword();
+                mydelegate += SwordAttackMove;
+            }
         }
         else
         {
@@ -93,7 +105,8 @@ public class AttackBehaviour : MonoBehaviour
         sword.transform.localPosition = new Vector3(0, 0, 1);
         sword.transform.localScale = new Vector3(0.3f, 0.3f, 2f);
 
-        sword.layer = 10;
+        var tag = gameObject.tag;
+        sword.layer = tag == "Enemy" ? 10 : 11;
     }
     private void AttachSpear()
     {

@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - NPC
+  - Ally
+  - Enemy
+  - WhiteBalls
+  - BlackBalls
   layers:
   - Default
   - TransparentFX
@@ -14,12 +18,12 @@ TagManager:
   - UI
   - Player
   - Enemies
-  - 
+  - Allies
   - PlayerWeapons
   - EnemyWeapons
-  - 
-  - 
-  - 
+  - AllyWeapons
+  - WhiteBalls
+  - BlackBalls
   - 
   - 
   - 

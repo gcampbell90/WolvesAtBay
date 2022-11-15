@@ -22,18 +22,20 @@ public class Enemy : CharacterBase
         event_death?.Invoke();
     }
 
-    private void Awake()
+    protected void Awake()
     {
-        Speed = 5;
-        Health = 20;
+
+        //place into Enemy layer for physics etc
+        gameObject.layer = 7;
+        //give enemy tag for in game behaviours and finding
+        gameObject.tag = "Enemy";
 
         //gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
     }
 
     private void Start()
     {
-        //place into Enemy layer for physics etc
-        gameObject.layer = 7;
+
         var rb = GetComponent<Rigidbody>();
         rb.mass = 50f;
         rb.constraints = RigidbodyConstraints.FreezePositionY;
@@ -43,20 +45,16 @@ public class Enemy : CharacterBase
         var col = GetComponent<Collider>();
         col.isTrigger = false;
 
-        transform.rotation = Quaternion.Euler(new Vector3(0,180,0));
-        //rb.useGravity = false;
-        //VirtualMethodTest(1, "Enemy is created");
-
+        transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0));
 
         //Move component and Attack component both getting ref to player pos
         //TODO: fix inefficient method(s)
         AddLookAtTarget();
         DEBUG_AddMoveComponent();
         gameObject.AddComponent<AttackBehaviour>();
+        gameObject.AddComponent<TargetingSystem>();
 
         // also has ref to player pos
-
-
 
         //gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }
@@ -87,6 +85,7 @@ public class Enemy : CharacterBase
         Health -= damage;
         if(Health <= 0)
         {
+            GroupController.Enemies.Remove(gameObject.GetComponent<TargetingSystem>());
             EnemyDeath();
         }
     }

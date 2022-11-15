@@ -11,11 +11,14 @@ public class Swordsman : Enemy
 
     private void Awake()
     {
+        base.Awake();
 
         Speed = 5;
         Health = 20;
 
-        gameObject.layer = 7;
+        gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
+        gameObject.AddComponent<TargetingSystem>();
+        gameObject.AddComponent<AttackBehaviour>();
 
     }
 
@@ -36,8 +39,8 @@ public class Swordsman : Enemy
         //Move component and Attack component both getting ref to player pos
         //TODO: fix inefficient method(s)
         AddLookAtTarget();
-        DEBUG_AddMoveComponent();
-        gameObject.AddComponent<AttackBehaviour>();
+        //DEBUG_AddMoveComponent();
+        //gameObject.AddComponent<AttackBehaviour>();
 
         //gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }
