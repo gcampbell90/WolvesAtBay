@@ -29,29 +29,37 @@ public class AttackBehaviour : MonoBehaviour
 
         range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
         WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
+
         //Debug.Log($"Attack Behaviour Component - Range: {range}");
     }
     void Start()
     {
+
         transform.TryGetComponent(out CharacterBase component);
         if (!component) _speed = 2; return;
         _speed = component.Speed;
+        target = GetComponent<TargetingSystem>().Target;
+        Debug.Log("Start target: " + target);
 
     }
 
     //Check every frame if player is in range of weapon, if so, attack.
-    private void FixedUpdate()
+    private void Update()
     {
-        //if(GameObject.FindGameObjectWithTag("Player") == null) { return; }
-        transform.TryGetComponent(out TargetingSystem component);
-        if (!component) return;
-        target = component.Target;
-        target = GameObject.FindGameObjectWithTag("Enemy").transform;
+        //target = GameObject.FindGameObjectWithTag("Enemy").transform;
+        if (target == null)
+        {
+            target = GetComponent<TargetingSystem>().Target;
+            return;
+        }
+        Debug.Log("Update target: " + target);
 
         var _distance = Vector3.Distance(transform.position, target.position);
 
         if (_distance < range + 5f)
         {
+            Debug.Log("Attacking" + target);
+
             StartCoroutine(mydelegate());
         }
         //Debug.Log($"Attack Behaviour Component"
@@ -106,6 +114,8 @@ public class AttackBehaviour : MonoBehaviour
         sword.transform.localScale = new Vector3(0.3f, 0.3f, 2f);
 
         var tag = gameObject.tag;
+        //Pivot.tag = tag;
+        //sword.tag = tag;
         sword.layer = tag == "Enemy" ? 10 : 11;
     }
     private void AttachSpear()
@@ -189,4 +199,5 @@ public class AttackBehaviour : MonoBehaviour
 
         isRunning = false;
     }
+
 }

@@ -86,7 +86,7 @@ public class Spearman : Enemy
     public override void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.name != "Sword") return;
-        if (collision.gameObject.tag != "Player") return;
+        if (collision.gameObject.tag == "Enemy" ) return;
         Debug.Log("Hit! " + collision.gameObject.tag);
 
         //replace damage with weapon/player strength/damage

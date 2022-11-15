@@ -120,6 +120,7 @@ public class Enemy : CharacterBase
     {
         if (collision.gameObject.name != "Sword") return;
         if (collision.gameObject.tag != "Player") return;
+        if (collision.gameObject.tag != "Ally") return;
         //Debug.Log("Player Hit! " + collision.gameObject.tag);
 
         //replace damage with weapon/player strength/damage

@@ -5,7 +5,7 @@ using UnityEngine;
 public class GroupController : MonoBehaviour
 {
     public static List<TargetingSystem> Enemies = new List<TargetingSystem> ();
-    public static List<Transform> Allies = new List<Transform>();
+    public static List<TargetingSystem> Allies = new List<TargetingSystem>();
 
     // Start is called before the first frame update
     void Start()
@@ -19,12 +19,18 @@ public class GroupController : MonoBehaviour
         var alliesInScene = GameObject.FindGameObjectsWithTag("Ally");
         foreach (var ally in alliesInScene)
         {
-            Allies.Add(ally.transform);
+            Allies.Add(ally.GetComponent<TargetingSystem>());
         }
     }
 
 
-    private void Update()
+    private void FixedUpdate()
+    {
+        SetAllyTargets();
+        SetEnemyTargets();
+    }
+
+    private void SetEnemyTargets()
     {
         foreach (var enemy in Enemies)
         {
@@ -74,6 +80,55 @@ public class GroupController : MonoBehaviour
         }
     }
 
+    private void SetAllyTargets()
+    {
+        foreach (var ally in Allies)
+        {
+            var nearestDist = float.MaxValue;
+            Transform nearestObject = null;
+            Transform nearestVisibleObject = null;
+
+            var canAttack = false;
+            foreach (var enemy in Enemies)
+            {
+                //calculates closest object
+                var distance = Vector3.Distance(ally.transform.position, enemy.transform.position);
+                if (distance < nearestDist)
+                {
+                    nearestDist = distance;
+                    nearestObject = enemy.transform;
+                }
+
+                //then checks if there is an object in the way
+                RaycastHit hit;
+                if (Physics.Linecast(ally.transform.position, enemy.transform.position, out hit))
+                {
+                    //checks for any collider that is not a black ball
+                    if (!hit.collider.CompareTag("Enemy"))
+                    {
+                        // Stop chasing
+                        Debug.Log("Obstacle in the way of target");
+                        canAttack = false;
+                        //Debug.Log("Waiting");
+                    }
+                    else
+                    {
+                        Debug.Log("TargetFound");
+
+                        canAttack = true;
+                        //Debug.Log("Attacking");
+                    }
+                }
+                if (!canAttack)
+                {
+                    nearestObject = FindNextNearestTarget(ally.gameObject);
+                }
+
+                ally.Target = nearestObject;
+                ally.CanAttack = canAttack;
+            }
+        }
+    }
 
     private Transform FindNextNearestTarget(GameObject _source)
     {

@@ -9,6 +9,7 @@ public class TargetingSystem : MonoBehaviour
     public bool CanAttack { get; set; }
 
     [SerializeField] bool randomMovement;
+    [SerializeField] bool enableDebugLines;
     private void Start()
     {
         if (randomMovement)
@@ -19,9 +20,10 @@ public class TargetingSystem : MonoBehaviour
 
     private void Update()
     {
-        if (Target == null) { return; }
+        if (Target == null) return; 
 
-        transform.GetComponent<MoveToTarget>().Target = Target;
+        //transform.GetComponent<MoveToTarget>().Target = Target;
+        if (!enableDebugLines) return;
         //Draws line to closest target regardless of whats in the way
         Debug.DrawLine(transform.position + new Vector3(0.1f, 0, 0), Target.position + new Vector3(0.1f, 0, 0), Color.blue);
 

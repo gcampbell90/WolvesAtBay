@@ -18,6 +18,7 @@ public class Swordsman : Enemy
 
         gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
         gameObject.AddComponent<TargetingSystem>();
+        gameObject.AddComponent<MoveToTarget>();
         gameObject.AddComponent<AttackBehaviour>();
 
     }

@@ -17,8 +17,8 @@ TagManager:
   - Water
   - UI
   - Player
-  - Enemies
-  - Allies
+  - Enemy
+  - Ally
   - PlayerWeapons
   - EnemyWeapons
   - AllyWeapons
