@@ -94,7 +94,7 @@ public class Swordsman : Enemy
     {
         if (collision.gameObject.name != "Sword") return;
         if (collision.gameObject.tag != "Player") return;
-        Debug.Log("Player Hit! " + collision.gameObject.tag);
+        //Debug.Log("Player Hit! " + collision.gameObject.tag);
 
         //replace damage with weapon/player strength/damage
         ITakeDamage(20);

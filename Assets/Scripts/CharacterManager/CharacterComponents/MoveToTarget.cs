@@ -1,12 +1,29 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 public partial class MoveToTarget : MonoBehaviour
 {
+
     public Transform Target { get; set; }
     private int _speed;
-    //TODO: Fix this inefficient method(s) 
+
+    Task MoveToTask;
+    CancellationTokenSource _cancellationTokenSource = null;
+
+    //private void OnEnable()
+    //{
+    //    Enemy.deathEvent += OnKilled;
+    //}
+    //private void OnDisable()
+    //{
+    //    Enemy.deathEvent -= OnKilled;
+    //}
+
 
     private void Awake()
     {
@@ -25,29 +42,66 @@ public partial class MoveToTarget : MonoBehaviour
 
     }
 
-    void FixedUpdate()
+    private async void Start()
     {
         if(GameObject.FindGameObjectWithTag("Player") == null) { return; }
-
-        MoveTo();
-    }
-    public void MoveTo()
-    {
         Target = GameObject.FindGameObjectWithTag("Player").transform;
 
-        if (Vector3.Distance(transform.position, Target.position) < 3f)
+
+        //set up cancellation token for move task
+        _cancellationTokenSource = new CancellationTokenSource();
+        var token = _cancellationTokenSource.Token;
+        MoveToTask = MoveToTargetOverTime(_cancellationTokenSource.Token);
+
+        try
         {
-            return;
+            await MoveToTask;
+        }
+        catch (OperationCanceledException e)
+        {
+            Debug.Log($"Movement Cancelled {e.Message}");
+        }
+        finally
+        {
+            Debug.Log("Destination Reached");
+            _cancellationTokenSource.Dispose();
         }
 
-
-        // Move our position a step closer to the target.
-        var step = _speed * Time.deltaTime; // calculate distance to move
-        transform.position = Vector3.MoveTowards(transform.position, Target.position, step);
-
-
-        //Debug.Log("Moving to Target" + step + " " + transform.position + " " + target.position);
-
     }
-  
+
+    public async Task MoveToTargetOverTime(CancellationToken token)
+    {
+        float distance = Vector3.Distance(transform.position, Target.position);
+        while (distance > 3)
+        {
+            distance = Vector3.Distance(transform.position, Target.position);
+
+            // Move our position a step closer to the target.
+            var step = _speed * Time.deltaTime; // calculate distance to move
+            transform.position = Vector3.MoveTowards(transform.position, Target.position, step);
+
+            if (token.IsCancellationRequested)
+            {
+                Debug.Log("Task Cancelled");
+
+                return;
+
+                //throw exception?
+                //token.ThrowIfCancellationRequested();
+            }
+            await Task.Yield();
+        }
+        Debug.Log("Destination Arrived");
+    }
+    public async Task OnKilled()
+    {
+        Debug.Log("MoveToTarget cleanup");
+        if (MoveToTask.IsCompleted) return;
+        _cancellationTokenSource.Cancel();
+        while (!MoveToTask.IsCanceled)
+        {
+            await Task.Yield();
+        }
+    }
+
 }

@@ -26,7 +26,7 @@ public class GroupController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        SetAllyTargets();
+        //SetAllyTargets();
         SetEnemyTargets();
     }
 
@@ -57,13 +57,13 @@ public class GroupController : MonoBehaviour
                     if (!hit.collider.CompareTag("Ally"))
                     {
                         // Stop chasing
-                        Debug.Log("Obstacle in the way of target");
+                        //Debug.Log("Obstacle in the way of target");
                         canAttack = false;
                         //Debug.Log("Waiting");
                     }
                     else
                     {
-                        Debug.Log("TargetFound");
+                        //Debug.Log("TargetFound");
 
                         canAttack = true;
                         //Debug.Log("Attacking");
@@ -167,7 +167,7 @@ public class GroupController : MonoBehaviour
         }
         if (nearestObject == null)
         {
-            Debug.Log("No available targets");
+            //Debug.Log("No available targets");
         }
 
 

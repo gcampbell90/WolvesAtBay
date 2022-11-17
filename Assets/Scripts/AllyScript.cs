@@ -33,7 +33,7 @@ public class AllyScript : MonoBehaviour
     {
         if (isDefending)
         {
-            Debug.Log("Already running" + myRoutine + "..stopping");
+            //Debug.Log("Already running" + myRoutine + "..stopping");
             //StopCoroutine(myRoutine);
             isDefending = false;
         }
@@ -87,11 +87,11 @@ public class AllyScript : MonoBehaviour
 
         while (isDefending)
         {
-            Debug.Log("Defending");
+            //Debug.Log("Defending");
 
             yield return null;
         }
-        Debug.Log("Break Defense");
+        ////Debug.Log("Break Defense");
 
 
         _follower.transform.localPosition = _originPos;
@@ -119,11 +119,11 @@ public class AllyScript : MonoBehaviour
         float _t = 0f;
         while (_t < 1f)
         {
-            Debug.Log("Charging");
+            //Debug.Log("Charging");
             _t += Time.deltaTime;
             yield return null;
         }
-        Debug.Log("Reforming the line");
+        //Debug.Log("Reforming the line");
 
         _follower.transform.localPosition = _originPos;
         isCharging = false;

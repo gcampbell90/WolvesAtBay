@@ -18,11 +18,11 @@ public class GMLevelAbstract : MonoBehaviour
 
     private void OnEnable()
     {
-        Enemy.event_death += EnemyKilled;
+        Enemy.deathEvent += EnemyKilled;
     }
     private void OnDisable()
     {
-        Enemy.event_death -= EnemyKilled;
+        Enemy.deathEvent -= EnemyKilled;
     }
 
     protected void Awake()

@@ -52,13 +52,13 @@ public class AttackBehaviour : MonoBehaviour
             target = GetComponent<TargetingSystem>().Target;
             return;
         }
-        Debug.Log("Update target: " + target);
+        //Debug.Log("Update target: " + target);
 
         var _distance = Vector3.Distance(transform.position, target.position);
 
         if (_distance < range + 5f)
         {
-            Debug.Log("Attacking" + target);
+            //Debug.Log("Attacking" + target);
 
             StartCoroutine(mydelegate());
         }
