@@ -1,3 +1,4 @@
+using Mono.Cecil.Cil;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,21 +8,37 @@ public class CameraFollow : MonoBehaviour
 {
     Transform m_FollowTarget;
 
-    float offsetY;
-    float offsetZ = 0;
-    // Start is called before the first frame update
+    [SerializeField] bool UseCameraStartPosition;
+    Vector3 m_cameraStartPos;
+
+    [SerializeField] float offsetX;
+    [SerializeField] float offsetY;
+    [SerializeField] float offsetZ;
 
     public static Vector3 CameraForward;
+
     private void Awake()
     {
-        offsetY = transform.position.y;
-        offsetZ = transform.position.z;
+        CheckIfPlayerExists();
+        m_cameraStartPos = transform.position;
+
         CameraForward = Vector3.zero;
     }
 
-    private void Start()
+    Vector3 GetVector()
     {
-        CheckIfPlayerExists();
+        var targetVector = Vector3.zero;
+
+        if (UseCameraStartPosition)
+        {
+            targetVector = m_cameraStartPos - m_FollowTarget.position;
+        }
+        else
+        {
+            targetVector = new Vector3(offsetX,offsetY,offsetZ);
+        }
+ 
+        return targetVector;
     }
 
     private bool CheckIfPlayerExists()
@@ -55,12 +72,8 @@ public class CameraFollow : MonoBehaviour
     private void FollowPlayer()
     {
         var targetPos = m_FollowTarget.position;
-        Vector3 newTargetPos = Vector3.zero;
-        if (targetPos == newTargetPos) return;
 
-        newTargetPos = targetPos;
-
-        transform.position = newTargetPos + new Vector3(0, offsetY, offsetZ);
+        transform.position = targetPos + GetVector();
     }
 
     [SerializeField] Vector2 sensitivity = new Vector2(1, 1);

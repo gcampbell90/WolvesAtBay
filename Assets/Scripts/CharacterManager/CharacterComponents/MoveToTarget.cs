@@ -59,11 +59,11 @@ public partial class MoveToTarget : MonoBehaviour
         }
         catch (OperationCanceledException e)
         {
-            Debug.Log($"Movement Cancelled {e.Message}");
+            //Debug.Log($"Movement Cancelled {e.Message}");
         }
         finally
         {
-            Debug.Log("Destination Reached");
+            //Debug.Log("Destination Reached");
             _cancellationTokenSource.Dispose();
         }
 
@@ -82,7 +82,7 @@ public partial class MoveToTarget : MonoBehaviour
 
             if (token.IsCancellationRequested)
             {
-                Debug.Log("Task Cancelled");
+                //Debug.Log("Task Cancelled");
 
                 return;
 
@@ -91,11 +91,11 @@ public partial class MoveToTarget : MonoBehaviour
             }
             await Task.Yield();
         }
-        Debug.Log("Destination Arrived");
+        //Debug.Log("Destination Arrived");
     }
     public async Task OnKilled()
     {
-        Debug.Log("MoveToTarget cleanup");
+        //Debug.Log("MoveToTarget cleanup");
         if (MoveToTask.IsCompleted) return;
         _cancellationTokenSource.Cancel();
         while (!MoveToTask.IsCanceled)
@@ -103,5 +103,7 @@ public partial class MoveToTarget : MonoBehaviour
             await Task.Yield();
         }
     }
+
+
 
 }

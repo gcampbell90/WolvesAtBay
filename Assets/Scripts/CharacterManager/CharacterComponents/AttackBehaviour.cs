@@ -15,25 +15,17 @@ public class AttackBehaviour : MonoBehaviour
     int _speed;
     public Rigidbody WeaponRB { get; set; }
     //coroutine check
-    bool isRunning;
+    bool isAttacking;
 
     public Transform target;
 
     //Delegate to hold attack animation type - should eventually be managed by weapon system
     public delegate IEnumerator AttackBehaviourDelegate();
-    public AttackBehaviourDelegate mydelegate;
+    public AttackBehaviourDelegate AttackMove;
 
-    private void Awake()
-    {
-        AttachWeaponObjects();
-
-        range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
-        WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
-
-        //Debug.Log($"Attack Behaviour Component - Range: {range}");
-    }
     void Start()
     {
+        AttachWeaponObjects();
 
         transform.TryGetComponent(out CharacterBase component);
         if (!component) _speed = 2; return;
@@ -60,12 +52,19 @@ public class AttackBehaviour : MonoBehaviour
         {
             //Debug.Log("Attacking" + target);
 
-            StartCoroutine(mydelegate());
+            StartCoroutine(AttackMove());
         }
         //Debug.Log($"Attack Behaviour Component"
         //    + $" - Range: {_distance}"
         //    );
 
+    }
+
+    public void Attack()
+    {
+        Debug.Log("AttackBehaviour - attack method ");
+
+        StartCoroutine(AttackMove());
     }
 
     void AttachWeaponObjects()
@@ -77,17 +76,17 @@ public class AttackBehaviour : MonoBehaviour
             if(gameObject.GetComponent<Swordsman>() != null)
             {
                 AttachSword();
-                mydelegate += SwordAttackMove;
+                AttackMove += SwordAttackMove;
 
             }else if(gameObject.GetComponent<Spearman>() != null)
             {
                 AttachSpear();
-                mydelegate += SpearAttackMove;
+                AttackMove += SpearAttackMove;
             }
             else
             {
                 AttachSword();
-                mydelegate += SwordAttackMove;
+                AttackMove += SwordAttackMove;
             }
         }
         else
@@ -96,6 +95,9 @@ public class AttackBehaviour : MonoBehaviour
         }
         Pivot.transform.SetParent(transform, false);
 
+        range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
+        WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
+        //Debug.Log($"Attack Behaviour Component - Range: {range}");
     }
 
     private void AttachSword()
@@ -138,12 +140,12 @@ public class AttackBehaviour : MonoBehaviour
 
     private IEnumerator SwordAttackMove()
     {
-        if (isRunning)
+        if (isAttacking)
             yield break;
 
-        isRunning = true;
+        isAttacking = true;
         // Just make the animation interval configurable for easier modification later
-        float duration = 1f;
+        float duration = 0.5f;
         float rot = Pivot.localRotation.y > 0 ? -45 : 45;
         float progress = 0f;
         // Loop until instructed otherwise
@@ -157,15 +159,27 @@ public class AttackBehaviour : MonoBehaviour
             // Make the coroutine wait for a moment
             yield return null;
         }
+        progress = 0f;
+        rot = Pivot.localRotation.y > 0 ? -45 : 45;
+        while (progress <= duration)
+        {
 
-        isRunning = false;
+            // Do some nice animation
+            Pivot.localRotation = Quaternion.Slerp(Pivot.localRotation, Quaternion.Euler(new Vector3(0, rot, 0)), progress);
+            progress += Time.deltaTime / duration;
+
+            // Make the coroutine wait for a moment
+            yield return null;
+        }
+
+        isAttacking = false;
     }
     private IEnumerator SpearAttackMove()
     {
-        if (isRunning)
+        if (isAttacking)
             yield break;
 
-        isRunning = true;
+        isAttacking = true;
         // Just make the animation interval configurable for easier modification later
         float duration = 1f;
         //float rot = Pivot.localRotation.y > 0 ? -45 : 45;
@@ -197,7 +211,7 @@ public class AttackBehaviour : MonoBehaviour
         }
         transform.GetChild(0).GetComponentInChildren<BoxCollider>().enabled = false;
 
-        isRunning = false;
+        isAttacking = false;
     }
 
 }

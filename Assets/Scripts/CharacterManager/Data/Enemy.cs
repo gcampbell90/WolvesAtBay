@@ -40,7 +40,7 @@ public class Enemy : CharacterBase
 
         base.AddLookAtTarget();
 
-        gameObject.AddComponent<MoveToTarget>();
+        //gameObject.AddComponent<MoveToTarget>();
         gameObject.AddComponent<AttackBehaviour>();
         gameObject.AddComponent<TargetingSystem>();
 
@@ -68,7 +68,7 @@ public class Enemy : CharacterBase
         Health -= damage;
         if(Health <= 0)
         {
-            Debug.Log("Death Event");
+            //Debug.Log("Death Event");
             GroupController.Enemies.Remove(gameObject.GetComponent<TargetingSystem>());
             //deathEvent?.Invoke();
             EnemyDeath();
@@ -77,7 +77,7 @@ public class Enemy : CharacterBase
 
     private async void EnemyDeath()
     {
-        Debug.Log("Enemy Death async task cleanup");
+        //Debug.Log("Enemy Death async task cleanup");
 
         //EnemyDeath Cleanup
         var moveComponent = GetComponent<MoveToTarget>();
@@ -93,7 +93,7 @@ public class Enemy : CharacterBase
         }
         finally
         {
-            Debug.Log("Finished Cleanup");
+            //Debug.Log("Finished Cleanup");
             GetComponent<IKillable>().Destroy();
         }
     }
