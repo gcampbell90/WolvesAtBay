@@ -23,7 +23,6 @@ public class GroupController : MonoBehaviour
         }
     }
 
-
     private void FixedUpdate()
     {
         //SetAllyTargets();

@@ -9,7 +9,15 @@ using UnityEngine;
 public partial class MoveToTarget : MonoBehaviour
 {
 
-    public Transform Target { get; set; }
+    private Transform target;
+    public Transform Target { get
+        {
+            return target; 
+        }
+        set {
+            target = value;
+        }
+    }
     private int _speed;
 
     Task MoveToTask;
@@ -44,10 +52,6 @@ public partial class MoveToTarget : MonoBehaviour
 
     private async void Start()
     {
-        if(GameObject.FindGameObjectWithTag("Player") == null) { return; }
-        Target = GameObject.FindGameObjectWithTag("Player").transform;
-
-
         //set up cancellation token for move task
         _cancellationTokenSource = new CancellationTokenSource();
         var token = _cancellationTokenSource.Token;
@@ -71,6 +75,11 @@ public partial class MoveToTarget : MonoBehaviour
 
     public async Task MoveToTargetOverTime(CancellationToken token)
     {
+        while (Target == null)
+        {  
+            Target = GetComponent<TargetingSystem>().Target;
+            await Task.Yield();
+        } 
         float distance = Vector3.Distance(transform.position, Target.position);
         while (distance > 3)
         {
