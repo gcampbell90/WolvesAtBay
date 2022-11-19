@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 //using static UnityEditor.Experimental.GraphView.GraphView;
 //using static UnityEngine.GraphicsBuffer;
 
@@ -14,43 +15,56 @@ public class AttackBehaviour : MonoBehaviour
     int _speed;
     public Rigidbody WeaponRB { get; set; }
     //coroutine check
-    bool isRunning;
+    bool isAttacking;
 
     public Transform target;
 
     //Delegate to hold attack animation type - should eventually be managed by weapon system
     public delegate IEnumerator AttackBehaviourDelegate();
-    public AttackBehaviourDelegate mydelegate;
+    public AttackBehaviourDelegate AttackMove;
 
-    private void Awake()
+    void Start()
     {
         AttachWeaponObjects();
 
-        range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
-        WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
-        //Debug.Log($"Attack Behaviour Component - Range: {range}");
-    }
-    void Start()
-    {
-        _speed = gameObject.GetComponent<CharacterBase>().Speed;
+        transform.TryGetComponent(out CharacterBase component);
+        if (!component) _speed = 2; return;
+        _speed = component.Speed;
+        target = GetComponent<TargetingSystem>().Target;
+        Debug.Log("Start target: " + target);
 
     }
 
     //Check every frame if player is in range of weapon, if so, attack.
-    private void FixedUpdate()
+    private void Update()
     {
-        if(GameObject.FindGameObjectWithTag("Player") == null) { return; }
-        target = GameObject.FindGameObjectWithTag("Player").transform;
+        //target = GameObject.FindGameObjectWithTag("Enemy").transform;
+        if (target == null)
+        {
+            target = GetComponent<TargetingSystem>().Target;
+            return;
+        }
+        //Debug.Log("Update target: " + target);
+
         var _distance = Vector3.Distance(transform.position, target.position);
 
         if (_distance < range + 5f)
         {
-            StartCoroutine(mydelegate());
+            //Debug.Log("Attacking" + target);
+
+            StartCoroutine(AttackMove());
         }
         //Debug.Log($"Attack Behaviour Component"
         //    + $" - Range: {_distance}"
         //    );
 
+    }
+
+    public void Attack()
+    {
+        Debug.Log("AttackBehaviour - attack method ");
+
+        StartCoroutine(AttackMove());
     }
 
     void AttachWeaponObjects()
@@ -62,12 +76,17 @@ public class AttackBehaviour : MonoBehaviour
             if(gameObject.GetComponent<Swordsman>() != null)
             {
                 AttachSword();
-                mydelegate += SwordAttackMove;
+                AttackMove += SwordAttackMove;
 
             }else if(gameObject.GetComponent<Spearman>() != null)
             {
                 AttachSpear();
-                mydelegate += SpearAttackMove;
+                AttackMove += SpearAttackMove;
+            }
+            else
+            {
+                AttachSword();
+                AttackMove += SwordAttackMove;
             }
         }
         else
@@ -76,6 +95,9 @@ public class AttackBehaviour : MonoBehaviour
         }
         Pivot.transform.SetParent(transform, false);
 
+        range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
+        WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
+        //Debug.Log($"Attack Behaviour Component - Range: {range}");
     }
 
     private void AttachSword()
@@ -93,7 +115,10 @@ public class AttackBehaviour : MonoBehaviour
         sword.transform.localPosition = new Vector3(0, 0, 1);
         sword.transform.localScale = new Vector3(0.3f, 0.3f, 2f);
 
-        sword.layer = 10;
+        var tag = gameObject.tag;
+        //Pivot.tag = tag;
+        //sword.tag = tag;
+        sword.layer = tag == "Enemy" ? 10 : 11;
     }
     private void AttachSpear()
     {
@@ -115,12 +140,12 @@ public class AttackBehaviour : MonoBehaviour
 
     private IEnumerator SwordAttackMove()
     {
-        if (isRunning)
+        if (isAttacking)
             yield break;
 
-        isRunning = true;
+        isAttacking = true;
         // Just make the animation interval configurable for easier modification later
-        float duration = 1f;
+        float duration = 0.5f;
         float rot = Pivot.localRotation.y > 0 ? -45 : 45;
         float progress = 0f;
         // Loop until instructed otherwise
@@ -134,15 +159,27 @@ public class AttackBehaviour : MonoBehaviour
             // Make the coroutine wait for a moment
             yield return null;
         }
+        progress = 0f;
+        rot = Pivot.localRotation.y > 0 ? -45 : 45;
+        while (progress <= duration)
+        {
 
-        isRunning = false;
+            // Do some nice animation
+            Pivot.localRotation = Quaternion.Slerp(Pivot.localRotation, Quaternion.Euler(new Vector3(0, rot, 0)), progress);
+            progress += Time.deltaTime / duration;
+
+            // Make the coroutine wait for a moment
+            yield return null;
+        }
+
+        isAttacking = false;
     }
     private IEnumerator SpearAttackMove()
     {
-        if (isRunning)
+        if (isAttacking)
             yield break;
 
-        isRunning = true;
+        isAttacking = true;
         // Just make the animation interval configurable for easier modification later
         float duration = 1f;
         //float rot = Pivot.localRotation.y > 0 ? -45 : 45;
@@ -174,6 +211,7 @@ public class AttackBehaviour : MonoBehaviour
         }
         transform.GetChild(0).GetComponentInChildren<BoxCollider>().enabled = false;
 
-        isRunning = false;
+        isAttacking = false;
     }
+
 }

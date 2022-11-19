@@ -11,7 +11,7 @@ public class Player : CharacterBase
     //// Start is called before the first frame update
     private void Awake()
     {
-        Speed = 10;
+        Speed = 2;
         Health = 1000;
     }
 
@@ -28,7 +28,7 @@ public class Player : CharacterBase
 
     public override void ITakeDamage(int damage)
     {
-        Debug.Log($"{gameObject.name} have taken damage of {damage}");
+        //Debug.Log($"{gameObject.name} have taken damage of {damage}");
         Health -= damage;
         if (Health <= 0)
         {
@@ -41,7 +41,7 @@ public class Player : CharacterBase
 
     public override void OnCollisionEnter(Collision collision)
     {
-        Debug.Log($"Collision on {gameObject.name} from {collision.gameObject.name}");
+        //Debug.Log($"Collision on {gameObject.name} from {collision.gameObject.name}");
         if (collision.gameObject.name != "Sword" && collision.gameObject.name != "Spear") return;
         { 
             ITakeDamage(5);

@@ -1,39 +1,32 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : CharacterBase
 {
     public delegate void DeathEvent();
-    public static event DeathEvent event_death;
+    public static event DeathEvent deathEvent;
 
     //[SerializeField]
-    //GMLevelAbstract gmLevelAbstract;
-    private void OnEnable()
-    {
-        //GMLevelAbstract.event_death += EnemyDeath;
-    }
+    GMLevelAbstract gmLevelAbstract;
 
-    private void OnDisable()
+    protected void Awake()
     {
-        //GMLevelAbstract.event_death -= EnemyDeath
-        event_death?.Invoke();
-    }
 
-    private void Awake()
-    {
-        Speed = 5;
-        Health = 20;
+        //place into Enemy layer for physics etc
+        gameObject.layer = 7;
+        //give enemy tag for in game behaviours and finding
+        gameObject.tag = "Enemy";
 
         //gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
     }
 
     private void Start()
     {
-        //place into Enemy layer for physics etc
-        gameObject.layer = 7;
+
         var rb = GetComponent<Rigidbody>();
         rb.mass = 50f;
         rb.constraints = RigidbodyConstraints.FreezePositionY;
@@ -43,20 +36,13 @@ public class Enemy : CharacterBase
         var col = GetComponent<Collider>();
         col.isTrigger = false;
 
-        transform.rotation = Quaternion.Euler(new Vector3(0,180,0));
-        //rb.useGravity = false;
-        //VirtualMethodTest(1, "Enemy is created");
+        transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0));
 
+        base.AddLookAtTarget();
 
-        //Move component and Attack component both getting ref to player pos
-        //TODO: fix inefficient method(s)
-        AddLookAtTarget();
-        DEBUG_AddMoveComponent();
+        //gameObject.AddComponent<MoveToTarget>();
         gameObject.AddComponent<AttackBehaviour>();
-
-        // also has ref to player pos
-
-
+        gameObject.AddComponent<TargetingSystem>();
 
         //gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }
@@ -76,55 +62,62 @@ public class Enemy : CharacterBase
     //    Debug.Log($"Output: {testInt},{testString}. Overridden Virtual method called directly from class than base. I can also add to this implementation with or without calling the base method.\n Whenever that behaviour is required/useful is still to be figured out. ");
     //}
 
-    public override void AddLookAtTarget()
-    {
-        base.AddLookAtTarget();
-    }
-
     public override void ITakeDamage(int damage)
     {
         //Debug.Log($"{gameObject.name} Damage: {damage}");
         Health -= damage;
         if(Health <= 0)
         {
+            //Debug.Log("Death Event");
+            GroupController.Enemies.Remove(this);
+            //deathEvent?.Invoke();
             EnemyDeath();
         }
     }
 
-    private void EnemyDeath()
+    private async void EnemyDeath()
     {
-        //gmLevelAbstract.EnemyKilled();
-        //gmLevelAbstract.CheckIfAllEnemiesKilled();
+        //Debug.Log("Enemy Death async task cleanup");
 
-        Debug.Log($"{name} Killed");
-        GetComponent<IKillable>().Destroy();
+        //EnemyDeath Cleanup
+        var moveComponent = GetComponent<MoveToTarget>();
+        var task = moveComponent.OnKilled();
 
-        //var gm = GameObject.FindObjectOfType<GMLevelAbstract>();
-        //gm.GetComponent<GMLevelAbstract>().EnemyKilled();
-
+        try
+        {
+            await task;
+        }
+        catch (ObjectDisposedException e)
+        {
+            Debug.Log($"Kill cleanup error {e.Message}");
+        }
+        finally
+        {
+            //Debug.Log("Finished Cleanup");
+            GetComponent<IKillable>().Destroy();
+        }
     }
 
-    //private void DropWeapon()
-    //{
-    //    var weapon = transform.GetChild(0);
-    //    var rb = weapon.GetComponentInChildren<Rigidbody>();
-    //    rb.transform.SetParent(null);
-    //    rb.useGravity = true;
-    //}
-
-    private void DEBUG_AddMoveComponent()
+    public void SetTarget(Transform target)
     {
-        gameObject.AddComponent<MoveToTarget>();
+        var targetSys = GetComponent<TargetingSystem>();
+        targetSys.Target = target.transform;
     }
 
     public override void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.name != "Sword") return;
         if (collision.gameObject.tag != "Player") return;
+        if (collision.gameObject.tag != "Ally") return;
         //Debug.Log("Player Hit! " + collision.gameObject.tag);
 
         //replace damage with weapon/player strength/damage
         ITakeDamage(10);
+    }
+
+    private void OnDestroy()
+    {
+        deathEvent?.Invoke();
     }
 
     #endregion

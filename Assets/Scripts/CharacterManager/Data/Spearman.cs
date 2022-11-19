@@ -11,12 +11,14 @@ public class Spearman : Enemy
 
     private void Awake()
     {
+        base.Awake();
+
         Speed = 5;
         Health = 20;
 
         gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
-
-        gameObject.layer = 7;
+        gameObject.AddComponent<TargetingSystem>();
+        gameObject.AddComponent<AttackBehaviour>();
 
     }
 
@@ -36,9 +38,9 @@ public class Spearman : Enemy
 
         //Move component and Attack component both getting ref to player pos
         //TODO: fix inefficient method(s)
-        AddLookAtTarget();
+        //AddLookAtTarget();
         DEBUG_AddMoveComponent();
-        gameObject.AddComponent<AttackBehaviour>();
+        //gameObject.AddComponent<AttackBehaviour>();
 
         //gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }
@@ -84,8 +86,8 @@ public class Spearman : Enemy
     public override void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.name != "Sword") return;
-        if (collision.gameObject.tag != "Player") return;
-        Debug.Log("Hit! " + collision.gameObject.tag);
+        if (collision.gameObject.tag == "Enemy" ) return;
+        //Debug.Log("Hit! " + collision.gameObject.tag);
 
         //replace damage with weapon/player strength/damage
         ITakeDamage(20);

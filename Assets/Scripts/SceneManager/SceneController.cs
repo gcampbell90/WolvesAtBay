@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR 
+using UnityEditor.SearchService;
+#endif
 
 namespace SceneManagerSystem
 {
@@ -27,7 +29,7 @@ namespace SceneManagerSystem
             {
                 level.Id = count++;
 
-                Debug.Log($"Scene controller created reference to scene: ID: {level.Id} Name: {level.name}");
+                //Debug.Log($"Scene controller created reference to scene: ID: {level.Id} Name: {level.name}");
             }
         }
 
@@ -39,14 +41,13 @@ namespace SceneManagerSystem
 
         public static IEnumerator LoadSceneAsync(int id)
         {
-            Debug.Log("Load Scene called");
+            //Debug.Log("Load Scene called");
             string sceneName = SceneDataList.levels[id].name;
 
             AsyncOperation sceneLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
             while (sceneLoad.progress != 1f)
             {
-                Debug.Log("Waiting..." + sceneLoad.progress);
                 yield return null;
             }
 

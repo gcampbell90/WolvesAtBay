@@ -11,8 +11,6 @@ public class EffectController : MonoBehaviour
     [SerializeField] private AudioClip[] swordSwingClips;
     [SerializeField] private AudioClip[] deathSoundClips;
 
-    public static ParticleSystem swordTrail;
-
     public float minPitch = 0.95f;
     public float maxPitch = 1.05f;
 
@@ -26,20 +24,16 @@ public class EffectController : MonoBehaviour
         if (_instance != null && _instance != this)
         {
             Destroy(this.gameObject);
-            Debug.Log("EffectController instance already exists...Destroying");
+            //Debug.Log("EffectController instance already exists...Destroying");
 
         }
         else
         {
             _instance = this;
-            Debug.Log("Setting EffectController to this instance...");
+            //Debug.Log("Setting EffectController to this instance...");
         }
 
         source = gameObject.AddComponent<AudioSource>(); //Create AudioSource
-    }
-
-    private void Start()
-    {
     }
 
     void PlayRandomSound(AudioClip[] RandomClips)
@@ -50,26 +44,18 @@ public class EffectController : MonoBehaviour
         source.volume = 0.25f; //Sets volume
         source.pitch = Random.Range(minPitch, maxPitch); //Sets pitch
 
-        source.PlayOneShot(source.clip);
+        //source.PlayOneShot(source.clip);
     }
 
     public void PlaySwordSound()
     {
-        PlayRandomSound(swordSwingClips);
+        //PlayRandomSound(swordSwingClips);
+        //RandomSwordSound();
     }
 
     public void PlayDeathSound()
     {
-        PlayRandomSound(deathSoundClips);
-    }
-
-    public void EnableSwordTrail()
-    {
-        swordTrail.Play();
-    }
-
-    public void DisableSwordTrail()
-    {
-        swordTrail.Stop();
+        //PlayRandomSound(deathSoundClips);
+        //RandomDeathSound();
     }
 }

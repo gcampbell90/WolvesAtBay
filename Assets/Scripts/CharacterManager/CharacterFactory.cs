@@ -16,6 +16,11 @@ public class CharacterFactory : MonoBehaviour
     /*
      * Should go into a start method rather? Or is awake fine for initialisation?
      */
+
+    private void Start()
+    {
+        SpawnCharacters();
+    }
     public void SpawnCharacters()
     {
         for (int i = 0; i < swordsmanCount; i++)
@@ -42,7 +47,6 @@ public class CharacterFactory : MonoBehaviour
         //TODO: Update test Methods to accept newly created character to initialise instead of in awake method
         //CreateNPCs();
         //CreateEnemies();
-        Destroy(gameObject);
     }
 
     #region TestMethods
