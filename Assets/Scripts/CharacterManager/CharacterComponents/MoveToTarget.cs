@@ -32,7 +32,6 @@ public partial class MoveToTarget : MonoBehaviour
     //    Enemy.deathEvent -= OnKilled;
     //}
 
-
     private void Awake()
     {
         if (gameObject.GetComponent<CharacterBase>() == null)
