@@ -10,6 +10,9 @@ public class Enemy : CharacterBase
     public delegate void DeathEvent();
     public static event DeathEvent deathEvent;
 
+    public delegate void DeathRemoveEvent(Enemy enemy);
+    public static event DeathRemoveEvent deathRemoveEvent;
+
     //[SerializeField]
     GMLevelAbstract gmLevelAbstract;
 
@@ -69,7 +72,6 @@ public class Enemy : CharacterBase
         if(Health <= 0)
         {
             //Debug.Log("Death Event");
-            GroupController.Enemies.Remove(this);
             //deathEvent?.Invoke();
             EnemyDeath();
         }
@@ -106,18 +108,17 @@ public class Enemy : CharacterBase
 
     public override void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name != "Sword") return;
-        if (collision.gameObject.tag != "Player") return;
-        if (collision.gameObject.tag != "Ally") return;
-        //Debug.Log("Player Hit! " + collision.gameObject.tag);
+        if (collision.gameObject.tag != "Weapon") return;
+        Debug.Log($"{gameObject.name} hit by a " + collision.gameObject.tag);
 
         //replace damage with weapon/player strength/damage
-        ITakeDamage(10);
+        ITakeDamage(20);
     }
 
     private void OnDestroy()
     {
         deathEvent?.Invoke();
+        deathRemoveEvent?.Invoke(this);
     }
 
     #endregion

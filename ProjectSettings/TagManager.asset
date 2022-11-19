@@ -7,8 +7,7 @@ TagManager:
   - NPC
   - Ally
   - Enemy
-  - WhiteBalls
-  - BlackBalls
+  - Weapon
   layers:
   - Default
   - TransparentFX

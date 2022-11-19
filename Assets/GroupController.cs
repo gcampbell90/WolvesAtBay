@@ -1,15 +1,28 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class GroupController : MonoBehaviour
 {
     //public static List<TargetingSystem> Enemies = new List<TargetingSystem>();
     //public static List<TargetingSystem> Allies = new List<TargetingSystem>();
-
-    public static List<Enemy> Enemies = new List<Enemy>();
+    private List<Enemy> _enemies = new List<Enemy>();
     private List<AllyScript> _allies = new List<AllyScript>();
-    public List<AllyScript> Allies
+
+    [SerializeField]bool DebugTargetLinesEnabled = false;
+    public List<Enemy> Enemies { get
+        {
+            return _enemies; 
+        }
+        set
+        {
+            _enemies = value;
+        }
+    }
+    private List<AllyScript> Allies
     {
         get
         {
@@ -23,31 +36,71 @@ public class GroupController : MonoBehaviour
 
     private AllyController allyController;
 
+    private void OnEnable()
+    {
+        Enemy.deathRemoveEvent += RemoveEntity;
+    }
+    private void OnDisable()
+    {
+        Enemy.deathRemoveEvent -= RemoveEntity;
+    }
+
+
     private void Awake()
     {
         allyController = GetComponent<AllyController>();
     }
     // Start is called before the first frame update
-    void Start()
+    async void Start()
     {
-        var enemiesInScene = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach (var enemy in enemiesInScene)
-        {
-            Enemies.Add(enemy.GetComponent<Enemy>());
-        }
-
+        _enemies = await FindEnemies();
+ 
         var alliesInScene = GameObject.FindGameObjectsWithTag("Ally");
         foreach (var ally in alliesInScene)
         {
             _allies.Add(ally.GetComponent<AllyScript>());
         }
+    }
+
+    async Task<List<Enemy>> FindEnemies()
+    {
+        var enemiesInScene = GameObject.FindGameObjectsWithTag("Enemy");
+        List<Enemy> m_tmpList = new List<Enemy>();
+        while(enemiesInScene.Length == 0 || !ApplicationStateManager.playMode)
+        {
+            enemiesInScene = GameObject.FindGameObjectsWithTag("Enemy");
+            Debug.Log("Looking for enemies");
+            await Task.Yield();
+        }
+        Debug.Log("Setting Enemies");
+        foreach (var enemy in enemiesInScene)
+        {
+            var enemyComponent = enemy.GetComponent<Enemy>();
+
+            enemy.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabled;
+
+            m_tmpList.Add(enemyComponent);
+        }
+        if(m_tmpList.Count > 0)
+        {
+            return m_tmpList;
+        }
+        else
+        {
+            return null;
+        }
 
     }
 
+    //TODO: Move to its own task based approach
     private void FixedUpdate()
     {
         //SetAllyTargets();
-        //SetEnemyTargets();
+        SetEnemyTargets();
+    }
+    private void RemoveEntity(Enemy enemy)
+    {
+        Enemies.Remove(enemy);
     }
 
     //Targeting system - send targets to entity's targeting system
@@ -150,7 +203,6 @@ public class GroupController : MonoBehaviour
     //        }
     //    }
     //}
-
     private Transform FindNextNearestTarget(GameObject _source)
     {
         var nearestDist = float.MaxValue;

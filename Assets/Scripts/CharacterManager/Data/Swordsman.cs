@@ -92,12 +92,11 @@ public class Swordsman : Enemy
 
     public override void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name != "Sword") return;
-        if (collision.gameObject.tag != "Player") return;
-        //Debug.Log("Player Hit! " + collision.gameObject.tag);
+        if (collision.gameObject.tag != "Weapon") return;
+        Debug.Log($"{gameObject.name} hit by a " + collision.gameObject.tag);
 
         //replace damage with weapon/player strength/damage
-        ITakeDamage(20);
+        ITakeDamage(10);
     }
 
     #endregion

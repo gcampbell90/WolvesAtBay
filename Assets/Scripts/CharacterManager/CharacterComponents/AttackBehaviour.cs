@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 using static UnityEngine.GraphicsBuffer;
 //using static UnityEditor.Experimental.GraphView.GraphView;
 //using static UnityEngine.GraphicsBuffer;
@@ -97,6 +98,8 @@ public class AttackBehaviour : MonoBehaviour
 
         range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
         WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
+        //Pivot.tag = "Weapon";
+
         //Debug.Log($"Attack Behaviour Component - Range: {range}");
     }
 
@@ -117,7 +120,7 @@ public class AttackBehaviour : MonoBehaviour
 
         var tag = gameObject.tag;
         //Pivot.tag = tag;
-        //sword.tag = tag;
+        sword.tag = "Weapon";
         sword.layer = tag == "Enemy" ? 10 : 11;
     }
     private void AttachSpear()

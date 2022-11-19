@@ -43,7 +43,8 @@ public partial class AllyController : MonoBehaviour
 
     private void Awake()
     {
-        PlayerController.onDefend += DefensiveFormation;
+        PlayerController.onDefend += DefendCommand;
+        PlayerController.onAttack += AttackCommand;
     }
 
     private async void Start()
@@ -52,7 +53,7 @@ public partial class AllyController : MonoBehaviour
         Leader =
         //GameObject.CreatePrimitive(PrimitiveType.Cube);
         new GameObject("LeaderGuide");
-        
+
         SetAllyList();
 
         _cancellationTokenSource = new CancellationTokenSource();
@@ -161,8 +162,8 @@ public partial class AllyController : MonoBehaviour
             {
                 foreach (var follower in _followers)
                 {
-                    var _originPos = Leader.transform.position - follower.Offset;
-                    var _targetPos = isDefending ? follower.GameObject.transform.position : _originPos;
+                    var _targetPos = Leader.transform.position - follower.Offset;
+                    //var _targetPos = Leader.transform.position - follower.GameObject.transform.position;
 
                     follower.LerpToVector(_targetPos, Leader.transform.rotation);
                 }
@@ -172,15 +173,14 @@ public partial class AllyController : MonoBehaviour
                     return;
                 }
                 await Task.Yield();
-                Leader.transform.hasChanged = false;
                 //Debug.Log($"Commander(Player){Commander.transform.position} Leader(To follow): {Leader.transform.position}");
             }
+            Leader.transform.hasChanged = false;
             await Task.Yield();
         }
     }
 
-    bool isDefending;
-    public void DefensiveFormation()
+    public void DefendCommand()
     {
         foreach (var follower in _followers)
         {
@@ -205,11 +205,16 @@ public partial class AllyController : MonoBehaviour
 
         }
     }
+    private void AttackCommand()
+    {
+        foreach (var ally in Allies)
+        {
+            ally.AttackBehaviour.Attack();
+        }
+    }
 
     private async Task Defend(Follower follower, CancellationToken token)
     {
-        isDefending = true;
-
         while (Input.GetKey(KeyCode.Mouse1))
         {
             Debug.Log("Defending");
@@ -231,13 +236,11 @@ public partial class AllyController : MonoBehaviour
                 //token.ThrowIfCancellationRequested();
             }
             await Task.Yield();
-            follower.GameObject.transform.position = Commander.transform.position -follower.Offset;
+            follower.GameObject.transform.position = Commander.transform.position - follower.Offset;
         }
         Debug.Log("Break Defense");
 
-        isDefending = false;
     }
-
     private async void OnDestroy()
     {
         //Debug.Log("MoveToTarget cleanup");

@@ -10,9 +10,12 @@ public class AllyScript : MonoBehaviour
     Vector3 formationPos = Vector3.zero;
     bool isDefending = false;
     Coroutine myRoutine = null;
+    
+    public AttackBehaviour AttackBehaviour { get; set; }
 
     private void Awake()
     {
+        AttackBehaviour = GetComponent<AttackBehaviour>();
         //AllyController.onDefend += DefendCall;
         //StartCoroutine(CheckLeader());
     }

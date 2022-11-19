@@ -10,11 +10,14 @@ public partial class MoveToTarget : MonoBehaviour
 {
 
     private Transform target;
-    public Transform Target { get
+    public Transform Target
+    {
+        get
         {
-            return target; 
+            return target;
         }
-        set {
+        set
+        {
             target = value;
         }
     }
@@ -75,10 +78,21 @@ public partial class MoveToTarget : MonoBehaviour
     public async Task MoveToTargetOverTime(CancellationToken token)
     {
         while (Target == null)
-        {  
+        {
             Target = GetComponent<TargetingSystem>().Target;
             await Task.Yield();
-        } 
+
+            if (token.IsCancellationRequested)
+            {
+                //Debug.Log("Task Cancelled");
+
+                return;
+
+                //throw exception?
+                //token.ThrowIfCancellationRequested();
+            }
+        }
+
         float distance = Vector3.Distance(transform.position, Target.position);
         while (distance > 3)
         {

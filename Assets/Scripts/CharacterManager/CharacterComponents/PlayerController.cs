@@ -28,6 +28,9 @@ public class PlayerController : MonoBehaviour
     public delegate void DefendCommand();
     public static event DefendCommand onDefend;
 
+    public delegate void AttackCommand();
+    public static event AttackCommand onAttack;
+
     private void Awake()
     {
         SwordPivot = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
@@ -151,9 +154,9 @@ public class PlayerController : MonoBehaviour
 
         //Play the sword swing audio from the effect controller
         //EffectController.Instance.PlaySwordSound();
-        Debug.Log("PlayerController - attacking");
+        //Debug.Log("PlayerController - attacking");
 
-        //allyController.AttackCommand();
+        onAttack?.Invoke();
 
         //Get Mouse Position
         //var cam = Camera.main;
