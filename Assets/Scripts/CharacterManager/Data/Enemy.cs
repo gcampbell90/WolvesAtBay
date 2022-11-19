@@ -69,7 +69,7 @@ public class Enemy : CharacterBase
         if(Health <= 0)
         {
             //Debug.Log("Death Event");
-            GroupController.Enemies.Remove(gameObject.GetComponent<TargetingSystem>());
+            GroupController.Enemies.Remove(this);
             //deathEvent?.Invoke();
             EnemyDeath();
         }
@@ -98,6 +98,12 @@ public class Enemy : CharacterBase
         }
     }
 
+    public void SetTarget(Transform target)
+    {
+        var targetSys = GetComponent<TargetingSystem>();
+        targetSys.Target = target.transform;
+    }
+
     public override void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.name != "Sword") return;
@@ -113,6 +119,7 @@ public class Enemy : CharacterBase
     {
         deathEvent?.Invoke();
     }
+
     #endregion
 }
 

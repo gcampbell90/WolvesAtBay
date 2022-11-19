@@ -6621,8 +6621,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NextLevelTrigger: {fileID: 1372533524}
   charFactory: {fileID: 272937673}
-  SwordsmenCount: 2
-  SpearmenCount: 2
+  SwordsmenCount: 5
+  SpearmenCount: 5
 --- !u!4 &1519725443
 Transform:
   m_ObjectHideFlags: 0

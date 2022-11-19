@@ -55,7 +55,7 @@ public partial class MoveToTarget : MonoBehaviour
         //set up cancellation token for move task
         _cancellationTokenSource = new CancellationTokenSource();
         var token = _cancellationTokenSource.Token;
-        MoveToTask = MoveToTargetOverTime(_cancellationTokenSource.Token);
+        MoveToTask = MoveToTargetOverTime(token);
 
         try
         {

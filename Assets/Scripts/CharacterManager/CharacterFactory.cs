@@ -47,7 +47,6 @@ public class CharacterFactory : MonoBehaviour
         //TODO: Update test Methods to accept newly created character to initialise instead of in awake method
         //CreateNPCs();
         //CreateEnemies();
-        Destroy(gameObject);
     }
 
     #region TestMethods

@@ -25,6 +25,9 @@ public class PlayerController : MonoBehaviour
 
     public bool Boost { get; set; }
 
+    public delegate void DefendCommand();
+    public static event DefendCommand onDefend;
+
     private void Awake()
     {
         SwordPivot = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
@@ -43,39 +46,41 @@ public class PlayerController : MonoBehaviour
 
         var newrot = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0);
         transform.rotation = Quaternion.Slerp(transform.rotation, newrot, Time.deltaTime * 5);
+        HandleInput();
 
-        if (Input.GetKey(KeyCode.W) || (Input.GetKey(KeyCode.A)) || (Input.GetKey(KeyCode.D)))
-        {
-            HandleMovementInput();
-        }
-
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            StartCoroutine(BoostBehaviour());
-        }
-
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            StartCoroutine(AttackMove());
-        }
-
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            StartCoroutine(DefensiveMove());
-        }
     }
-    void HandleMovementInput()
+    void HandleInput()
     {
+
         float xDir = Input.GetAxis("Horizontal");
         float yDir = Input.GetAxis("Vertical");
 
-        //Keyboard input and player movement via transform
-        Vector3 movementDir = new Vector3(xDir, 0, yDir);
+        if (Input.GetKey(KeyCode.W) || (Input.GetKey(KeyCode.A)) || (Input.GetKey(KeyCode.D) || Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKey(KeyCode.Mouse1)))
+        {
+
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                StartCoroutine(BoostBehaviour());
+            }
+
+            //Keyboard input and player movement via transform
+            Vector3 movementDir = new Vector3(xDir, 0, yDir);
+            var newPos = transform.position + new Vector3(0, 0, movementDir.z * GetSpeed() * Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * GetSpeed());
+
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                StartCoroutine(AttackMove());
+            }
+
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                StartCoroutine(DefensiveMove());
+            }
+
+        }
 
         //movementDir.Normalize();
-
-        var newPos = transform.position + new Vector3(0, 0, movementDir.z * GetSpeed() * Time.deltaTime);
-        transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * GetSpeed());
 
         //old stuff
         //movementDir = movementDir * GetSpeed() * Time.deltaTime;
@@ -115,7 +120,7 @@ public class PlayerController : MonoBehaviour
 
         Boost = true;
 
-        allyController.ChargeCommand();
+        //allyController.ChargeCommand();
 
         while (Input.GetKey(KeyCode.LeftShift))
         {
@@ -148,7 +153,7 @@ public class PlayerController : MonoBehaviour
         //EffectController.Instance.PlaySwordSound();
         Debug.Log("PlayerController - attacking");
 
-        allyController.AttackCommand();
+        //allyController.AttackCommand();
 
         //Get Mouse Position
         //var cam = Camera.main;
@@ -181,11 +186,12 @@ public class PlayerController : MonoBehaviour
     private IEnumerator DefensiveMove()
     {
         isDefending = true;
+        onDefend?.Invoke();
 
         //float rot = 40;
         float timer = 0f;
         float duration = 2f;
-        allyController.SetDefensiveFormation();
+
         while (!Input.GetKeyUp(KeyCode.Mouse1))
         {
             SwordPivot.gameObject.SetActive(false);
@@ -195,11 +201,7 @@ public class PlayerController : MonoBehaviour
         ShieldPivot.gameObject.SetActive(false);
         SwordPivot.gameObject.SetActive(true);
         isDefending = false;
-    }
-
-    private IEnumerator ChangeDirection()
-    {
-        throw new NotImplementedException();
+        yield return null;
     }
 }
 

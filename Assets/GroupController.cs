@@ -4,31 +4,53 @@ using UnityEngine;
 
 public class GroupController : MonoBehaviour
 {
-    public static List<TargetingSystem> Enemies = new List<TargetingSystem> ();
-    public static List<TargetingSystem> Allies = new List<TargetingSystem>();
+    //public static List<TargetingSystem> Enemies = new List<TargetingSystem>();
+    //public static List<TargetingSystem> Allies = new List<TargetingSystem>();
 
+    public static List<Enemy> Enemies = new List<Enemy>();
+    private List<AllyScript> _allies = new List<AllyScript>();
+    public List<AllyScript> Allies
+    {
+        get
+        {
+            return _allies;
+        }
+        set
+        {
+            _allies = value;
+        }
+    }
+
+    private AllyController allyController;
+
+    private void Awake()
+    {
+        allyController = GetComponent<AllyController>();
+    }
     // Start is called before the first frame update
     void Start()
     {
         var enemiesInScene = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (var enemy in enemiesInScene)
         {
-            Enemies.Add(enemy.GetComponent<TargetingSystem>());
+            Enemies.Add(enemy.GetComponent<Enemy>());
         }
 
         var alliesInScene = GameObject.FindGameObjectsWithTag("Ally");
         foreach (var ally in alliesInScene)
         {
-            Allies.Add(ally.GetComponent<TargetingSystem>());
+            _allies.Add(ally.GetComponent<AllyScript>());
         }
+
     }
 
     private void FixedUpdate()
     {
         //SetAllyTargets();
-        SetEnemyTargets();
+        //SetEnemyTargets();
     }
 
+    //Targeting system - send targets to entity's targeting system
     private void SetEnemyTargets()
     {
         foreach (var enemy in Enemies)
@@ -38,7 +60,7 @@ public class GroupController : MonoBehaviour
             Transform nearestVisibleObject = null;
 
             var canAttack = false;
-            foreach (var ally in Allies)
+            foreach (var ally in _allies)
             {
                 //calculates closest object
                 var distance = Vector3.Distance(enemy.transform.position, ally.transform.position);
@@ -63,7 +85,6 @@ public class GroupController : MonoBehaviour
                     else
                     {
                         //Debug.Log("TargetFound");
-
                         canAttack = true;
                         //Debug.Log("Attacking");
                     }
@@ -72,69 +93,70 @@ public class GroupController : MonoBehaviour
                 {
                     nearestObject = FindNextNearestTarget(enemy.gameObject);
                 }
+                else if (nearestObject != null)
+                {
+                    enemy.SetTarget(nearestObject.transform);
+                }
 
-                enemy.Target = nearestObject;
-                enemy.CanAttack = canAttack;
             }
         }
     }
+    //private void SetAllyTargets()
+    //{
+    //    foreach (var ally in Allies)
+    //    {
+    //        var nearestDist = float.MaxValue;
+    //        Transform nearestObject = null;
+    //        Transform nearestVisibleObject = null;
 
-    private void SetAllyTargets()
-    {
-        foreach (var ally in Allies)
-        {
-            var nearestDist = float.MaxValue;
-            Transform nearestObject = null;
-            Transform nearestVisibleObject = null;
+    //        var canAttack = false;
+    //        foreach (var enemy in Enemies)
+    //        {
+    //            //calculates closest object
+    //            var distance = Vector3.Distance(ally.transform.position, enemy.transform.position);
+    //            if (distance < nearestDist)
+    //            {
+    //                nearestDist = distance;
+    //                nearestObject = enemy.transform;
+    //            }
 
-            var canAttack = false;
-            foreach (var enemy in Enemies)
-            {
-                //calculates closest object
-                var distance = Vector3.Distance(ally.transform.position, enemy.transform.position);
-                if (distance < nearestDist)
-                {
-                    nearestDist = distance;
-                    nearestObject = enemy.transform;
-                }
+    //            //then checks if there is an object in the way
+    //            RaycastHit hit;
+    //            if (Physics.Linecast(ally.transform.position, enemy.transform.position, out hit))
+    //            {
+    //                //checks for any collider that is not a black ball
+    //                if (!hit.collider.CompareTag("Enemy"))
+    //                {
+    //                    // Stop chasing
+    //                    Debug.Log("Obstacle in the way of target");
+    //                    canAttack = false;
+    //                    //Debug.Log("Waiting");
+    //                }
+    //                else
+    //                {
+    //                    Debug.Log("TargetFound");
 
-                //then checks if there is an object in the way
-                RaycastHit hit;
-                if (Physics.Linecast(ally.transform.position, enemy.transform.position, out hit))
-                {
-                    //checks for any collider that is not a black ball
-                    if (!hit.collider.CompareTag("Enemy"))
-                    {
-                        // Stop chasing
-                        Debug.Log("Obstacle in the way of target");
-                        canAttack = false;
-                        //Debug.Log("Waiting");
-                    }
-                    else
-                    {
-                        Debug.Log("TargetFound");
+    //                    canAttack = true;
+    //                    //Debug.Log("Attacking");
+    //                }
+    //            }
+    //            if (!canAttack)
+    //            {
+    //                nearestObject = FindNextNearestTarget(ally.gameObject);
+    //            }
 
-                        canAttack = true;
-                        //Debug.Log("Attacking");
-                    }
-                }
-                if (!canAttack)
-                {
-                    nearestObject = FindNextNearestTarget(ally.gameObject);
-                }
-
-                ally.Target = nearestObject;
-                ally.CanAttack = canAttack;
-            }
-        }
-    }
+    //            ally.Target = nearestObject;
+    //            ally.CanAttack = canAttack;
+    //        }
+    //    }
+    //}
 
     private Transform FindNextNearestTarget(GameObject _source)
     {
         var nearestDist = float.MaxValue;
         Transform nearestObject = null;
         bool canAttack = false;
-        foreach (var ally in Allies)
+        foreach (var ally in _allies)
         {
             //calculates closest object
             var distance = Vector3.Distance(_source.transform.position, ally.transform.position);
