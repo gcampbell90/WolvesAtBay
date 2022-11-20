@@ -14,7 +14,7 @@ public class Enemy : CharacterBase
     public static event DeathRemoveEvent deathRemoveEvent;
 
     //[SerializeField]
-    GMLevelAbstract gmLevelAbstract;
+    //GMLevelAbstract gmLevelAbstract;
 
     protected void Awake()
     {
@@ -71,8 +71,6 @@ public class Enemy : CharacterBase
         Health -= damage;
         if(Health <= 0)
         {
-            //Debug.Log("Death Event");
-            //deathEvent?.Invoke();
             EnemyDeath();
         }
     }
@@ -83,25 +81,14 @@ public class Enemy : CharacterBase
 
         //EnemyDeath Cleanup
         var moveComponent = GetComponent<MoveToTarget>();
-        var task = moveComponent.OnKilled();
+        //var task = moveComponent.OnKilled();
+        GetComponent<IKillable>().Destroy();
 
-        try
-        {
-            await task;
-        }
-        catch (ObjectDisposedException e)
-        {
-            Debug.Log($"Kill cleanup error {e.Message}");
-        }
-        finally
-        {
-            //Debug.Log("Finished Cleanup");
-            GetComponent<IKillable>().Destroy();
-        }
     }
 
     public void SetTarget(Transform target)
     {
+        //Debug.Log("Setting target" + target);
         var targetSys = GetComponent<TargetingSystem>();
         targetSys.Target = target.transform;
     }

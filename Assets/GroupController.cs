@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -12,10 +13,15 @@ public class GroupController : MonoBehaviour
     private List<Enemy> _enemies = new List<Enemy>();
     private List<AllyScript> _allies = new List<AllyScript>();
 
-    [SerializeField]bool DebugTargetLinesEnabled = false;
-    public List<Enemy> Enemies { get
+    [SerializeField] bool DebugTargetLinesEnabled = false;
+
+    CancellationTokenSource _cts;
+
+    public List<Enemy> Enemies
+    {
+        get
         {
-            return _enemies; 
+            return _enemies;
         }
         set
         {
@@ -45,7 +51,6 @@ public class GroupController : MonoBehaviour
         Enemy.deathRemoveEvent -= RemoveEntity;
     }
 
-
     private void Awake()
     {
         allyController = GetComponent<AllyController>();
@@ -53,35 +58,71 @@ public class GroupController : MonoBehaviour
     // Start is called before the first frame update
     async void Start()
     {
-        _enemies = await FindEnemies();
- 
         var alliesInScene = GameObject.FindGameObjectsWithTag("Ally");
         foreach (var ally in alliesInScene)
         {
             _allies.Add(ally.GetComponent<AllyScript>());
         }
+
+        _cts = new CancellationTokenSource();
+        var token = _cts.Token;
+        try
+        {
+            _enemies = await FindEnemies(token);
+        }
+        catch (OperationCanceledException e)
+        {
+            //Debug.Log("Group Controller - Operation Cancelled" + e.Message);
+        }
+        finally
+        {
+            var enemyCount = Enemies == null ? 0 : Enemies.Count;
+            //Debug.Log("GroupController - Find Enemies Task Finished - Total Enemies: " + enemyCount);
+            _cts.Dispose();
+        }
+
+        if (_enemies.Count > 0 && _allies.Count > 0)
+        {
+            SetEnemyTargets();
+        }
     }
 
-    async Task<List<Enemy>> FindEnemies()
+    async Task<List<Enemy>> FindEnemies(CancellationToken token)
     {
-        var enemiesInScene = GameObject.FindGameObjectsWithTag("Enemy");
+
         List<Enemy> m_tmpList = new List<Enemy>();
-        while(enemiesInScene.Length == 0 || !ApplicationStateManager.playMode)
+
+        var enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        while (enemies.Length <= 0)
         {
-            enemiesInScene = GameObject.FindGameObjectsWithTag("Enemy");
-            Debug.Log("Looking for enemies");
+            //Debug.Log("Group Controller - Looking for enemies");
+
+            if (token.IsCancellationRequested)
+            {
+                //Debug.Log("Group Controller - FollowTheLeader Async Task has been cancelled");
+                return null;
+            }
+            enemies = GameObject.FindGameObjectsWithTag("Enemy");
+            if (enemies.Length > 0)
+            {
+                //Debug.Log("Group Controller - Will arrive here after enemies found");
+                foreach (var enemy in enemies)
+                {
+                    //Debug.Log("Group Controller - Setting Enemy");
+
+                    var enemyComponent = enemy.GetComponent<Enemy>();
+
+                    enemy.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabled;
+                    m_tmpList.Add(enemyComponent);
+                }
+                continue;
+            }
             await Task.Yield();
         }
-        Debug.Log("Setting Enemies");
-        foreach (var enemy in enemiesInScene)
-        {
-            var enemyComponent = enemy.GetComponent<Enemy>();
 
-            enemy.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabled;
+        //Debug.Log("Group Controller - Returning Found Array/List" + m_tmpList);
 
-            m_tmpList.Add(enemyComponent);
-        }
-        if(m_tmpList.Count > 0)
+        if (m_tmpList.Count > 0)
         {
             return m_tmpList;
         }
@@ -89,15 +130,8 @@ public class GroupController : MonoBehaviour
         {
             return null;
         }
-
     }
 
-    //TODO: Move to its own task based approach
-    private void FixedUpdate()
-    {
-        //SetAllyTargets();
-        SetEnemyTargets();
-    }
     private void RemoveEntity(Enemy enemy)
     {
         Enemies.Remove(enemy);
@@ -108,6 +142,8 @@ public class GroupController : MonoBehaviour
     {
         foreach (var enemy in Enemies)
         {
+            //Debug.Log("Set enemy target");
+
             var nearestDist = float.MaxValue;
             Transform nearestObject = null;
             Transform nearestVisibleObject = null;
@@ -122,6 +158,7 @@ public class GroupController : MonoBehaviour
                     nearestDist = distance;
                     nearestObject = ally.transform;
                 }
+                //Debug.Log("Setting enemy target to" + nearestObject);
 
                 //then checks if there is an object in the way
                 RaycastHit hit;
@@ -148,11 +185,12 @@ public class GroupController : MonoBehaviour
                 }
                 else if (nearestObject != null)
                 {
+                    Debug.Log("Group Controller -Setting Target");
                     enemy.SetTarget(nearestObject.transform);
                 }
-
             }
         }
+        return;
     }
     //private void SetAllyTargets()
     //{
@@ -247,4 +285,7 @@ public class GroupController : MonoBehaviour
         return nearestObject;
     }
 
+    private void OnDestroy()
+    {
+    }
 }

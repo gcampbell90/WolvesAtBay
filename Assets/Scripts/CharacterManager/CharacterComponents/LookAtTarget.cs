@@ -4,20 +4,28 @@ using UnityEngine;
 
 public class LookAtTarget : MonoBehaviour
 {
-    Transform target;
+    Transform _target;
 
     //TODO: Fix this inefficient method(s) 
 
+    private void Start()
+    {
+        
+    }
+
     void Update()
     {
-        LookAt();
+        if (_target == null)
+        {
+            _target = GetComponent<TargetingSystem>().Target;
+        }
+        else
+        {
+            LookAt();
+        }
     }
     public void LookAt()
     {
-        if (GameObject.FindGameObjectWithTag("Player") == null) { return; }
-
-        target = GameObject.FindGameObjectWithTag("Player").transform;
-
-        transform.LookAt(target);
+        transform.LookAt(_target);
     }
 }

@@ -543,6 +543,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ally (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 4186749017310366556, guid: cd2bb17d134dac34abb1519dac8b81fa,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd2bb17d134dac34abb1519dac8b81fa, type: 3}
 --- !u!1001 &1194384718
@@ -621,6 +626,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Ally (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4186749017310366556, guid: cd2bb17d134dac34abb1519dac8b81fa,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd2bb17d134dac34abb1519dac8b81fa, type: 3}
@@ -769,6 +779,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ally (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 4186749017310366556, guid: cd2bb17d134dac34abb1519dac8b81fa,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd2bb17d134dac34abb1519dac8b81fa, type: 3}
 --- !u!1 &1563582704
@@ -845,8 +860,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcCount: 0
-  swordsmanCount: 20
-  spearmanCount: 20
+  swordsmanCount: 10
+  spearmanCount: 0
   npc_Material: {fileID: 2100000, guid: 83b2942ba2b74af4f83876e754b68568, type: 2}
   enemy_Material: {fileID: 2100000, guid: 235177c5a2188bf4798835411c711ab0, type: 2}
   swordsManGO: {fileID: 919132149155446097, guid: 32da9ca90c5d51945ae3a31a0ee66e3c,
@@ -930,6 +945,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ally (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4186749017310366556, guid: cd2bb17d134dac34abb1519dac8b81fa,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd2bb17d134dac34abb1519dac8b81fa, type: 3}
 --- !u!1001 &1747449430
@@ -1008,6 +1028,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Ally (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4186749017310366556, guid: cd2bb17d134dac34abb1519dac8b81fa,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd2bb17d134dac34abb1519dac8b81fa, type: 3}
@@ -1142,7 +1167,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1823944948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1255,6 +1280,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Ally
+      objectReference: {fileID: 0}
+    - target: {fileID: 4186749017310366556, guid: cd2bb17d134dac34abb1519dac8b81fa,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd2bb17d134dac34abb1519dac8b81fa, type: 3}

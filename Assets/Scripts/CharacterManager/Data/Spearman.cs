@@ -6,8 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class Spearman : Enemy
 {
-
-    GMLevelAbstract gmLevelAbstract;
+    //GMLevelAbstract gmLevelAbstract;
 
     private void Awake()
     {
@@ -16,7 +15,7 @@ public class Spearman : Enemy
         Speed = 5;
         Health = 20;
 
-        gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
+        //gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
         gameObject.AddComponent<TargetingSystem>();
         gameObject.AddComponent<AttackBehaviour>();
 

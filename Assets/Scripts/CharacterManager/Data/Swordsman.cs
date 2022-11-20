@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class Swordsman : Enemy
 {
-    GMLevelAbstract gmLevelAbstract;
+    //GMLevelAbstract gmLevelAbstract;
 
     private void Awake()
     {
@@ -16,7 +16,7 @@ public class Swordsman : Enemy
         Speed = 5;
         Health = 20;
 
-        gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
+        //gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
         gameObject.AddComponent<TargetingSystem>();
         gameObject.AddComponent<MoveToTarget>();
         gameObject.AddComponent<AttackBehaviour>();
