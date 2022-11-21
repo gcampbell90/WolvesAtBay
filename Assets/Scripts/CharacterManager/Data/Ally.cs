@@ -3,26 +3,53 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AllyScript : MonoBehaviour
+public class Ally : MonoBehaviour
 {
     public Transform Leader { get; set; }
     public GameObject Follower { get; set; }
-    Vector3 formationPos = Vector3.zero;
-    bool isDefending = false;
-    Coroutine myRoutine = null;
-    
+    Transform formationTransform;
+
     public AttackBehaviour AttackBehaviour { get; set; }
+    public int Speed { get; set; } = 5;
+
+    private void OnEnable()
+    {
+        PlayerController.onDefend += Defend;
+        PlayerController.onAttack += Attack;
+    }
+
+    private void OnDisable()
+    {
+        PlayerController.onDefend -= Defend;
+        PlayerController.onAttack -= Attack;
+
+    }
+
+    private void Attack()
+    {
+        AttackBehaviour.Attack();
+    }
+    private void Defend()
+    {
+        StartCoroutine(RaiseShield());
+    }
+
+    private IEnumerator RaiseShield()
+    {
+        var m_shield = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
+        var m_originRot = m_shield.localRotation;
+        while (Input.GetKey(KeyCode.Mouse1))
+        {
+            m_shield.localRotation = Quaternion.Euler(0, 0, 0);
+            yield return null;
+        }
+        m_shield.localRotation = m_originRot;
+    }
 
     private void Awake()
     {
         AttackBehaviour = GetComponent<AttackBehaviour>();
-        //AllyController.onDefend += DefendCall;
         //StartCoroutine(CheckLeader());
-    }
-
-    void DefendCall()
-    {
-        //StartCoroutine(Defend());
     }
 
     private void Start()
@@ -30,40 +57,21 @@ public class AllyScript : MonoBehaviour
         //_follower.transform.SetLocalPositionAndRotation(_followerpos, _leader.transform.rotation);
         StartCoroutine(StayInFormation());
     }
-    //    public void StayInFormationCall()
-    //    {
-    //        StartCoroutine(StayInFormation());
-    //    }
-
-    //    public void ChargeCommand()
-    //    {
-    //        myRoutine = StartCoroutine(Charge());
-    //    }
 
     public IEnumerator StayInFormation()
     {
-
         float _t = 0f;
         while (true)
         {
             yield return StartCoroutine(CheckFollowerPosition());
 
-            formationPos = Follower.transform.position;
-
-            //Debug.Log("Formation Moving from " + transform.position + " " + " " + formationPos);
-
-            var leaderRot = Leader.transform.rotation;
+            //Debug.Log("Formation Moving from " + transform.position + "to " + formationTransform.position);
 
             while (_t < 0.15f)
             {
-                var pos = Vector3.Lerp(transform.position, formationPos, _t);
-                var rot = Quaternion.Slerp(transform.rotation, leaderRot, _t);
-
-                //transform.position = Vector3.MoveTowards(transform.position, pos, _t);
-                //transform.rotation = Quaternion.RotateTowards(transform.rotation, rot, _t);
+                var pos = Vector3.Lerp(transform.position, formationTransform.position, _t);
+                var rot = Quaternion.Slerp(transform.rotation, formationTransform.rotation, _t);
                 transform.SetPositionAndRotation(pos, rot);
-                //transform.position = Vector3.Slerp(transform.position, formationPos, _t);
-                //transform.rotation = Quaternion.Slerp(transform.rotation, leaderRot, _t);
                 _t += Time.deltaTime;
                 yield return null;
             }
@@ -74,15 +82,14 @@ public class AllyScript : MonoBehaviour
     IEnumerator CheckFollowerPosition()
     {
         while (Follower == null) yield return null;
-        Vector3 m_followerPosTmp = Follower.transform.position;
+        Transform m_followerTmp = Follower.transform;
         //Debug.Log("Formation Check");
-        while (formationPos == m_followerPosTmp)
+        while (transform.position == m_followerTmp.position)
         {
-            m_followerPosTmp = Follower.transform.position;
-            //Debug.Log("Waiting for formation change = " + formationPos + " " + m_followerPosTmp);
-
+            //Debug.Log("Waiting for formation change = " + formationTransform.position + " " + m_followerTmp.position);
             yield return null;
         }
+        formationTransform = m_followerTmp;
         //Debug.Log("Formation change = " + formationPos + " " + m_followerPosTmp);
     }
 

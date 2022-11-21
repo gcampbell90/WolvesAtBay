@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
@@ -16,7 +18,7 @@ public class Enemy : CharacterBase
     //[SerializeField]
     //GMLevelAbstract gmLevelAbstract;
 
-    protected void Awake()
+    public void Awake()
     {
 
         //place into Enemy layer for physics etc
@@ -25,28 +27,28 @@ public class Enemy : CharacterBase
         gameObject.tag = "Enemy";
 
         //gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
-    }
-
-    private void Start()
-    {
 
         var rb = GetComponent<Rigidbody>();
-        rb.mass = 50f;
-        rb.constraints = RigidbodyConstraints.FreezePositionY;
-        rb.constraints = RigidbodyConstraints.FreezeRotationX;
-        rb.constraints = RigidbodyConstraints.FreezeRotationZ;
+        rb.mass = 30f;
+        rb.constraints = RigidbodyConstraints.FreezePositionY |
+            RigidbodyConstraints.FreezeRotationX|
+            RigidbodyConstraints.FreezeRotationZ;
+
 
         var col = GetComponent<Collider>();
         col.isTrigger = false;
 
         transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0));
 
-        base.AddLookAtTarget();
-
-        //gameObject.AddComponent<MoveToTarget>();
-        gameObject.AddComponent<AttackBehaviour>();
         gameObject.AddComponent<TargetingSystem>();
+        gameObject.AddComponent<LookAtTarget>();
+        gameObject.AddComponent<MoveToTarget>();
+        gameObject.AddComponent<AttackBehaviour>();
 
+    }
+
+    private void Start()
+    {
         //gameObject.GetComponent<IKillable>().ITakeDamage(5);
     }
 
@@ -107,6 +109,7 @@ public class Enemy : CharacterBase
         deathEvent?.Invoke();
         deathRemoveEvent?.Invoke(this);
     }
+    //GMLevelAbstract gmLevelAbstract;
 
     #endregion
 }

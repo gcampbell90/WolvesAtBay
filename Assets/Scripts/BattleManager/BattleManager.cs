@@ -6,16 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class GroupController : MonoBehaviour
+public class BattleManager : MonoBehaviour
 {
-    //public static List<TargetingSystem> Enemies = new List<TargetingSystem>();
-    //public static List<TargetingSystem> Allies = new List<TargetingSystem>();
     private List<Enemy> _enemies = new List<Enemy>();
-    private List<AllyScript> _allies = new List<AllyScript>();
+    private List<Ally> _allies = new List<Ally>();
 
     [SerializeField] bool DebugTargetLinesEnabled = false;
-
-    CancellationTokenSource _cts;
 
     public List<Enemy> Enemies
     {
@@ -28,7 +24,7 @@ public class GroupController : MonoBehaviour
             _enemies = value;
         }
     }
-    private List<AllyScript> Allies
+    private List<Ally> Allies
     {
         get
         {
@@ -39,8 +35,9 @@ public class GroupController : MonoBehaviour
             _allies = value;
         }
     }
+    private AllyController _allyController;
 
-    private AllyController allyController;
+    CancellationTokenSource _cts;
 
     private void OnEnable()
     {
@@ -50,25 +47,19 @@ public class GroupController : MonoBehaviour
     {
         Enemy.deathRemoveEvent -= RemoveEntity;
     }
-
     private void Awake()
     {
-        allyController = GetComponent<AllyController>();
+        _allyController = GetComponent<AllyController>();
     }
-    // Start is called before the first frame update
     async void Start()
     {
-        var alliesInScene = GameObject.FindGameObjectsWithTag("Ally");
-        foreach (var ally in alliesInScene)
-        {
-            _allies.Add(ally.GetComponent<AllyScript>());
-        }
+        FindAndSetAllies();
 
         _cts = new CancellationTokenSource();
         var token = _cts.Token;
         try
         {
-            _enemies = await FindEnemies(token);
+            _enemies = await FindAndSetEnemies(token);
         }
         catch (OperationCanceledException e)
         {
@@ -83,11 +74,18 @@ public class GroupController : MonoBehaviour
 
         if (_enemies.Count > 0 && _allies.Count > 0)
         {
-            SetEnemyTargets();
+            FindAndSetEnemyTargets();
         }
     }
-
-    async Task<List<Enemy>> FindEnemies(CancellationToken token)
+    private void FindAndSetAllies()
+    {
+        var alliesInScene = GameObject.FindGameObjectsWithTag("Ally");
+        foreach (var ally in alliesInScene)
+        {
+            _allies.Add(ally.GetComponent<Ally>());
+        }
+    }
+    async Task<List<Enemy>> FindAndSetEnemies(CancellationToken token)
     {
 
         List<Enemy> m_tmpList = new List<Enemy>();
@@ -131,14 +129,7 @@ public class GroupController : MonoBehaviour
             return null;
         }
     }
-
-    private void RemoveEntity(Enemy enemy)
-    {
-        Enemies.Remove(enemy);
-    }
-
-    //Targeting system - send targets to entity's targeting system
-    private void SetEnemyTargets()
+    private void FindAndSetEnemyTargets()
     {
         foreach (var enemy in Enemies)
         {
@@ -181,7 +172,7 @@ public class GroupController : MonoBehaviour
                 }
                 if (!canAttack)
                 {
-                    nearestObject = FindNextNearestTarget(enemy.gameObject);
+                    nearestObject = GetNearestTarget(enemy.gameObject);
                 }
                 else if (nearestObject != null)
                 {
@@ -241,7 +232,7 @@ public class GroupController : MonoBehaviour
     //        }
     //    }
     //}
-    private Transform FindNextNearestTarget(GameObject _source)
+    private Transform GetNearestTarget(GameObject _source)
     {
         var nearestDist = float.MaxValue;
         Transform nearestObject = null;
@@ -284,7 +275,10 @@ public class GroupController : MonoBehaviour
 
         return nearestObject;
     }
-
+    private void RemoveEntity(Enemy enemy)
+    {
+        Enemies.Remove(enemy);
+    }
     private void OnDestroy()
     {
     }

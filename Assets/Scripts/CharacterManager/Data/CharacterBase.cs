@@ -40,11 +40,6 @@ public abstract class CharacterBase : MonoBehaviour, IKillable
 
     #region Behaviours
     //Adding Behaviour Components and abstract behaviours - how to decide to limit monobehaviour count?
-    public virtual void AddLookAtTarget()
-    {
-        gameObject.AddComponent<LookAtTarget>();
-    }
-
     //IKillable interface methods
     public abstract void OnCollisionEnter(Collision collision);
     public abstract void ITakeDamage(int damage);

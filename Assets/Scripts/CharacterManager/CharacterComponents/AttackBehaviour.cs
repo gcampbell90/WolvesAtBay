@@ -70,30 +70,28 @@ public class AttackBehaviour : MonoBehaviour
 
     void AttachWeaponObjects()
     {
-        if (gameObject.GetComponentInChildren<Transform>().childCount <= 0)
-        {
-            Pivot = new GameObject("WeaponPivot").transform;
+        Pivot = new GameObject("WeaponPivot").transform;
 
-            if(gameObject.GetComponent<Swordsman>() != null)
-            {
-                AttachSword();
-                AttackMove += SwordAttackMove;
-
-            }else if(gameObject.GetComponent<Spearman>() != null)
-            {
-                AttachSpear();
-                AttackMove += SpearAttackMove;
-            }
-            else
-            {
-                AttachSword();
-                AttackMove += SwordAttackMove;
-            }
-        }
-        else
+        if (gameObject.GetComponent<Swordsman>() != null)
         {
-            Pivot = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
+            AttachSword();
+            AttackMove += SwordAttackMove;
+
         }
+        else if (gameObject.GetComponent<Spearman>() != null)
+        {
+            AttachSpear();
+            AttackMove += SpearAttackMove;
+        }
+        else if (gameObject.GetComponent<Ally>() != null)
+        {
+            //AttachSword();
+            //AttackMove += SwordAttackMove;
+
+            AttachSpear();
+            AttackMove += SpearAttackMove;
+        }
+
         Pivot.transform.SetParent(transform, false);
 
         range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
@@ -136,9 +134,11 @@ public class AttackBehaviour : MonoBehaviour
         spear.transform.SetParent(Pivot, false);
 
         spear.transform.localPosition = new Vector3(0.55f, -0.3f, 1);
-        spear.transform.localScale = new Vector3(0.1f, 0.1f,5);
+        spear.transform.localScale = new Vector3(0.1f, 0.1f, 5);
 
         spear.layer = 10;
+        spear.tag = "Weapon";
+        spear.layer = tag == "Enemy" ? 10 : 11;
     }
 
     private IEnumerator SwordAttackMove()
@@ -184,12 +184,12 @@ public class AttackBehaviour : MonoBehaviour
 
         isAttacking = true;
         // Just make the animation interval configurable for easier modification later
-        float duration = 1f;
+        float duration = 0.5f;
         //float rot = Pivot.localRotation.y > 0 ? -45 : 45;
         float progress = 0f;
         // Loop until instructed otherwise
 
-        while (progress <= duration/2)
+        while (progress <= duration)
         {
 
             // Do some nice animation
@@ -199,10 +199,11 @@ public class AttackBehaviour : MonoBehaviour
             // Make the coroutine wait for a moment
             yield return null;
         }
-        transform.GetChild(0).GetComponentInChildren<BoxCollider>().enabled = true;
+        Pivot.GetComponentInChildren<BoxCollider>().enabled = true;
         yield return new WaitForFixedUpdate();
 
-        while (progress <= duration/2)
+        progress = 0f;
+        while (progress <= duration)
         {
 
             // Do some nice animation
@@ -212,7 +213,8 @@ public class AttackBehaviour : MonoBehaviour
             // Make the coroutine wait for a moment
             yield return null;
         }
-        transform.GetChild(0).GetComponentInChildren<BoxCollider>().enabled = false;
+        Pivot.GetComponentInChildren<BoxCollider>().enabled = false;
+
 
         isAttacking = false;
     }

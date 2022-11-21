@@ -49,9 +49,9 @@ public partial class MoveToTarget : MonoBehaviour
     {
         //set up cancellation token for move task
         _cts = new CancellationTokenSource();
-        var token = _cts.Token; 
+        var token = _cts.Token;
         CancellationTokenSource.CreateLinkedTokenSource(token);
-        
+
         try
         {
             await (MoveToTask = MoveToTargetOverTime(token));
@@ -104,7 +104,7 @@ public partial class MoveToTarget : MonoBehaviour
                 }
 
                 float distance = Vector3.Distance(transform.position, Target.position);
-                while (distance > 3)
+                while (distance > 5)
                 {
                     if (token.IsCancellationRequested)
                     {

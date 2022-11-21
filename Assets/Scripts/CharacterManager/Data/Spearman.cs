@@ -8,42 +8,6 @@ public class Spearman : Enemy
 {
     //GMLevelAbstract gmLevelAbstract;
 
-    private void Awake()
-    {
-        base.Awake();
-
-        Speed = 5;
-        Health = 20;
-
-        //gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
-        gameObject.AddComponent<TargetingSystem>();
-        gameObject.AddComponent<AttackBehaviour>();
-
-    }
-
-    private void Start()
-    {
-
-        var rb = GetComponent<Rigidbody>();
-        rb.mass = 0f;
-
-        var col = GetComponent<Collider>();
-        col.isTrigger = false;
-
-        transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0));
-        //rb.useGravity = false;
-        //VirtualMethodTest(1, "Enemy is created");
-
-
-        //Move component and Attack component both getting ref to player pos
-        //TODO: fix inefficient method(s)
-        //AddLookAtTarget();
-        DEBUG_AddMoveComponent();
-        //gameObject.AddComponent<AttackBehaviour>();
-
-        //gameObject.GetComponent<IKillable>().ITakeDamage(5);
-    }
-
     #region OOP test methods
     //Public method to call classes protected method for layer of control/security.
     //public void CallMustBeOverridden()
@@ -58,11 +22,6 @@ public class Spearman : Enemy
     //    base.VirtualMethodTest(testInt, testString);
     //    Debug.Log($"Output: {testInt},{testString}. Overridden Virtual method called directly from class than base. I can also add to this implementation with or without calling the base method.\n Whenever that behaviour is required/useful is still to be figured out. ");
     //}
-
-    public override void AddLookAtTarget()
-    {
-        base.AddLookAtTarget();
-    }
 
     public override void ITakeDamage(int damage)
     {
