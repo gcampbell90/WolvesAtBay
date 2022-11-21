@@ -92,7 +92,7 @@ public partial class MoveToTarget : MonoBehaviour
             }
             finally
             {
-                Debug.Log("Got Target " + Target);
+                Debug.Log("MoveToTarget-Enemy Got Target " + Target);
             }
 
             while (Target != null)

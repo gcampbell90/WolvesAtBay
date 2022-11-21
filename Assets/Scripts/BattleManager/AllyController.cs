@@ -213,7 +213,6 @@ public class AllyController : MonoBehaviour
     {
         while (!isDestroyed || !ApplicationStateManager.playMode)
         {
-            Debug.Log("Moving Followers");
             while (!Commander.Equals(null) ||
                 !Leader.Equals(null) ||
                 Leader.transform.hasChanged &&

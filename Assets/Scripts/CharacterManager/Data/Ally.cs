@@ -8,8 +8,8 @@ public class Ally : MonoBehaviour
     public Transform Leader { get; set; }
     public GameObject Follower { get; set; }
     Transform formationTransform;
-
     public AttackBehaviour AttackBehaviour { get; set; }
+    public TargetingSystem TargetingSystem { get; set; }
     public int Speed { get; set; } = 5;
 
     private void OnEnable()
@@ -24,7 +24,18 @@ public class Ally : MonoBehaviour
         PlayerController.onAttack -= Attack;
 
     }
+    private void Awake()
+    {
+        AttackBehaviour = GetComponent<AttackBehaviour>();
+        TargetingSystem = GetComponent<TargetingSystem>();
+        //StartCoroutine(CheckLeader());
+    }
 
+    private void Start()
+    {
+        //_follower.transform.SetLocalPositionAndRotation(_followerpos, _leader.transform.rotation);
+        StartCoroutine(StayInFormation());
+    }
     private void Attack()
     {
         AttackBehaviour.Attack();
@@ -33,7 +44,10 @@ public class Ally : MonoBehaviour
     {
         StartCoroutine(RaiseShield());
     }
-
+    public void SetTarget(Transform target)
+    {
+        TargetingSystem.Target = target;
+    }
     private IEnumerator RaiseShield()
     {
         var m_shield = gameObject.GetComponentInChildren<Transform>().GetChild(0).transform;
@@ -45,19 +59,6 @@ public class Ally : MonoBehaviour
         }
         m_shield.localRotation = m_originRot;
     }
-
-    private void Awake()
-    {
-        AttackBehaviour = GetComponent<AttackBehaviour>();
-        //StartCoroutine(CheckLeader());
-    }
-
-    private void Start()
-    {
-        //_follower.transform.SetLocalPositionAndRotation(_followerpos, _leader.transform.rotation);
-        StartCoroutine(StayInFormation());
-    }
-
     public IEnumerator StayInFormation()
     {
         float _t = 0f;
@@ -78,7 +79,6 @@ public class Ally : MonoBehaviour
             _t = 0f;
         }
     }
-
     IEnumerator CheckFollowerPosition()
     {
         while (Follower == null) yield return null;

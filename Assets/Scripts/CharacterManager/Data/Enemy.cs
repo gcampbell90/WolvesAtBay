@@ -92,7 +92,8 @@ public class Enemy : CharacterBase
     {
         //Debug.Log("Setting target" + target);
         var targetSys = GetComponent<TargetingSystem>();
-        targetSys.Target = target.transform;
+        //if (targetSys != null || targetSys.Target != null) return;
+        targetSys.Target = target;
     }
 
     public override void OnCollisionEnter(Collision collision)

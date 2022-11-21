@@ -59,7 +59,7 @@ public class BattleManager : MonoBehaviour
         var token = _cts.Token;
         try
         {
-             _enemies = await FindAndSetEnemies(token);
+            _enemies = await FindAndSetEnemies(token);
         }
         catch (OperationCanceledException e)
         {
@@ -68,13 +68,14 @@ public class BattleManager : MonoBehaviour
         finally
         {
             var enemyCount = Enemies == null ? 0 : Enemies.Count;
-            Debug.Log("Battle Manager - Find Enemies Task Finished - Total Enemies: " + enemyCount);
+            Debug.Log("BATTLE MANAGER  - Find Enemies Task Finished - Total Enemies: " + enemyCount);
             _cts.Dispose();
         }
 
         if (_enemies.Count > 0 && _allies.Count > 0)
         {
             FindAndSetEnemyTargets();
+            FindAndSetAllyTargets();
         }
     }
     private void FindAndSetAllies()
@@ -83,6 +84,8 @@ public class BattleManager : MonoBehaviour
         foreach (var ally in alliesInScene)
         {
             _allies.Add(ally.GetComponent<Ally>());
+            ally.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabled;
+
         }
     }
     async Task<List<Enemy>> FindAndSetEnemies(CancellationToken token)
@@ -93,7 +96,7 @@ public class BattleManager : MonoBehaviour
 
         while (enemies == null || m_tmpList.Count == 0)
         {
-            Debug.Log("Group Controller - Looking for enemies");
+            Debug.Log("BATTLE MANAGER - Looking for enemies");
 
             if (token.IsCancellationRequested)
             {
@@ -107,7 +110,7 @@ public class BattleManager : MonoBehaviour
                 //Debug.Log("Group Controller - Will arrive here after enemies found");
                 foreach (var enemy in enemies)
                 {
-                    Debug.Log("Group Controller - Setting Enemy");
+                    Debug.Log("BATTLE MANAGER - Setting Enemy in list");
 
                     var enemyComponent = enemy.GetComponent<Enemy>();
 
@@ -172,68 +175,96 @@ public class BattleManager : MonoBehaviour
                         //Debug.Log("Attacking");
                     }
                 }
-                if (!canAttack)
-                {
-                    nearestObject = GetNearestTarget(enemy.gameObject);
-                }
-                else if (nearestObject != null)
-                {
-                    Debug.Log("Group Controller -Setting Target");
-                    enemy.SetTarget(nearestObject.transform);
-                }
+            }
+            if (!canAttack)
+            {
+                nearestObject = GetNearestTarget(enemy.gameObject);
+            }
+            else if (canAttack && nearestObject != null)
+            {
+                Debug.Log("BATTLE MANAGER - Enemy - Setting Target");
+                enemy.SetTarget(nearestObject.transform);
+                //ally.SetTarget(enemy.transform);
             }
         }
         return;
     }
-    //private void SetAllyTargets()
-    //{
-    //    foreach (var ally in Allies)
-    //    {
-    //        var nearestDist = float.MaxValue;
-    //        Transform nearestObject = null;
-    //        Transform nearestVisibleObject = null;
+    private void FindAndSetAllyTargets()
+    {
+        foreach (var ally in _allies)
+        {
+            Transform target = null;
+            float closestDistance = Mathf.Infinity;
 
-    //        var canAttack = false;
-    //        foreach (var enemy in Enemies)
-    //        {
-    //            //calculates closest object
-    //            var distance = Vector3.Distance(ally.transform.position, enemy.transform.position);
-    //            if (distance < nearestDist)
-    //            {
-    //                nearestDist = distance;
-    //                nearestObject = enemy.transform;
-    //            }
+            foreach (var enemy in _enemies)
+            {
+                var distance = Vector3.Distance(ally.transform.position, enemy.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    target = enemy.transform;
+                }
+            }
+            ally.SetTarget(target);
+            //Debug.Log($"{ally} target set to {m_tmpNearestObject}");
+        }
+    }
+    private Transform GetNearestTargetGeneric(GameObject _source)
+    {
+        Transform[] _targetGroup;
 
-    //            //then checks if there is an object in the way
-    //            RaycastHit hit;
-    //            if (Physics.Linecast(ally.transform.position, enemy.transform.position, out hit))
-    //            {
-    //                //checks for any collider that is not a black ball
-    //                if (!hit.collider.CompareTag("Enemy"))
-    //                {
-    //                    // Stop chasing
-    //                    Debug.Log("Obstacle in the way of target");
-    //                    canAttack = false;
-    //                    //Debug.Log("Waiting");
-    //                }
-    //                else
-    //                {
-    //                    Debug.Log("TargetFound");
+        if (_source.tag == "Ally")
+        {
+            _targetGroup = _enemies.Select(f => f.transform).ToArray();
+        }
+        else if (_source.tag == "Enemy")
+        {
+            _targetGroup = _allies.Select(f => f.transform).ToArray();
+        }
 
-    //                    canAttack = true;
-    //                    //Debug.Log("Attacking");
-    //                }
-    //            }
-    //            if (!canAttack)
-    //            {
-    //                nearestObject = FindNextNearestTarget(ally.gameObject);
-    //            }
+        var nearestDist = float.MaxValue;
+        Transform nearestObject = null;
+        bool canAttack = false;
+        foreach (var enemy in _enemies)
+        {
+            //calculates closest object
+            var distance = Vector3.Distance(_source.transform.position, enemy.transform.position);
 
-    //            ally.Target = nearestObject;
-    //            ally.CanAttack = canAttack;
-    //        }
-    //    }
-    //}
+            //if when finds an object closest will check the raycast
+            if (distance < nearestDist)
+            {
+
+                //then checks if there is an object in the way
+                RaycastHit hit;
+                if (Physics.Linecast(_source.transform.position, enemy.transform.position, out hit))
+                {
+                    //checks for any collider that is not a black ball
+                    if (!hit.collider.CompareTag("Enemy"))
+                    {
+                        // Stop chasing
+                        canAttack = false;
+                        //Debug.Log("Waiting");
+                    }
+                    else
+                    {
+                        canAttack = true;
+                        nearestDist = distance;
+                        nearestObject = enemy.transform;
+                        //Debug.Log("Attacking");
+                    }
+                }
+            }
+        }
+        if (nearestObject == null)
+        {
+            Debug.Log("BATTLE MANAGER - Ally -No available targets");
+            return null;
+        }
+        else
+        {
+            return nearestObject;
+        }
+    }
     private Transform GetNearestTarget(GameObject _source)
     {
         var nearestDist = float.MaxValue;
