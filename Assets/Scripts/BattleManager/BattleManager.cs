@@ -59,7 +59,7 @@ public class BattleManager : MonoBehaviour
         var token = _cts.Token;
         try
         {
-            _enemies = await FindAndSetEnemies(token);
+             _enemies = await FindAndSetEnemies(token);
         }
         catch (OperationCanceledException e)
         {
@@ -68,7 +68,7 @@ public class BattleManager : MonoBehaviour
         finally
         {
             var enemyCount = Enemies == null ? 0 : Enemies.Count;
-            //Debug.Log("GroupController - Find Enemies Task Finished - Total Enemies: " + enemyCount);
+            Debug.Log("Battle Manager - Find Enemies Task Finished - Total Enemies: " + enemyCount);
             _cts.Dispose();
         }
 
@@ -87,13 +87,13 @@ public class BattleManager : MonoBehaviour
     }
     async Task<List<Enemy>> FindAndSetEnemies(CancellationToken token)
     {
-
         List<Enemy> m_tmpList = new List<Enemy>();
 
         var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        while (enemies.Length <= 0)
+
+        while (enemies == null || m_tmpList.Count == 0)
         {
-            //Debug.Log("Group Controller - Looking for enemies");
+            Debug.Log("Group Controller - Looking for enemies");
 
             if (token.IsCancellationRequested)
             {
@@ -101,18 +101,20 @@ public class BattleManager : MonoBehaviour
                 return null;
             }
             enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
             if (enemies.Length > 0)
             {
                 //Debug.Log("Group Controller - Will arrive here after enemies found");
                 foreach (var enemy in enemies)
                 {
-                    //Debug.Log("Group Controller - Setting Enemy");
+                    Debug.Log("Group Controller - Setting Enemy");
 
                     var enemyComponent = enemy.GetComponent<Enemy>();
 
                     enemy.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabled;
                     m_tmpList.Add(enemyComponent);
                 }
+
                 continue;
             }
             await Task.Yield();
