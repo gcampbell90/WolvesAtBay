@@ -11,7 +11,8 @@ public class BattleManager : MonoBehaviour
     private List<Enemy> _enemies = new List<Enemy>();
     private List<Ally> _allies = new List<Ally>();
 
-    [SerializeField] bool DebugTargetLinesEnabled = false;
+    [SerializeField] bool DebugTargetLinesEnabledAllies = false;
+    [SerializeField] bool DebugTargetLinesEnabledEnemies = false;
 
     public List<Enemy> Enemies
     {
@@ -39,6 +40,8 @@ public class BattleManager : MonoBehaviour
 
     CancellationTokenSource _cts;
 
+    public static BattleManager Instance;
+
     private void OnEnable()
     {
         Enemy.deathRemoveEvent += RemoveEntity;
@@ -49,6 +52,7 @@ public class BattleManager : MonoBehaviour
     }
     private void Awake()
     {
+        Instance = this;
         _allyController = GetComponent<AllyController>();
     }
     async void Start()
@@ -84,7 +88,7 @@ public class BattleManager : MonoBehaviour
         foreach (var ally in alliesInScene)
         {
             _allies.Add(ally.GetComponent<Ally>());
-            ally.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabled;
+            ally.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabledAllies;
 
         }
     }
@@ -94,7 +98,7 @@ public class BattleManager : MonoBehaviour
 
         var enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
-        while (enemies == null || m_tmpList.Count == 0)
+        while (enemies == null || m_tmpList.Count == 0 || !ApplicationStateManager.playMode)
         {
             Debug.Log("BATTLE MANAGER - Looking for enemies");
 
@@ -114,7 +118,7 @@ public class BattleManager : MonoBehaviour
 
                     var enemyComponent = enemy.GetComponent<Enemy>();
 
-                    enemy.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabled;
+                    enemy.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabledEnemies;
                     m_tmpList.Add(enemyComponent);
                 }
 
@@ -176,9 +180,10 @@ public class BattleManager : MonoBehaviour
                     }
                 }
             }
+
             if (!canAttack)
             {
-                nearestObject = GetNearestTarget(enemy.gameObject);
+                nearestObject = GetNearestTargetGeneric(enemy.gameObject);
             }
             else if (canAttack && nearestObject != null)
             {
@@ -209,9 +214,11 @@ public class BattleManager : MonoBehaviour
             //Debug.Log($"{ally} target set to {m_tmpNearestObject}");
         }
     }
-    private Transform GetNearestTargetGeneric(GameObject _source)
+
+    //ebug method for both enenmies and allies, starting with allies...need to fix
+    public Transform GetNearestTargetGeneric(GameObject _source)
     {
-        Transform[] _targetGroup;
+        Transform[] _targetGroup = null;
 
         if (_source.tag == "Ally")
         {
@@ -225,10 +232,11 @@ public class BattleManager : MonoBehaviour
         var nearestDist = float.MaxValue;
         Transform nearestObject = null;
         bool canAttack = false;
-        foreach (var enemy in _enemies)
+
+        foreach (var entity in _targetGroup)
         {
             //calculates closest object
-            var distance = Vector3.Distance(_source.transform.position, enemy.transform.position);
+            var distance = Vector3.Distance(_source.transform.position, entity.transform.position);
 
             //if when finds an object closest will check the raycast
             if (distance < nearestDist)
@@ -236,7 +244,7 @@ public class BattleManager : MonoBehaviour
 
                 //then checks if there is an object in the way
                 RaycastHit hit;
-                if (Physics.Linecast(_source.transform.position, enemy.transform.position, out hit))
+                if (Physics.Linecast(_source.transform.position, entity.transform.position, out hit))
                 {
                     //checks for any collider that is not a black ball
                     if (!hit.collider.CompareTag("Enemy"))
@@ -249,7 +257,8 @@ public class BattleManager : MonoBehaviour
                     {
                         canAttack = true;
                         nearestDist = distance;
-                        nearestObject = enemy.transform;
+                        nearestObject = entity.transform;
+                        _source.GetComponent<ITarget>().SetTarget(nearestObject);
                         //Debug.Log("Attacking");
                     }
                 }
@@ -257,11 +266,12 @@ public class BattleManager : MonoBehaviour
         }
         if (nearestObject == null)
         {
-            Debug.Log("BATTLE MANAGER - Ally -No available targets");
+            //Debug.Log($"BATTLE MANAGER - Ally {_source.name} -No available targets");
             return null;
         }
         else
         {
+            Debug.Log("BATTLE MANAGER - Ally - Setting Target");
             return nearestObject;
         }
     }
@@ -314,5 +324,6 @@ public class BattleManager : MonoBehaviour
     }
     private void OnDestroy()
     {
+
     }
 }

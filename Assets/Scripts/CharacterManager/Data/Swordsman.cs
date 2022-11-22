@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(BoxCollider))]
 
 public class Swordsman : Enemy
 {
@@ -69,14 +67,23 @@ public class Swordsman : Enemy
         gameObject.AddComponent<MoveToTarget>();
     }
 
+    //removed phyics(for now)
     public override void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag != "Weapon") return;
-        Debug.Log($"{gameObject.name} hit by a " + collision.gameObject.tag);
-
+        Debug.Log($"SWORDMAN - {gameObject.name} hit by a " + collision.gameObject.tag);
+        
         //replace damage with weapon/player strength/damage
         ITakeDamage(10);
     }
 
+    public override void OnTriggerEnter(Collider collider)
+    {
+        if (collider.gameObject.tag != "Weapon") return;
+        //Debug.Log($"SWORDMAN - {gameObject.name} hit by a " + collider.gameObject.tag);
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        //replace damage with weapon/player strength/damage
+        ITakeDamage(30);
+    }
     #endregion
 }

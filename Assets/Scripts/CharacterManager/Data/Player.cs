@@ -51,4 +51,10 @@ public class Player : CharacterBase
         }
 
     }
+
+    public override void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.tag != "Weapon") return;
+        ITakeDamage(5);
+    }
 }

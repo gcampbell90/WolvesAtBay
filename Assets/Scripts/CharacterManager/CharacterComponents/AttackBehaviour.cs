@@ -6,7 +6,6 @@ using static UnityEngine.GraphicsBuffer;
 //using static UnityEditor.Experimental.GraphView.GraphView;
 //using static UnityEngine.GraphicsBuffer;
 
-[RequireComponent(typeof(Rigidbody))]
 public class AttackBehaviour : MonoBehaviour
 {
     //WeaponInfo 
@@ -15,6 +14,7 @@ public class AttackBehaviour : MonoBehaviour
     //TODO implement into attack speed?
     int _speed;
     public Rigidbody WeaponRB { get; set; }
+    public BoxCollider WeaponCollider { get; set; }
     //coroutine check
     bool isAttacking;
 
@@ -47,6 +47,7 @@ public class AttackBehaviour : MonoBehaviour
 
             StartCoroutine(AttackMove());
         }
+
         //Debug.Log($"Attack Behaviour Component"
         //    + $" - Range: {_distance}"
         //    );
@@ -87,6 +88,10 @@ public class AttackBehaviour : MonoBehaviour
 
         range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
         WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
+        WeaponRB.mass = 0.1f;
+
+        WeaponCollider = Pivot.GetComponentInChildren<BoxCollider>();
+        WeaponCollider.isTrigger = true;
         //Pivot.tag = "Weapon";
 
         //Debug.Log($"Attack Behaviour Component - Range: {range}");

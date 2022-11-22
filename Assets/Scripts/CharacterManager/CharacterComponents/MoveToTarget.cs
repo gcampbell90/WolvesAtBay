@@ -24,10 +24,11 @@ public partial class MoveToTarget : MonoBehaviour
     }
     private int _speed;
 
-    Task MoveToTask;
+    Task MoveToTargetAsync;
     CancellationTokenSource _cts = null;
     CancellationTokenSource _childcts = null;
 
+    bool destinationArrived = false;
     private void Awake()
     {
         if (gameObject.GetComponent<CharacterBase>() == null)
@@ -50,11 +51,11 @@ public partial class MoveToTarget : MonoBehaviour
         //set up cancellation token for move task
         _cts = new CancellationTokenSource();
         var token = _cts.Token;
-        CancellationTokenSource.CreateLinkedTokenSource(token);
+        _childcts = CancellationTokenSource.CreateLinkedTokenSource(token);
 
         try
         {
-            await (MoveToTask = MoveToTargetOverTime(token));
+            await( MoveToTargetAsync =  MoveToTargetOverTime(token));
         }
         catch (OperationCanceledException e)
         {
@@ -62,16 +63,17 @@ public partial class MoveToTarget : MonoBehaviour
         }
         finally
         {
-            //Debug.Log("Destination Reached");
+            //Debug.Log("MOVE TO TARGET - Move to target task set");
             _cts.Dispose();
         }
     }
 
     public async Task MoveToTargetOverTime(CancellationToken token)
     {
-        while (Target == null)
+        while (Target == null || !ApplicationStateManager.playMode)
         {
-            Debug.Log("Move to Target - Looking for target");
+            //Debug.Log("MOVE TO TARGET - Looking for target");
+            destinationArrived = false;
 
             if (token.IsCancellationRequested)
             {
@@ -92,10 +94,21 @@ public partial class MoveToTarget : MonoBehaviour
             }
             finally
             {
-                Debug.Log("MoveToTarget-Enemy Got Target " + Target);
+                //Debug.Log($"MOVE TO TARGET -{gameObject.name} received Target " + Target);
             }
+            await Task.Yield();
+        }
 
-            while (Target != null)
+        while (Target != null)
+        {
+            if (token.IsCancellationRequested)
+            {
+                //Debug.Log("Task Cancelled");
+                return;
+            }
+            float distance = Vector3.Distance(transform.position, Target.position);
+
+            while (distance > 5 && Target != null)
             {
                 if (token.IsCancellationRequested)
                 {
@@ -103,70 +116,28 @@ public partial class MoveToTarget : MonoBehaviour
                     return;
                 }
 
-                float distance = Vector3.Distance(transform.position, Target.position);
-                while (distance > 5)
-                {
-                    if (token.IsCancellationRequested)
-                    {
-                        //Debug.Log("Task Cancelled");
-                        return;
-                    }
+                //Debug.Log($"MOVE TO TARGET - {gameObject} Moving to Target {distance}");
 
-                    distance = Vector3.Distance(transform.position, Target.position);
+                distance = Vector3.Distance(transform.position, Target.position);
 
-                    // Move our position a step closer to the target.
-                    var step = _speed * Time.deltaTime; // calculate distance to move
-                    transform.position = Vector3.MoveTowards(transform.position, Target.position, step);
+                // Move our position a step closer to the target.
+                var step = _speed * Time.deltaTime; // calculate distance to move
+                transform.position = Vector3.MoveTowards(transform.position, Target.position, step);
 
-                    await Task.Yield();
-                }
-                Debug.Log("Move to Target - Destination Arrived");
                 await Task.Yield();
             }
+            destinationArrived = true;
+            //Debug.Log("MOVE TO TARGET - Destination Arrived");
             await Task.Yield();
         }
-
-
-        //while (Target == null || Target.Equals(null) || !ApplicationStateManager.playMode)
-        //{
-        //    if (token.IsCancellationRequested)
-        //    {
-        //        //Debug.Log("Task Cancelled");
-        //        return;
-        //    }
-        //    if (!TryGetComponent(out TargetingSystem targetingSystem)) await Task.Yield();
-
-        //    while (targetingSystem.Target != null || !Target.Equals(null))
-        //    {
-        //        Target = targetingSystem.Target;
-        //        float distance = Vector3.Distance(transform.position, Target.position);
-        //        while (distance > 3)
-        //        {
-        //            distance = Vector3.Distance(transform.position, Target.position);
-
-        //            // Move our position a step closer to the target.
-        //            var step = _speed * Time.deltaTime; // calculate distance to move
-        //            transform.position = Vector3.MoveTowards(transform.position, Target.position, step);
-
-        //            if (token.IsCancellationRequested)
-        //            {
-        //                //Debug.Log("Task Cancelled");
-        //                return;
-        //                //throw exception?
-        //                //token.ThrowIfCancellationRequested();
-        //            }
-        //            await Task.Yield();
-        //        }
-        //        Debug.Log("Destination Arrived");
-        //    }
-        //    await Task.Yield();
-        //    Debug.Log("Waiting for another target");
     }
+
     private async Task<Transform> GetTargetFromTargetingScript(CancellationToken token)
     {
         var m_target = Target;
         while (m_target == null)
         {
+            //Debug.Log("MOVE TO TARGET - Looking for target from targeting script");
             if (token.IsCancellationRequested)
             {
                 return null;
@@ -178,14 +149,9 @@ public partial class MoveToTarget : MonoBehaviour
         return m_target;
     }
 
-    public async void OnDestroy()
+    public void OnDestroy()
     {
-        //Debug.Log("MoveToTarget cleanup");
-        if (MoveToTask.IsCompleted) return;
+        if (MoveToTargetAsync == null || MoveToTargetAsync.IsCompleted) return;
         _cts.Cancel();
-        while (!MoveToTask.IsCanceled)
-        {
-            await Task.Yield();
-        }
     }
 }

@@ -350,6 +350,7 @@ public class AllyController : MonoBehaviour
     bool isDestroyed;
     private async void OnDestroy()
     {
+        if (_followPlayerTask == null) return;
         if (!_followPlayerTask.IsCompleted || !_followPlayerTask.IsCanceled)
         {
             _cancellationSourceFollowPlayer.Cancel();

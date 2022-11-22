@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(BoxCollider))]
 public class Enemy : CharacterBase
 {
     public delegate void DeathEvent();
@@ -29,11 +29,12 @@ public class Enemy : CharacterBase
         //gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
 
         var rb = GetComponent<Rigidbody>();
-        rb.mass = 30f;
+        //rb.mass = 30f;
         rb.constraints = RigidbodyConstraints.FreezePositionY |
-            RigidbodyConstraints.FreezeRotationX|
+            RigidbodyConstraints.FreezeRotationX |
             RigidbodyConstraints.FreezeRotationZ;
 
+        rb.isKinematic = false;
 
         var col = GetComponent<Collider>();
         col.isTrigger = false;
@@ -109,6 +110,11 @@ public class Enemy : CharacterBase
     {
         deathEvent?.Invoke();
         deathRemoveEvent?.Invoke(this);
+    }
+
+    public override void OnTriggerEnter(Collider collision)
+    {
+        throw new NotImplementedException();
     }
     //GMLevelAbstract gmLevelAbstract;
 
