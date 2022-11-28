@@ -10,7 +10,7 @@ using static UnityEngine.GraphicsBuffer;
 public partial class MoveToTarget : MonoBehaviour
 {
 
-    private Transform target;
+    [SerializeField]private Transform target;
     public Transform Target
     {
         get

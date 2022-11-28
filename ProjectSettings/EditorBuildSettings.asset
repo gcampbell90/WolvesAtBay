@@ -9,14 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/PersistentScene.unity
     guid: 3a250bf881b23d649a5037a5c65df3be
   - enabled: 0
-    path: Assets/Scenes/StartLevel.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/UIScene.unity
+    guid: bf5e808a1ecd17c4fba2cfebc9dc17e8
   - enabled: 0
-    path: Assets/Scenes/MiddleLevel.unity
-    guid: 7bf47b16ebe721d4eb0db3b90e8f163a
-  - enabled: 0
-    path: Assets/Scenes/EndLevel.unity
-    guid: 43a2dab12d6e653468b50cb0b2244e37
+    path: Assets/Scenes/Debug_Start_Level.unity
+    guid: 9744314b256f6c545a4d6cabf1eac119
   - enabled: 1
     path: Assets/Scenes/Debug_Level.unity
     guid: d85ab4b7216584c4cb2bd283f11d6894

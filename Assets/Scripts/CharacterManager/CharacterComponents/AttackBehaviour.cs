@@ -26,7 +26,7 @@ public class AttackBehaviour : MonoBehaviour
 
     void Start()
     {
-        AttachWeaponObjects();
+        //AttachWeaponObjects();
     }
 
     //Check every frame if player is in range of weapon, if so, attack.
@@ -86,7 +86,7 @@ public class AttackBehaviour : MonoBehaviour
 
         Pivot.transform.SetParent(transform, false);
 
-        range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
+        //range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
         WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
         WeaponRB.mass = 0.1f;
 

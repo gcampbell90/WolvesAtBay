@@ -11,14 +11,13 @@ using UnityEngine;
 
 public class AllyController : MonoBehaviour
 {
-    [SerializeField] List<Follower> _followers = new List<Follower>();
+    private GameObject _player;
+    private GameObject _playerGuide;
 
-    [SerializeField] private GameObject Commander;
-    public GameObject Leader { get; private set; }
     private List<Ally> _allies = new List<Ally>();
-    public List<Ally> Allies { get => _allies; set => _allies = value; }
-    [SerializeField] public float shieldArea;//Needs implemented with Editior script for debugging visuals
-
+    private List<Ally> Allies { get => _allies; set => _allies = value; }
+    private List<Follower> _followers = new List<Follower>();
+    //[SerializeField] public float shieldArea;//Needs implemented with Editior script for debugging visuals
     CancellationTokenSource _cancellationSourceFollowPlayer;
     CancellationTokenSource _cancellationSourceFollowLeader;
 
@@ -26,88 +25,51 @@ public class AllyController : MonoBehaviour
     Task _followLeaderTask;
     Task[] AllyControllerTasks = new Task[2];
 
+    [SerializeField] private float _smoothSpeed;
+    [SerializeField] private float _shieldWallXSpacing;
+    [SerializeField] private float _shieldWallYSpacing;
+
     //Debug
     private void OnDrawGizmos()
     {
-        if (Leader == null) return;
+        if (_playerGuide == null) return;
         Gizmos.color = Color.green;
-        Gizmos.DrawCube(Leader.transform.position + Vector3.forward, Vector3.one);
-        //Gizmos.DrawSphere(Leader.transform.position + Vector3.forward, 2);
+        Gizmos.DrawCube(_playerGuide.transform.position + _playerGuide.transform.forward, Vector3.one);
 
         foreach (var follower in _followers)
         {
-            Gizmos.DrawCube(follower.GameObject.transform.position + Vector3.forward, Vector3.one);
-            //Gizmos.DrawSphere(follower.GameObject.transform.position + Vector3.forward, 2);
-
-            //if (_allies == null)
-            //{
-            //    continue;
-            //}
+            Gizmos.DrawCube(follower.GameObject.transform.position + follower.GameObject.transform.forward, Vector3.one);
         }
     }
-    //void OnSceneGUI()
-    //{
 
-    //    if (_followers == null)
-    //    {
-    //        return;
-    //    }
-
-    //    foreach (var follower in _followers)
-    //    {
-    //    Handles.color = Color.blue;
-    //    Handles.Label(follower.GameObject.transform.position + Vector3.up * 2,
-    //        follower.GameObject.transform.position.ToString() + "\nShieldArea: " +
-    //        shieldArea.ToString());
-
-    //    Handles.BeginGUI();
-    //    if (GUILayout.Button("Reset Area", GUILayout.Width(100)))
-    //    {
-    //          shieldArea = 5;
-    //    }
-    //    Handles.EndGUI();
-
-    //        Handles.DrawWireArc(follower.GameObject.transform.position,
-    //            follower.GameObject.transform.up,
-    //            -follower.GameObject.transform.right,
-    //            180,
-    //            shieldArea);
- 
-    //    //Handles.DrawWireArc(allyController.transform.position,
-    //    //    allyController.transform.up,
-    //    //    -allyController.transform.right,
-    //    //    180,
-    //    //    allyController.shieldArea);
-
-    //    shieldArea =
-    //        Handles.ScaleValueHandle(shieldArea,
-    //             follower.GameObject.transform.position + follower.GameObject.transform.forward * shieldArea,
-    //             follower.GameObject.transform.rotation,
-    //            1,
-    //            Handles.ConeHandleCap,
-    //            1);
-    //    }
-    //}
+    private void OnEnable()
+    {
+        PlayerController.onDefend += DefendCommand;
+    }
+    private void OnDisable()
+    {
+        PlayerController.onDefend -= DefendCommand;
+    }
 
     private void Awake()
     {
-        PlayerController.onDefend += DefendCommand;
         //PlayerController.onAttack += AttackCommand;
     }
-
     private void Start()
     {
+        _player = GameObject.FindGameObjectWithTag("Player");
 
-        Leader =
+        _playerGuide =
         new GameObject("LeaderGuide");
 
-        AllyControllerTasks[0] = _followPlayerTask;
-        AllyControllerTasks[1] = _followLeaderTask;
-
+        _playerGuide.transform.position = _player.transform.position;
+        _playerGuide.transform.rotation = _player.transform.rotation;
+    
         SetAllyList();
+
         try
         {
-            FollowPlayer();
+            _followPlayerTask = FollowPlayer();
 
         }
         catch (OperationCanceledException e)
@@ -120,7 +82,7 @@ public class AllyController : MonoBehaviour
         }
         try
         {
-            FollowTheLeader();
+            _followPlayerTask = FollowTheLeader();
 
         }
         catch (OperationCanceledException e)
@@ -129,7 +91,7 @@ public class AllyController : MonoBehaviour
         }
         finally
         {
-            Debug.Log("Ally Controller- Follower leader task ended");
+            Debug.Log("Ally Controller- Follower leader task set");
         }
     }
 
@@ -177,32 +139,34 @@ public class AllyController : MonoBehaviour
     }
     private async Task FollowPlayerAsync(CancellationToken token)
     {
-        //while (!ApplicationStateManager.playMode)
-        //{
-        //}
         while (!isDestroyed)
         {
-            while (!Commander.Equals(null) ||
-                   !Leader.Equals(null) ||
-                   Commander.transform.hasChanged &&
-                   Leader.transform.position != Commander.transform.position ||
-                   Leader.transform.rotation != Commander.transform.rotation)
-            {
+            while (!_player.Equals(null) ||
+                   !_playerGuide.Equals(null) ||
+                   _player.transform.hasChanged &&
+                   _playerGuide.transform.position != _player.transform.position ||
+                   _playerGuide.transform.rotation != _player.transform.rotation){
+
                 if (token.IsCancellationRequested)
                 {
                     Debug.Log("Ally Controller- Follow Async Task cancel token");
                     return;
                 }
 
-                Leader.transform.SetPositionAndRotation(
-                    Vector3.Lerp(Leader.transform.position,
-                    Commander.transform.position, Time.deltaTime * 5),
-                    Quaternion.Slerp(Leader.transform.rotation,
-                    Commander.transform.rotation, Time.deltaTime * 5)
-                    );
+                //var pos = Vector3.Lerp(_playerGuide.transform.position, _player.transform.position, Time.deltaTime * _smoothSpeed);
+
+                _playerGuide.transform.position = _player.transform.position;
+                _playerGuide.transform.rotation = _player.transform.rotation;
+                
+              //_playerGuide.transform.SetPositionAndRotation(
+              //      Vector3.Lerp(_playerGuide.transform.position,
+              //      _player.transform.position, Time.deltaTime),
+              //      Quaternion.Slerp(_playerGuide.transform.rotation,
+              //      _player.transform.rotation, Time.deltaTime)
+              //      );
 
                 await Task.Yield();
-                Commander.transform.hasChanged = false;
+                _player.transform.hasChanged = false;
                 //Debug.Log($"Commander(Player){Commander.transform.position} Leader(To follow): {Leader.transform.position}");
             }
             await Task.Yield();
@@ -213,11 +177,11 @@ public class AllyController : MonoBehaviour
     {
         while (!isDestroyed || !ApplicationStateManager.playMode)
         {
-            while (!Commander.Equals(null) ||
-                !Leader.Equals(null) ||
-                Leader.transform.hasChanged &&
-                Leader.transform.position != Commander.transform.position ||
-                Leader.transform.rotation != Commander.transform.rotation)
+            while (!_player.Equals(null) ||
+                !_playerGuide.Equals(null) ||
+                _playerGuide.transform.hasChanged &&
+                _playerGuide.transform.position != _player.transform.position ||
+                _playerGuide.transform.rotation != _player.transform.rotation)
             {
                 if (token.IsCancellationRequested)
                 {
@@ -226,18 +190,31 @@ public class AllyController : MonoBehaviour
                 }
                 foreach (var follower in _followers)
                 {
-                    var _targetPos = Leader.transform.position - follower.Offset;
-                    //var _targetPos = Leader.transform.position - follower.GameObject.transform.position;
+                    var offset = follower.FormationPosition;
+                    //offset.z -= 0.5f;
+                    var pos = _playerGuide.transform.TransformPoint(-offset);
+                    //if(rotationEuler.y > 85 && rotationEuler.y < 250)
+                    //{
+                    //    offset.z *= -1f;
+                    //}
 
-                    follower.SetPositionAndRotation(_targetPos, Leader.transform.rotation);
+                    //follower.GameObject.transform.RotateAround(_playerGuide.transform.position, Vector3.up,_playerGuide.transform.rotation.y);
+                    follower.GameObject.transform.SetPositionAndRotation(pos, _playerGuide.transform.rotation);
+
+                    //var _targetPos = _playerGuide.transform.position - follower.Offset;
+                    ////var _targetPos = Leader.transform.position - follower.GameObject.transform.position;
+                    //var _pos = Vector3.Lerp(follower.GameObject.transform.position, _targetPos, Time.deltaTime);
+                    //var _rot = Quaternion.Slerp(follower.GameObject.transform.rotation, _playerGuide.transform.rotation, Time.deltaTime);
+                    //follower.SetPositionAndRotation(_pos, _rot);
                 }
                 await Task.Yield();
-                Leader.transform.hasChanged = false;
+                _playerGuide.transform.hasChanged = false;
                 //Debug.Log($"Commander(Player){Commander.transform.position} Leader(To follow): {Leader.transform.position}");
             }
         }
         await Task.Yield();
     }
+
     public void SetAllyList()
     {
         //if (GroupController._allies != null)
@@ -258,40 +235,30 @@ public class AllyController : MonoBehaviour
             var m_allyComponent = _tmpAllyArr[i].GetComponent<Ally>();
             CreateFollower(m_allyComponent);
             Allies.Add(_tmpAllyArr[i].GetComponent<Ally>());
-
         }
-
         //Debug.Log($"List of allies set by finding - check groupController\nTotal Ally Count = {_allies.Count}");
     }
     public void CreateFollower(Ally m_allyComponent)
     {
         //create follower
-        var _follower = new GameObject("FollowerGuide");
-        _follower.AddComponent<SphereCollider>();
+        var m_follower = new GameObject("FollowerGuide");
         //assign position and rotation to curr position of placed allies and rotation of leader
-        var _followerpos = m_allyComponent.transform.position;
-        _follower.transform.SetPositionAndRotation(_followerpos, Leader.transform.rotation);
+        var m_followerpos = m_allyComponent.transform.position;
+        m_follower.transform.SetPositionAndRotation(m_followerpos, _playerGuide.transform.rotation);
 
         //Assign follower to ally script for reference - TODO: Update this to have a global ref here?
-        m_allyComponent.Follower = _follower;
-        m_allyComponent.Leader = Leader.transform;
-        var Offset = Leader.transform.position - _followerpos;
+        m_allyComponent.SetFollower(m_follower);
+        var Offset = _playerGuide.transform.position - m_followerpos;
         //Mathf.Abs(Leader.transform.position.z - _follower.transform.position.z);
 
+
         _followers.Add(
-            new Follower(_follower, Offset)
+            new Follower(m_follower, Offset)
             );
 
-        //Debug.Log($"Leader Pos:{Leader.transform.position}, Follower Pos : {_follower.transform.position}" +
+        //Debug.Log($"Leader Pos:{_playerGuide.transform.position}, Follower Pos : {m_follower.transform.position}" +
         //    $"Vector Difference: {Offset}");
     }
-    //private void AttackCommand()
-    //{
-    //    foreach (var ally in Allies)
-    //    {
-    //        ally.AttackBehaviour.ck();
-    //    }
-    //}
     private void DefendCommand()
     {
         foreach (var follower in _followers)
@@ -319,8 +286,19 @@ public class AllyController : MonoBehaviour
     }
     private async Task Defend(Follower follower, CancellationToken token)
     {
+        var formationPos = follower.FormationPosition;
+
         while (Input.GetKey(KeyCode.Mouse1))
         {
+            Debug.Log("Defending");
+            //get position of player guide and calculate relative position to it to maintain position.
+            var pos = _playerGuide.transform.TransformPoint(-formationPos);
+
+            var shieldWallPos = pos;
+            shieldWallPos.x *= _shieldWallXSpacing;
+            shieldWallPos.y *= 0;
+            shieldWallPos.z += _shieldWallYSpacing;
+
             //Debug.Log($"Should be moving {follower} from {_originPos} to {defensiveLine}");
             if (token.IsCancellationRequested)
             {
@@ -329,20 +307,11 @@ public class AllyController : MonoBehaviour
                 //token.ThrowIfCancellationRequested();
             }
 
-            Debug.Log("Defending");
-            var commanderPos = Commander.transform.position;
-            var _relOrigin = commanderPos - follower.Offset;
-            var defensiveLine = _relOrigin;
-
-            defensiveLine.x /= 1.25f;
-            defensiveLine.y = 0f;
-            //should be following leader not commander pos
-
-            follower.GameObject.transform.position = defensiveLine;
-            follower.GameObject.transform.rotation = Commander.transform.rotation;
-
+            follower.GameObject.transform.position = shieldWallPos;
+            follower.GameObject.transform.rotation = _playerGuide.transform.rotation;
             await Task.Yield();
-            follower.GameObject.transform.position = Commander.transform.position - follower.Offset;
+            follower.GameObject.transform.position = pos;
+
         }
         Debug.Log("Break Defense");
     }
@@ -360,16 +329,6 @@ public class AllyController : MonoBehaviour
             _cancellationSourceFollowLeader.Cancel();
         }
         await Task.Yield();
-        //await Task.WhenAll(AllyControllerTasks);
-        ////Debug.Log("MoveToTarget cleanup");
-        //if (_followPlayerTask.IsCompleted) return;
-        //if (_followPlayerTask.IsCompleted) return;
-        ////_followLeaderTask.IsCompleted
-        ////_cancellationTokenSource.Cancel();
-        //while (!_followPlayerTask.IsCanceled)
-        //{
-        //    await Task.Yield();
-        //}
     }
 
 }

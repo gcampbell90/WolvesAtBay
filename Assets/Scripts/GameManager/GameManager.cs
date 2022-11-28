@@ -50,13 +50,17 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         SceneController.SetScenesData(scenesData);
-        LoadScene(0);
+        LoadScene(1);
     }
 
     public void LoadScene(int sceneID)
     {
-        SceneController sceneController = gameObject.AddComponent<SceneController>();
-        sceneController.LoadScene(sceneID);
-        Destroy(sceneController);
+        SceneController.LoadScene(this, sceneID);
+        //Destroy(sceneController);
+    }
+
+    public void ActivateScene()
+    {
+        SceneController.ActivateScene();
     }
 }

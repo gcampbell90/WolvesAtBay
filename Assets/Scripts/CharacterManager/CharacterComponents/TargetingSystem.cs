@@ -15,11 +15,8 @@ public class TargetingSystem : MonoBehaviour, ITarget
     [SerializeField] bool randomMovement;
     [SerializeField] bool _enableDebugLines;
 
-    CancellationTokenSource _cts = null;
-    Task _findNewTarget;
-
-    bool isRunning = false;
-
+    //CancellationTokenSource _cts = null;
+    //Task _findNewTarget;
     public bool EnableDebugLines
     {
         get
@@ -30,25 +27,6 @@ public class TargetingSystem : MonoBehaviour, ITarget
         {
             _enableDebugLines = value;
         }
-    }
-    private async void Start()
-    {
-        //if (randomMovement)
-        //{
-        //    StartCoroutine(MoveAround(gameObject));
-        //}
-        try
-        {
-            _findNewTarget = GetAndSetTargetAsync();
-        }catch(OperationCanceledException e)
-        {
-            Debug.Log(e.Message);
-        }
-        finally
-        {
-            Debug.Log("TARGETING SYSTEM - Task for Getting and setting target started");
-        }
-        
     }
 
     private void Update()
@@ -68,67 +46,60 @@ public class TargetingSystem : MonoBehaviour, ITarget
         var lineCol = CanAttack ? Color.green : Color.red;
         Debug.DrawLine(transform.position, Target.position, lineCol);
     }
-
     public void GetNewTarget()
     {
         Target = BattleManager.Instance.GetNearestTargetGeneric(gameObject);
     }
-
     public void SetTarget(Transform _target)
     {
         Target = _target;
     }
-
-
-    public async Task GetAndSetTargetAsync()
-    {
-        isRunning = true;
-        Debug.Log("TARGETING SYSTEM - Setting token and running task");
-        var token = _cts.Token;
-        _cts = new CancellationTokenSource();
-
-            try
-            {
-                await GetTargetFromBattleManager(token);
-            }
-            catch (OperationCanceledException e)
-            {
-                Debug.LogError(e.Message);
-            }
-            finally
-            {
-                _cts.Dispose();
-                Debug.Log("TARGETING SYSTEM - Target get task ended");
-            }
-
-    }
-
-    //should run indefinitely if no target
-    private async Task<Transform> GetTargetFromBattleManager(CancellationToken token)
-    {
-        var m_target = Target;
-
-        while (m_target == null || !ApplicationStateManager.playMode)
-        {
-            Debug.Log("TARGETING SYSTEM - Looking for target from BattleManager");
-            if (token.IsCancellationRequested)
-            {
-                return null;
-            }
-            await Task.Yield();
-        }
-        isRunning = false;
-
-        return m_target;
-    }
-   
-
+    
     private void OnDestroy()
     {
         //_cts.Cancel();
     }
 
-    //debug random movement scrip to testing finding method.
+    //public async Task GetAndSetTargetAsync()
+    //{
+    //    Debug.Log("TARGETING SYSTEM - Setting token and running task");
+    //    var token = _cts.Token;
+    //    _cts = new CancellationTokenSource();
+
+    //        try
+    //        {
+    //            await GetTargetFromBattleManager(token);
+    //        }
+    //        catch (OperationCanceledException e)
+    //        {
+    //            Debug.LogError(e.Message);
+    //        }
+    //        finally
+    //        {
+    //            _cts.Dispose();
+    //            Debug.Log("TARGETING SYSTEM - Target get task ended");
+    //        }
+
+    //}
+    ////should run indefinitely if no target
+    //private async Task<Transform> GetTargetFromBattleManager(CancellationToken token)
+    //{
+    //    var m_target = Target;
+
+    //    while (m_target == null || !ApplicationStateManager.playMode)
+    //    {
+    //        Debug.Log("TARGETING SYSTEM - Looking for target from BattleManager");
+    //        if (token.IsCancellationRequested)
+    //        {
+    //            return null;
+    //        }
+    //        await Task.Yield();
+    //    }
+
+    //    return m_target;
+    //}
+
+    //debug random movement for testing finding method.
     //public IEnumerator MoveAround(GameObject _go)
     //{
     //    while (true)

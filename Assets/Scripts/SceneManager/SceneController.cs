@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-#if UNITY_EDITOR 
+using System.Threading.Tasks;
+using System.Threading;
+using UnityEditor;
+#if UNITY_EDITOR
 using UnityEditor.SearchService;
 #endif
 
@@ -11,6 +14,8 @@ namespace SceneManagerSystem
 {
     public class SceneController : MonoBehaviour
     {
+        private static bool allowActivation = false;
+
         public static ScenesData SceneDataList { get; private set; }
 
         public static void SetScenesData(ScenesData scenesData)
@@ -33,31 +38,69 @@ namespace SceneManagerSystem
             }
         }
 
-        //public void NextLevelTriggered()
-        //{
-        //    currLevelIndex++;
-        //    LoadSceneAsync(currLevelIndex);
-        //}
-
-        public static IEnumerator LoadSceneAsync(int id)
+        static IEnumerator LoadSceneAsync(int id)
         {
             //Debug.Log("Load Scene called");
-            string sceneName = SceneDataList.levels[id].name;
+            //string sceneName = SceneDataList.levels[id].name;
+            yield return null;
+            float timer = 0;
 
-            AsyncOperation sceneLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            AsyncOperation sceneLoad = SceneManager.LoadSceneAsync(id, LoadSceneMode.Additive);
+            sceneLoad.allowSceneActivation = true;
 
-            while (sceneLoad.progress != 1f)
+            while (sceneLoad.progress < 0.9f)
             {
+                timer += Time.deltaTime;
+                Debug.Log($"Loading..{sceneLoad.progress}");
+                yield return null;
+                Debug.Log($"LoadingTime:{timer}");
+            }
+
+            while (!allowActivation)
+            {
+                Debug.Log("Loaded. Press button to activate" + sceneLoad.progress);
+                yield return null;
+            }
+            sceneLoad.allowSceneActivation = true;
+            Debug.Log("Loaded." + sceneLoad.isDone);
+
+
+
+            //var myScene = SceneManager.GetSceneByName(sceneName);
+            //SceneManager.SetActiveScene(myScene);
+        }
+
+            static IEnumerator UnloadSceneAsync(int id)
+        {
+            //Debug.Log("Load Scene called");
+            //string sceneName = SceneDataList.levels[id].name;
+            yield return null;
+
+            AsyncOperation sceneLoad = SceneManager.UnloadSceneAsync(id);
+
+            while (sceneLoad.progress < 0.9f)
+            {
+                Debug.Log("Unloading" + sceneLoad.progress);
+
                 yield return null;
             }
 
-            var myScene = SceneManager.GetSceneByName(sceneName);
-            SceneManager.SetActiveScene(myScene);
+            Debug.Log("Unloaded." + sceneLoad.isDone);
+
         }
 
-        public void LoadScene(int id)
+        public static void LoadScene(MonoBehaviour context, int id)
         {
-            StartCoroutine(SceneController.LoadSceneAsync(id));
+            context.StartCoroutine(LoadSceneAsync(id));
+        }
+        public static void UnloadScene(MonoBehaviour context, int id)
+        {
+            context.StartCoroutine(UnloadSceneAsync(id));
+        }
+
+        public static void ActivateScene()
+        {
+            allowActivation = true;
         }
     }
 }
