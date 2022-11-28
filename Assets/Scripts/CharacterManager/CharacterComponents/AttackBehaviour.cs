@@ -6,7 +6,6 @@ using static UnityEngine.GraphicsBuffer;
 //using static UnityEditor.Experimental.GraphView.GraphView;
 //using static UnityEngine.GraphicsBuffer;
 
-[RequireComponent(typeof(Rigidbody))]
 public class AttackBehaviour : MonoBehaviour
 {
     //WeaponInfo 
@@ -15,10 +14,11 @@ public class AttackBehaviour : MonoBehaviour
     //TODO implement into attack speed?
     int _speed;
     public Rigidbody WeaponRB { get; set; }
+    public BoxCollider WeaponCollider { get; set; }
     //coroutine check
     bool isAttacking;
 
-    public Transform target;
+    public Transform Target { get; set; } 
 
     //Delegate to hold attack animation type - should eventually be managed by weapon system
     public delegate IEnumerator AttackBehaviourDelegate();
@@ -26,35 +26,28 @@ public class AttackBehaviour : MonoBehaviour
 
     void Start()
     {
-        AttachWeaponObjects();
-
-        transform.TryGetComponent(out CharacterBase component);
-        if (!component) _speed = 2; return;
-        _speed = component.Speed;
-        target = GetComponent<TargetingSystem>().Target;
-        Debug.Log("Start target: " + target);
-
+        //AttachWeaponObjects();
     }
 
     //Check every frame if player is in range of weapon, if so, attack.
     private void Update()
     {
         //target = GameObject.FindGameObjectWithTag("Enemy").transform;
-        if (target == null)
+        if (Target == null)
         {
-            target = GetComponent<TargetingSystem>().Target;
+            Target = GetComponent<TargetingSystem>().Target;
             return;
         }
-        //Debug.Log("Update target: " + target);
 
-        var _distance = Vector3.Distance(transform.position, target.position);
+        var _distance = Vector3.Distance(transform.position, Target.position);
 
-        if (_distance < range + 5f)
+        if (_distance < range + 5)
         {
             //Debug.Log("Attacking" + target);
 
             StartCoroutine(AttackMove());
         }
+
         //Debug.Log($"Attack Behaviour Component"
         //    + $" - Range: {_distance}"
         //    );
@@ -67,8 +60,7 @@ public class AttackBehaviour : MonoBehaviour
 
         StartCoroutine(AttackMove());
     }
-
-    void AttachWeaponObjects()
+    private void AttachWeaponObjects()
     {
         Pivot = new GameObject("WeaponPivot").transform;
 
@@ -94,13 +86,16 @@ public class AttackBehaviour : MonoBehaviour
 
         Pivot.transform.SetParent(transform, false);
 
-        range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
+        //range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
         WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
+        WeaponRB.mass = 0.1f;
+
+        WeaponCollider = Pivot.GetComponentInChildren<BoxCollider>();
+        WeaponCollider.isTrigger = true;
         //Pivot.tag = "Weapon";
 
         //Debug.Log($"Attack Behaviour Component - Range: {range}");
     }
-
     private void AttachSword()
     {
         Pivot.transform.localPosition = new Vector3(0.7f, 0, 0.9f);
@@ -140,7 +135,6 @@ public class AttackBehaviour : MonoBehaviour
         spear.tag = "Weapon";
         spear.layer = tag == "Enemy" ? 10 : 11;
     }
-
     private IEnumerator SwordAttackMove()
     {
         if (isAttacking)

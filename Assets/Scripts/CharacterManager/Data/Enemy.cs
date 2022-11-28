@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(BoxCollider))]
 public class Enemy : CharacterBase
 {
+    [SerializeField]private BoxCollider _colliderBlocker;
+
     public delegate void DeathEvent();
     public static event DeathEvent deathEvent;
 
@@ -29,11 +31,14 @@ public class Enemy : CharacterBase
         //gmLevelAbstract = FindObjectOfType<GMLevelAbstract>();
 
         var rb = GetComponent<Rigidbody>();
-        rb.mass = 30f;
+        rb.mass = 500f;
+        rb.drag = 5f;
+
         rb.constraints = RigidbodyConstraints.FreezePositionY |
-            RigidbodyConstraints.FreezeRotationX|
+            RigidbodyConstraints.FreezeRotationX |
             RigidbodyConstraints.FreezeRotationZ;
 
+        rb.isKinematic = false;
 
         var col = GetComponent<Collider>();
         col.isTrigger = false;
@@ -45,27 +50,10 @@ public class Enemy : CharacterBase
         gameObject.AddComponent<MoveToTarget>();
         gameObject.AddComponent<AttackBehaviour>();
 
+
+        //Physics.IgnoreCollision(col, _colliderBlocker, true);
+
     }
-
-    private void Start()
-    {
-        //gameObject.GetComponent<IKillable>().ITakeDamage(5);
-    }
-
-    #region OOP test methods
-    //Public method to call classes protected method for layer of control/security.
-    //public void CallMustBeOverridden()
-    //{
-    //    MustBeOverridden();
-    //}
-
-    //Example of overridding a virtual method from the base when needed. Fetching/sending data to base methods?  
-    //TODO: Find examples of actual useful implementations
-    //public override void VirtualMethodTest(int testInt, string testString)
-    //{
-    //    base.VirtualMethodTest(testInt, testString);
-    //    Debug.Log($"Output: {testInt},{testString}. Overridden Virtual method called directly from class than base. I can also add to this implementation with or without calling the base method.\n Whenever that behaviour is required/useful is still to be figured out. ");
-    //}
 
     public override void ITakeDamage(int damage)
     {
@@ -76,25 +64,19 @@ public class Enemy : CharacterBase
             EnemyDeath();
         }
     }
-
-    private async void EnemyDeath()
+    private void EnemyDeath()
     {
-        //Debug.Log("Enemy Death async task cleanup");
-
-        //EnemyDeath Cleanup
-        var moveComponent = GetComponent<MoveToTarget>();
-        //var task = moveComponent.OnKilled();
+        deathEvent?.Invoke();
+        deathRemoveEvent?.Invoke(this);
         GetComponent<IKillable>().Destroy();
-
     }
-
     public void SetTarget(Transform target)
     {
         //Debug.Log("Setting target" + target);
         var targetSys = GetComponent<TargetingSystem>();
-        targetSys.Target = target.transform;
+        //if (targetSys != null || targetSys.Target != null) return;
+        targetSys.Target = target;
     }
-
     public override void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag != "Weapon") return;
@@ -103,14 +85,10 @@ public class Enemy : CharacterBase
         //replace damage with weapon/player strength/damage
         ITakeDamage(20);
     }
-
-    private void OnDestroy()
+    public override void OnTriggerEnter(Collider collision)
     {
-        deathEvent?.Invoke();
-        deathRemoveEvent?.Invoke(this);
+        throw new NotImplementedException();
     }
-    //GMLevelAbstract gmLevelAbstract;
 
-    #endregion
 }
 

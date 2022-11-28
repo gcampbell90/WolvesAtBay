@@ -7,38 +7,22 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class Player : CharacterBase
 {
-    //public int speed = 10;
-    //// Start is called before the first frame update
     private void Awake()
     {
         Speed = 2;
         Health = 1000;
     }
-
-    //void Start()
-    //{
-    //    //gameObject.GetComponent<IKillable>().ITakeDamage(5);
-    //}
-
-    //// Update is called once per frame
-    //void Update()
-    //{
-
-    //}
-
     public override void ITakeDamage(int damage)
     {
         //Debug.Log($"{gameObject.name} have taken damage of {damage}");
         Health -= damage;
         if (Health <= 0)
         {
-            Destroy(gameObject);
             Debug.Log("GameOver");
-            EffectController.Instance.PlayDeathSound();
+            //EffectController.Instance.PlayDeathSound();
+            Destroy(gameObject);
         }
     }
-
-
     public override void OnCollisionEnter(Collision collision)
     {
         //Debug.Log($"Collision on {gameObject.name} from {collision.gameObject.name}");
@@ -47,8 +31,12 @@ public class Player : CharacterBase
             ITakeDamage(5);
             gameObject.GetComponent<Rigidbody>().isKinematic = true;
             gameObject.GetComponent<Rigidbody>().isKinematic = false;
-            //throw new System.NotImplementedException();
         }
 
+    }
+    public override void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.tag != "Weapon") return;
+        ITakeDamage(5);
     }
 }

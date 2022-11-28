@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(BoxCollider))]
 public class Spearman : Enemy
 {
@@ -48,6 +47,14 @@ public class Spearman : Enemy
 
         //replace damage with weapon/player strength/damage
         ITakeDamage(20);
+    }
+    public override void OnTriggerEnter(Collider collider)
+    {
+        if (collider.gameObject.tag != "Weapon") return;
+        //Debug.Log($"SWORDMAN - {gameObject.name} hit by a " + collider.gameObject.tag);
+
+        //replace damage with weapon/player strength/damage
+        ITakeDamage(10);
     }
 
     #endregion

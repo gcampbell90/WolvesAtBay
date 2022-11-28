@@ -4,11 +4,13 @@
 public sealed class Follower
 {
     public GameObject GameObject { get; set; }
-    public Vector3 Offset { get; set; }
-    public Follower(GameObject follower, Vector3 offset)
+    public Vector3 FormationPosition { get; set; }
+    public Vector3 DefensivePosition { get; set; }
+    public Follower(GameObject follower, Vector3 formationPosition, Vector3 defensivePosition)
     {
         GameObject = follower;
-        Offset = offset;
+        FormationPosition = formationPosition;
+        DefensivePosition = defensivePosition;
     }
 
     //public void LerpToVector(Vector3 pos, Quaternion rot)
