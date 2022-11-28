@@ -26,8 +26,11 @@ public class AllyController : MonoBehaviour
     Task[] AllyControllerTasks = new Task[2];
 
     [SerializeField] private float _smoothSpeed;
+    [Range(0.1f,1f)]
     [SerializeField] private float _shieldWallXSpacing;
-    [SerializeField] private float _shieldWallYSpacing;
+    [SerializeField] private float _shieldWallZSpacing;
+
+    private bool isDefending = false;
 
     //Debug
     private void OnDrawGizmos()
@@ -190,22 +193,11 @@ public class AllyController : MonoBehaviour
                 }
                 foreach (var follower in _followers)
                 {
-                    var offset = follower.FormationPosition;
-                    //offset.z -= 0.5f;
+                    var offset = isDefending ? follower.DefensivePosition : follower.FormationPosition;
+                    Debug.Log("Is Defending?" + isDefending + offset);
                     var pos = _playerGuide.transform.TransformPoint(-offset);
-                    //if(rotationEuler.y > 85 && rotationEuler.y < 250)
-                    //{
-                    //    offset.z *= -1f;
-                    //}
-
-                    //follower.GameObject.transform.RotateAround(_playerGuide.transform.position, Vector3.up,_playerGuide.transform.rotation.y);
+                  
                     follower.GameObject.transform.SetPositionAndRotation(pos, _playerGuide.transform.rotation);
-
-                    //var _targetPos = _playerGuide.transform.position - follower.Offset;
-                    ////var _targetPos = Leader.transform.position - follower.GameObject.transform.position;
-                    //var _pos = Vector3.Lerp(follower.GameObject.transform.position, _targetPos, Time.deltaTime);
-                    //var _rot = Quaternion.Slerp(follower.GameObject.transform.rotation, _playerGuide.transform.rotation, Time.deltaTime);
-                    //follower.SetPositionAndRotation(_pos, _rot);
                 }
                 await Task.Yield();
                 _playerGuide.transform.hasChanged = false;
@@ -214,7 +206,6 @@ public class AllyController : MonoBehaviour
         }
         await Task.Yield();
     }
-
     public void SetAllyList()
     {
         //if (GroupController._allies != null)
@@ -248,12 +239,15 @@ public class AllyController : MonoBehaviour
 
         //Assign follower to ally script for reference - TODO: Update this to have a global ref here?
         m_allyComponent.SetFollower(m_follower);
-        var Offset = _playerGuide.transform.position - m_followerpos;
+        var formationOffset = _playerGuide.transform.position - m_followerpos;
+        var defensiveOffset = formationOffset;
+
+        defensiveOffset.x *= _shieldWallXSpacing;
+        defensiveOffset.z += _shieldWallZSpacing;
         //Mathf.Abs(Leader.transform.position.z - _follower.transform.position.z);
 
-
         _followers.Add(
-            new Follower(m_follower, Offset)
+            new Follower(m_follower, formationOffset, defensiveOffset)
             );
 
         //Debug.Log($"Leader Pos:{_playerGuide.transform.position}, Follower Pos : {m_follower.transform.position}" +
@@ -291,32 +285,22 @@ public class AllyController : MonoBehaviour
         while (Input.GetKey(KeyCode.Mouse1))
         {
             Debug.Log("Defending");
-            //get position of player guide and calculate relative position to it to maintain position.
-            var pos = _playerGuide.transform.TransformPoint(-formationPos);
+            isDefending = true;
 
-            var shieldWallPos = pos;
-            shieldWallPos.x *= _shieldWallXSpacing;
-            shieldWallPos.y *= 0;
-            shieldWallPos.z += _shieldWallYSpacing;
-
-            //Debug.Log($"Should be moving {follower} from {_originPos} to {defensiveLine}");
             if (token.IsCancellationRequested)
             {
                 //Debug.Log("Task Cancelled");
                 return;
                 //token.ThrowIfCancellationRequested();
             }
-
-            follower.GameObject.transform.position = shieldWallPos;
-            follower.GameObject.transform.rotation = _playerGuide.transform.rotation;
             await Task.Yield();
-            follower.GameObject.transform.position = pos;
-
+            isDefending = false;
         }
         Debug.Log("Break Defense");
     }
 
     bool isDestroyed;
+
     private async void OnDestroy()
     {
         if (_followPlayerTask == null) return;

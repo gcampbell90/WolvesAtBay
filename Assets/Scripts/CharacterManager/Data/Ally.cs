@@ -110,8 +110,8 @@ public class Ally : MonoBehaviour
         isDefending = true;
         AnimationController(AnimationState.Block);
 
-        var originRot = transform.GetChild(0).transform.rotation;
-        transform.GetChild(0).transform.rotation = Quaternion.Euler(originRot.eulerAngles + new Vector3(0, 45, 0));
+        var originRot = transform.GetChild(0).transform.localRotation;
+        transform.GetChild(0).transform.localRotation = Quaternion.Euler(originRot.eulerAngles + new Vector3(0, 45, 0));
 
         while (Input.GetKey(KeyCode.Mouse1))
         {
@@ -119,7 +119,7 @@ public class Ally : MonoBehaviour
             yield return null;
         }
         isDefending = false;
-        transform.GetChild(0).transform.rotation = Quaternion.identity;
+        transform.GetChild(0).transform.localRotation = Quaternion.Euler(0, 0, 0);
         //_animator.Play("Movement");
         //m_shield.localRotation = m_originRot;
     }
