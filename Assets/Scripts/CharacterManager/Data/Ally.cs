@@ -57,7 +57,10 @@ public class Ally : MonoBehaviour
     }
     private void Attack()
     {
-        AttackBehaviour.Attack();
+        //AttackBehaviour.Attack();
+        isAttacking = true;
+        AnimationController(AnimationState.Attack);
+        isAttacking = false;
     }
     private void Defend()
     {
@@ -78,7 +81,7 @@ public class Ally : MonoBehaviour
             //var pos = Vector3.Lerp(transform.position, Follower.transform.position, Time.deltaTime * _smoothSpeed);
             //var rot = Quaternion.Slerp(transform.rotation, Follower.transform.rotation, Time.deltaTime * _smoothSpeed);
             var pos = transform.position;
-            if (Vector3.Distance(pos, Follower.transform.position) < 0.15f && !isDefending)
+            if (Vector3.Distance(pos, Follower.transform.position) < 0.15f && !isDefending && !isAttacking)
             {
                 //_animator.SetBool("IsIdle", true);
                 //_animator.SetBool("IsWalking", false);
@@ -88,7 +91,7 @@ public class Ally : MonoBehaviour
             }
             else 
             {
-                if (!isDefending)
+                if (!isDefending && !isAttacking)
                 {
                     AnimationController(AnimationState.Walk);
                     //velocityX = 0f;
@@ -105,6 +108,8 @@ public class Ally : MonoBehaviour
     }
 
     bool isDefending = false;
+    private bool isAttacking;
+
     private IEnumerator RaiseShield()
     {
         isDefending = true;
@@ -147,6 +152,11 @@ public class Ally : MonoBehaviour
 
                     break;
                 }
+            case AnimationState.Attack:
+                {
+                    motionTitle = "Slash";
+                    break;
+                }
             case AnimationState.Block:
                 {
                     motionTitle = "Block Idle";
@@ -161,7 +171,6 @@ public class Ally : MonoBehaviour
     }
     void PlayAnimation(string motion)
     {
-        var clipInfo = _animator.GetCurrentAnimatorClipInfo(0);
         _animator.Play(motion, 0);
     }
     internal void SetFollower(GameObject m_follower)

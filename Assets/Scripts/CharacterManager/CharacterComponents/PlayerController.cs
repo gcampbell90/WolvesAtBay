@@ -53,11 +53,11 @@ public class PlayerController : MonoBehaviour
     {
 
         float horizontal = Input.GetAxis("Horizontal");
-        float vertical =  Input.GetAxis("Vertical");
+        float vertical = Input.GetAxis("Vertical");
 
         Vector3 movement = new Vector3(horizontal, 0, vertical);
 
-        if(movement.magnitude > 0)
+        if (movement.magnitude > 0)
         {
             movement.Normalize();
             movement *= GetSpeed() * Time.deltaTime;
@@ -79,7 +79,10 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            StartCoroutine(AttackMove());
+            onAttack?.Invoke();
+            //StartCoroutine(AttackMove());
+            AnimationController(AnimationState.Attack);
+
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse1))
@@ -97,6 +100,11 @@ public class PlayerController : MonoBehaviour
 
         switch (newstate)
         {
+            case AnimationState.Attack:
+                {
+                    motionTitle = "Slash";
+                    break;
+                }
             case AnimationState.Block:
                 {
                     motionTitle = "Block Idle";
@@ -174,13 +182,13 @@ public class PlayerController : MonoBehaviour
         {
             //_swordPivot.gameObject.SetActive(false);
             //_shieldPivot.gameObject.SetActive(true);
-            
+
 
             yield return null;
         }
         //_animator.SetBool("IsDefending", false);
         transform.GetChild(0).transform.localRotation = originRot;
-        _animator.Play("Movement",0);
+        _animator.Play("Movement", 0);
         yield return null;
     }
 
