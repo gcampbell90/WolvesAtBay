@@ -2,9 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(PlayerController))]
-[RequireComponent(typeof(BoxCollider))]
+
 public class Player : CharacterBase
 {
     private void Awake()

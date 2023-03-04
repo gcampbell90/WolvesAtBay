@@ -26,7 +26,7 @@ public class AllyController : MonoBehaviour
     Task[] AllyControllerTasks = new Task[2];
 
     [SerializeField] private float _smoothSpeed;
-    [Range(0.1f,1f)]
+    [Range(0.1f, 1f)]
     [SerializeField] private float _shieldWallXSpacing;
     [SerializeField] private float _shieldWallZSpacing;
 
@@ -44,20 +44,15 @@ public class AllyController : MonoBehaviour
             Gizmos.DrawCube(follower.GameObject.transform.position + follower.GameObject.transform.forward, Vector3.one);
         }
     }
-
     private void OnEnable()
     {
-        PlayerController.onDefend += DefendCommand;
+        PlayerController.OnDefend += DefendCommand;
     }
     private void OnDisable()
     {
-        PlayerController.onDefend -= DefendCommand;
+        PlayerController.OnDefend -= DefendCommand;
     }
 
-    private void Awake()
-    {
-        //PlayerController.onAttack += AttackCommand;
-    }
     private void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player");
@@ -67,7 +62,7 @@ public class AllyController : MonoBehaviour
 
         _playerGuide.transform.position = _player.transform.position;
         _playerGuide.transform.rotation = _player.transform.rotation;
-    
+
         SetAllyList();
 
         try
@@ -142,13 +137,12 @@ public class AllyController : MonoBehaviour
     }
     private async Task FollowPlayerAsync(CancellationToken token)
     {
-        while (!isDestroyed)
-        {
             while (!_player.Equals(null) ||
                    !_playerGuide.Equals(null) ||
                    _player.transform.hasChanged &&
                    _playerGuide.transform.position != _player.transform.position ||
-                   _playerGuide.transform.rotation != _player.transform.rotation){
+                   _playerGuide.transform.rotation != _player.transform.rotation)
+            {
 
                 if (token.IsCancellationRequested)
                 {
@@ -160,25 +154,23 @@ public class AllyController : MonoBehaviour
 
                 _playerGuide.transform.position = _player.transform.position;
                 _playerGuide.transform.rotation = _player.transform.rotation;
-                
-              //_playerGuide.transform.SetPositionAndRotation(
-              //      Vector3.Lerp(_playerGuide.transform.position,
-              //      _player.transform.position, Time.deltaTime),
-              //      Quaternion.Slerp(_playerGuide.transform.rotation,
-              //      _player.transform.rotation, Time.deltaTime)
-              //      );
+
+                //_playerGuide.transform.SetPositionAndRotation(
+                //      Vector3.Lerp(_playerGuide.transform.position,
+                //      _player.transform.position, Time.deltaTime),
+                //      Quaternion.Slerp(_playerGuide.transform.rotation,
+                //      _player.transform.rotation, Time.deltaTime)
+                //      );
 
                 await Task.Yield();
                 _player.transform.hasChanged = false;
                 //Debug.Log($"Commander(Player){Commander.transform.position} Leader(To follow): {Leader.transform.position}");
             }
             await Task.Yield();
-        }
-
     }
     private async Task FollowTheLeaderAsync(CancellationToken token)
     {
-        while (!isDestroyed || !ApplicationStateManager.playMode)
+        while (!ApplicationStateManager.playMode)
         {
             while (!_player.Equals(null) ||
                 !_playerGuide.Equals(null) ||
@@ -188,15 +180,15 @@ public class AllyController : MonoBehaviour
             {
                 if (token.IsCancellationRequested)
                 {
-                    Debug.Log("FollowTheLeader Async Task has been cancelled");
+                    //Debug.Log("FollowTheLeader Async Task has been cancelled");
                     return;
                 }
                 foreach (var follower in _followers)
                 {
                     var offset = isDefending ? follower.DefensivePosition : follower.FormationPosition;
-                    Debug.Log("Is Defending?" + isDefending + offset);
+                    //Debug.Log("Is Defending?" + isDefending + offset);
                     var pos = _playerGuide.transform.TransformPoint(-offset);
-                  
+
                     follower.GameObject.transform.SetPositionAndRotation(pos, _playerGuide.transform.rotation);
                 }
                 await Task.Yield();
@@ -206,6 +198,7 @@ public class AllyController : MonoBehaviour
         }
         await Task.Yield();
     }
+
     public void SetAllyList()
     {
         //if (GroupController._allies != null)
@@ -298,8 +291,6 @@ public class AllyController : MonoBehaviour
         }
         Debug.Log("Break Defense");
     }
-
-    bool isDestroyed;
 
     private async void OnDestroy()
     {

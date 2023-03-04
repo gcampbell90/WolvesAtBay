@@ -18,7 +18,6 @@ public static class ApplicationStateManager
     {
         EditorApplication.playModeStateChanged += LogPlayModeState;
     }
-
     private static void LogPlayModeState(PlayModeStateChange state)
     {
         playMode = state == PlayModeStateChange.EnteredPlayMode;

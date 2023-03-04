@@ -26,7 +26,7 @@ public class AttackBehaviour : MonoBehaviour
 
     void Start()
     {
-        //AttachWeaponObjects();
+        AttachWeaponObjects();
     }
 
     //Check every frame if player is in range of weapon, if so, attack.

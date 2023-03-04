@@ -15,6 +15,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Debug_Start_Level.unity
     guid: 9744314b256f6c545a4d6cabf1eac119
   - enabled: 1
-    path: Assets/Scenes/Debug_Level.unity
+    path: Assets/Scenes/Player_AlliesScene.unity
     guid: d85ab4b7216584c4cb2bd283f11d6894
   m_configObjects: {}

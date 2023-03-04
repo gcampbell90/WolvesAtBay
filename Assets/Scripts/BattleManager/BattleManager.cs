@@ -59,22 +59,23 @@ public class BattleManager : MonoBehaviour
     {
         FindAndSetAllies();
 
-        //_cts = new CancellationTokenSource();
-        //var token = _cts.Token;
-        //try
-        //{
-        //    _enemies = await FindAndSetEnemies(token);
-        //}
-        //catch (OperationCanceledException e)
-        //{
-        //    //Debug.Log("Group Controller - Operation Cancelled" + e.Message);
-        //}
-        //finally
-        //{
-        //    var enemyCount = Enemies == null ? 0 : Enemies.Count;
-        //    Debug.Log("BATTLE MANAGER  - Find Enemies Task Finished - Total Enemies: " + enemyCount);
-        //    _cts.Dispose();
-        //}
+
+        _cts = new CancellationTokenSource();
+        var token = _cts.Token;
+        try
+        {
+            _enemies = await FindAndSetEnemies(token);
+        }
+        catch (OperationCanceledException e)
+        {
+            //Debug.Log("Group Controller - Operation Cancelled" + e.Message);
+        }
+        finally
+        {
+            var enemyCount = Enemies == null ? 0 : Enemies.Count;
+            Debug.Log("BATTLE MANAGER  - Find Enemies Task Finished - Total Enemies: " + enemyCount);
+            _cts.Dispose();
+        }
 
         //if (_enemies.Count > 0 && _allies.Count > 0)
         //{
@@ -90,7 +91,6 @@ public class BattleManager : MonoBehaviour
         {
             _allies.Add(ally.GetComponent<Ally>());
             //ally.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabledAllies;
-
         }
     }
     async Task<List<Enemy>> FindAndSetEnemies(CancellationToken token)

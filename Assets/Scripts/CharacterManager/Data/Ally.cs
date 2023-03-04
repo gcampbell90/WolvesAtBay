@@ -22,13 +22,13 @@ public class Ally : MonoBehaviour
 
     private void OnEnable()
     {
-        PlayerController.onDefend += Defend;
-        PlayerController.onAttack += Attack;
+        PlayerController.OnDefend += Defend;
+        PlayerController.OnAttack += Attack;
     }
     private void OnDisable()
     {
-        PlayerController.onDefend -= Defend;
-        PlayerController.onAttack -= Attack;
+        PlayerController.OnDefend -= Defend;
+        PlayerController.OnAttack -= Attack;
     }
     private void Awake()
     {
@@ -152,11 +152,11 @@ public class Ally : MonoBehaviour
 
                     break;
                 }
-            case AnimationState.Attack:
-                {
-                    motionTitle = "Slash";
-                    break;
-                }
+            //case AnimationState.Attack:
+            //    {
+            //        //motionTitle = "Slash";
+            //        break;
+            //    }
             case AnimationState.Block:
                 {
                     motionTitle = "Block Idle";
