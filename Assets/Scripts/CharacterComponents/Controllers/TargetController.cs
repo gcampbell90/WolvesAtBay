@@ -1,0 +1,25 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class TargetController : MonoBehaviour
+{
+    Transform _target;
+
+    //TODO: Fix this inefficient method(s) 
+    void Update()
+    {
+        if (_target == null)
+        {
+            _target = GetComponent<TargetingSystem>().Target;
+        }
+        else
+        {
+            LookAt();
+        }
+    }
+    public void LookAt()
+    {
+        transform.LookAt(_target);
+    }
+}

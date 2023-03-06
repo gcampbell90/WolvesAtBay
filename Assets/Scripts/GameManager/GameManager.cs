@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Awake()
+    private void Start()
     {
         SceneController.SetScenesData(scenesData);
         LoadScene(1);

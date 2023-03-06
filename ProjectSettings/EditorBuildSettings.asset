@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Scenes/PersistentScene.unity
+    path: Assets/Scenes/BattleManagerScene.unity
     guid: 3a250bf881b23d649a5037a5c65df3be
   - enabled: 0
     path: Assets/Scenes/UIScene.unity
@@ -15,6 +15,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Debug_Start_Level.unity
     guid: 9744314b256f6c545a4d6cabf1eac119
   - enabled: 1
-    path: Assets/Scenes/Player_AlliesScene.unity
+    path: Assets/Scenes/AlliesScene.unity
     guid: d85ab4b7216584c4cb2bd283f11d6894
   m_configObjects: {}
