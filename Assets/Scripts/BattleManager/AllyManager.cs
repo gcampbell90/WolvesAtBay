@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class AllyManager : MonoBehaviour
 {
-    public GameObject Player { get; set; }
+    public GameObject PlayerGameObject { get; set; }
     public GameObject PlayerGuide { get; set; }
 
     private List<Ally> _allies = new List<Ally>();
@@ -27,10 +27,12 @@ public class AllyManager : MonoBehaviour
     public delegate void DefendCommand();
     public static DefendCommand OnDefendCommand;
 
+    public delegate void DefendAttackCommand();
+    public static DefendAttackCommand OnDefendAttackCommand;
+
     public delegate void AttackCommand();
     public static AttackCommand OnAttackCommand;
 
-    //Debug
     private void OnDrawGizmos()
     {
         if (PlayerGuide == null) return;
@@ -42,17 +44,29 @@ public class AllyManager : MonoBehaviour
             Gizmos.DrawCube(follower.GameObject.transform.position + follower.GameObject.transform.forward, Vector3.one);
         }
     }
+    private void OnEnable()
+    {
+        Player.OnDefend += () => OnDefendCommand?.Invoke();
+        Player.OnAttack += () => OnAttackCommand?.Invoke();
+        Player.OnDefendAttack += () => OnDefendAttackCommand?.Invoke();
+    }
+    private void OnDisable()
+    {
+        Player.OnDefend -= () => OnDefendCommand?.Invoke();
+        Player.OnAttack -= () => OnAttackCommand?.Invoke();
+        Player.OnDefendAttack -= () => OnDefendAttackCommand?.Invoke();
+
+    }
 
     private void Awake()
     {
-        Player = GameObject.FindGameObjectWithTag("Player");
+        PlayerGameObject = GameObject.FindGameObjectWithTag("Player");
         PlayerGuide = new GameObject("LeaderGuide");
-        PlayerGuide.transform.position = Player.transform.position;
-        PlayerGuide.transform.rotation = Player.transform.rotation;
+        PlayerGuide.transform.position = PlayerGameObject.transform.position;
+        PlayerGuide.transform.rotation = PlayerGameObject.transform.rotation;
 
-        GetComponent<AllyFollowManager>().SetPlayer(Player, PlayerGuide);
+        GetComponent<AllyFollowManager>().SetPlayer(PlayerGameObject, PlayerGuide);
     }
-
     private void Start()
     {
         SetAllyList();
@@ -100,5 +114,7 @@ public class AllyManager : MonoBehaviour
         //Debug.Log($"Leader Pos:{_playerGuide.transform.position}, Follower Pos : {m_follower.transform.position}" +
         //    $"Vector Difference: {Offset}");
     }
+
+
 
 }

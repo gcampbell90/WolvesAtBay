@@ -111,7 +111,7 @@ public partial class MovementController : MonoBehaviour, ICanMove
                 return;
             }
             float distance = Vector3.Distance(transform.position, Target.position);
-
+            var targetPos = Target.position + new Vector3(0, transform.position.y, 0);
             while (distance > 5 && Target != null)
             {
                 if (token.IsCancellationRequested)
@@ -122,12 +122,13 @@ public partial class MovementController : MonoBehaviour, ICanMove
 
                 //Debug.Log($"MOVE TO TARGET - {gameObject} Moving to Target {distance}");
 
-                distance = Vector3.Distance(transform.position, Target.position);
+                //distance = Vector3.Distance(transform.position, Target.position);
 
                 // Move our position a step closer to the target.
                 var step = _speed * Time.deltaTime; // calculate distance to move
-                transform.position = Vector3.MoveTowards(transform.position, Target.position, step);
-
+                
+                transform.position = Vector3.MoveTowards(transform.position, targetPos, step);
+                transform.LookAt(targetPos);
                 await Task.Yield();
             }
             destinationArrived = true;

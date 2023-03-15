@@ -49,6 +49,7 @@ public class TargetingSystem : MonoBehaviour, ICanTarget
 
     public void GetNewTarget()
     {
+        if (BattleManager.Instance == null) return;
         SetTarget(BattleManager.Instance.GetNearestTargetGeneric(gameObject));
     }
     public void SetTarget(Transform _target)

@@ -72,7 +72,7 @@ public abstract class Enemy : CharacterBase
     //    Debug.Log("Setting target" + target);
     //    GetComponent<ICanTarget>().SetTarget(target);
     //}
-    public override void OnCollisionEnter(Collision collision)
+    public override void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.tag != "Weapon") return;
         Debug.Log($"{gameObject.name} hit by a " + collision.gameObject.tag);
@@ -80,10 +80,5 @@ public abstract class Enemy : CharacterBase
         //replace damage with weapon/player strength/damage
         TakeDamage(20);
     }
-    public override void OnTriggerEnter(Collider collision)
-    {
-        throw new NotImplementedException();
-    }
-
 }
 

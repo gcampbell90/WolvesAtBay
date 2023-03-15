@@ -170,7 +170,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DebugTargetLinesEnabledAllies: 1
   DebugTargetLinesEnabledEnemies: 1
-  _enemyManager: {fileID: 0}
-  _allyManager: {fileID: 0}
-  swordsmanCount: 0
+  EnemyWaves: 1
+  swordsmanCount: 1
   spearmanCount: 0

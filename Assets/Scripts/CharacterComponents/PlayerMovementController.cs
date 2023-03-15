@@ -10,13 +10,19 @@ public class PlayerMovementController : MonoBehaviour
     public delegate void PlayerMoveCommand(Vector3 movement, bool isBoosting);
     public static PlayerMoveCommand OnMovePlayer;
 
+    //public delegate void PlayerDefendMoveCommand(Vector3 movement, bool isBoosting);
+    //public static PlayerDefendMoveCommand OnDefendMove;
+
     private void OnEnable()
     {
         OnMovePlayer += MovePlayer;
+        //OnDefendMove += MovePlayer;
     }
     private void OnDisable()
     {
         OnMovePlayer -= MovePlayer;
+        //OnDefendMove -= MovePlayer;
+
     }
 
     private void Start()
@@ -27,12 +33,17 @@ public class PlayerMovementController : MonoBehaviour
 
     private float GetBoostMultipledSpeed(bool isBoosting)
     {
-        var boostVal = isBoosting ? 5 : 1;
-        return playerSpeed * boostVal; 
+        var boostVal = isBoosting ? 2 : 1;
+        playerSpeed = boostVal;
+        GetComponent<Player>().Speed = (int)playerSpeed;
+
+        return playerSpeed; 
     }
 
     void MovePlayer(Vector3 movement, bool isBoosting)
     {
+        Player.OnActionCompleted?.Invoke(false);
+
         transform.Rotate(transform.up * movement.x);
 
         movement.Normalize();
@@ -40,40 +51,15 @@ public class PlayerMovementController : MonoBehaviour
 
         characterController.Move(transform.forward * movement.z);
 
-        //Debug.Log("Moving Player " + movement + " " + playerSpeed);
+        Player.OnActionCompleted?.Invoke(true);
 
+        //Debug.Log("Moving Player " + movement + " " + playerSpeed);
     }
 
-    //void AnimationController(AnimationState newstate)
-    //{
-    //    string motionTitle;
-    //    motionTitle = "";
-    //    var currState = _state;
+    void IdlePlayer()
+    {
 
-    //    switch (newstate)
-    //    {
-    //        //case AnimationState.Attack:
-    //        //    {
-    //        //        motionTitle = "Slash";
-    //        //        break;
-    //        //    }
-    //        case AnimationState.Block:
-    //            {
-    //                motionTitle = "Block Idle";
-    //                break;
-    //            }
-    //        default:
-    //            break;
-    //    }
-    //    _state = newstate;
-    //    PlayAnimation(motionTitle);
-
-    //}
-
-
-    //void PlayAnimation(string motion)
-    //{
-    //    _animator.Play(motion, 0);
-    //}
+        //Debug.Log("Moving Player " + movement + " " + playerSpeed);
+    }
 
 }

@@ -5,123 +5,114 @@ using UnityEngine;
 
 public class Ally : CharacterBase
 {
-    public CombatController AttackBehaviour { get; set; }
-    public TargetingSystem TargetingSystem { get; set; }
-    public GameObject Follower { get; set; }
+    private GameObject _follower;
+    private Transform _weaponPivot;
 
     [SerializeField] float _smoothSpeed;
 
     Animator _animator;
-    private enum AnimationState { Idle, Walk, Turn, Block, Attack };
+    private enum AnimationState { Idle, Walk, Turn, Block, Attack, Death };
     private AnimationState _state;
 
-    float velocityX = 0f;
-    float velocityZ = 0f;
+    private bool isDefending = false;
+    private bool isAttacking = false;
 
     public delegate void DefendCommand();
     public static DefendCommand OnDefendCommand;
 
+    public delegate void DefendAttackCommand();
+    public static DefendAttackCommand OnDefendAttackCommand;
+
     public delegate void AttackCommand();
     public static AttackCommand OnAttackCommand;
 
+    public delegate void DeathRemoveEvent(Ally ally);
+    public static event DeathRemoveEvent OnDeathRemoveEvent;
+
     private void OnEnable()
     {
-        OnDefendCommand += Defend;
-        OnAttackCommand += Attack;
+        OnDefendCommand += DefendMove;
+        OnAttackCommand += AttackMove;
+        OnDefendAttackCommand += DefendAttackMove;
     }
     private void OnDisable()
     {
-        OnDefendCommand -= Defend;
-        OnAttackCommand -= Attack;
+        OnDefendCommand -= DefendMove;
+        OnAttackCommand -= AttackMove;
+        OnDefendAttackCommand -= DefendAttackMove;
     }
 
     private void Awake()
     {
-        AttackBehaviour = GetComponent<CombatController>();
-        TargetingSystem = GetComponent<TargetingSystem>();
-
         _animator = GetComponent<Animator>();
-        //_animator.Play("Block Idle");
-        //Physics.IgnoreCollision(col, _colliderBlocker, true);
-
-        //StartCoroutine(CheckLeader());
+        _weaponPivot = transform.GetChild(0).GetChild(0).GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetComponentInChildren<Transform>();
+        Health = 100;
     }
     private void Start()
     {
-        //if (Follower == null) yield return null;
-
-        //_follower.transform.SetLocalPositionAndRotation(_followerpos, _leader.transform.rotation);
         _animator.Play("Idle", 0);
+    }
 
-    }
-    private void FixedUpdate()
+    private void AttackMove()
     {
-        if (Follower == null) return;
-
-        transform.position = Vector3.Lerp(transform.position, Follower.transform.position, _smoothSpeed);
+        StartCoroutine(Attack());
     }
-    private void Attack()
+    private void DefendMove()
     {
-        //AttackBehaviour.Attack();
-        isAttacking = true;
-        AnimationController(AnimationState.Attack);
-        isAttacking = false;
+        StartCoroutine(Defend());
     }
-    private void Defend()
+    private void DefendAttackMove()
     {
-        StartCoroutine(RaiseShield());
-    }
-    public void SetTarget(Transform target)
-    {
-        TargetingSystem.Target = target;
+        StartCoroutine(DefendAttack());
     }
     public IEnumerator StayInFormation()
     {
-        float _t = 0f;
-        var speed = 2f;
-
         while (true)
         {
-
-            //var pos = Vector3.Lerp(transform.position, Follower.transform.position, Time.deltaTime * _smoothSpeed);
-            //var rot = Quaternion.Slerp(transform.rotation, Follower.transform.rotation, Time.deltaTime * _smoothSpeed);
+            //Debug.Log("FormationCall");
             var pos = transform.position;
-            if (Vector3.Distance(pos, Follower.transform.position) < 0.15f && !isDefending && !isAttacking)
+            var dist = Vector3.Distance(pos, _follower.transform.position);
+            if (dist > 0.1f)
             {
-                //_animator.SetBool("IsIdle", true);
-                //_animator.SetBool("IsWalking", false);
+                transform.position = Vector3.Lerp(pos, _follower.transform.position, _smoothSpeed);
+            }
+            else if (!isAttacking & !isDefending)
+            {
                 AnimationController(AnimationState.Idle);
-                //velocityX = 0f;
-                //velocityZ = 0f;
             }
-            else
-            {
-                if (!isDefending && !isAttacking)
-                {
-                    AnimationController(AnimationState.Walk);
-                    //velocityX = 0f;
-                    //velocityZ = 1f;
-                }
-                //transform.position = Follower.transform.position;
-
-            }
-            transform.rotation = Follower.transform.rotation;
-            //_animator.SetFloat("VelocityX", velocityX, 0.1f, Time.deltaTime);
-            //_animator.SetFloat("VelocityZ", velocityZ, 0.1f, Time.deltaTime);
+            transform.rotation = _follower.transform.rotation;
             yield return null;
         }
     }
 
-    bool isDefending = false;
-    private bool isAttacking;
-
-    private IEnumerator RaiseShield()
+    private IEnumerator Attack()
     {
+        Debug.Log("AllyController - Attacking");
+        AnimationController(AnimationState.Attack);
+
+        // Just make the animation interval configurable for easier modification later
+        float duration = 0.5f;
+        float progress = 0f;
+
+        //Player.OnActionCompleted?.Invoke(false);
+        isAttacking = true;
+        // Loop until instructed otherwise
+        while (progress <= duration)
+        {
+            //_swordPivot.localRotation = Quaternion.Slerp(Quaternion.Euler(0, -70, 0), Quaternion.Euler(0, rot, 0), progress);
+            progress += Time.deltaTime;
+
+            yield return null;
+        }
+        isAttacking = false;
+    }
+    private IEnumerator Defend()
+    {
+        if (isDefending) yield break;
         isDefending = true;
         AnimationController(AnimationState.Block);
-
         var originRot = transform.GetChild(0).transform.localRotation;
-        transform.GetChild(0).transform.localRotation = Quaternion.Euler(originRot.eulerAngles + new Vector3(0, 45, 0));
+        transform.GetChild(0).transform.localRotation = Quaternion.Euler(originRot.eulerAngles + new Vector3(0, 25, 0));
 
         while (Input.GetKey(KeyCode.Mouse1))
         {
@@ -130,9 +121,34 @@ public class Ally : CharacterBase
         }
         isDefending = false;
         transform.GetChild(0).transform.localRotation = Quaternion.Euler(0, 0, 0);
-        //_animator.Play("Movement");
-        //m_shield.localRotation = m_originRot;
     }
+
+    private IEnumerator DefendAttack()
+    {
+        //Debug.Log("Ally - AttackingFromPhalanx");
+        // Just make the animation interval configurable for easier modification later
+        float duration = 0.5f;
+        float progress = 0f;
+
+        Player.OnActionCompleted?.Invoke(false);
+        var newPos = new Vector3(0, 0.1f, 0);
+
+        //Debug.Log(_weaponPivot.transform.localPosition);
+        // Loop until instructed otherwise
+        while (progress <= duration)
+        {
+            _weaponPivot.Translate(newPos, Space.Self);
+            _weaponPivot.transform.localPosition = Vector3.Lerp(_weaponPivot.localPosition, Vector3.zero, progress + Time.deltaTime);
+            progress += Time.deltaTime;
+
+            yield return null;
+        }
+
+        Player.OnActionCompleted?.Invoke(true);
+
+        //_swordPivot.localRotation = Quaternion.Euler(0, -70, 0);
+    }
+
     void AnimationController(AnimationState newstate)
     {
         string motionTitle;
@@ -157,14 +173,19 @@ public class Ally : CharacterBase
 
                     break;
                 }
-            //case AnimationState.Attack:
-            //    {
-            //        //motionTitle = "Slash";
-            //        break;
-            //    }
+            case AnimationState.Attack:
+                {
+                    motionTitle = "Slash";
+                    break;
+                }
             case AnimationState.Block:
                 {
                     motionTitle = "Block Idle";
+                    break;
+                }
+            case AnimationState.Death:
+                {
+                    motionTitle = "Death";
                     break;
                 }
             default:
@@ -178,25 +199,45 @@ public class Ally : CharacterBase
     {
         _animator.Play(motion, 0);
     }
+
     internal void SetFollower(GameObject m_follower)
     {
-        Follower = m_follower;
+        _follower = m_follower;
         StartCoroutine(StayInFormation());
     }
 
-    public override void OnCollisionEnter(Collision collision)
-    {
-        throw new NotImplementedException();
-    }
+    //private void SetTarget(Transform target)
+    //{
+    //    TargetingSystem.Target = target;
+    //}
 
-    public override void OnTriggerEnter(Collider collision)
+    //Character base interface methods
+
+    public override void OnCollisionStay(Collision collision)
     {
-        throw new NotImplementedException();
+
+        if (collision.collider.gameObject.tag != "Weapon") return;
+
+        Debug.Log($"Collision on {gameObject.name} from {collision.collider.gameObject.name}");
+
+        TakeDamage(10);
+        gameObject.GetComponent<Rigidbody>().isKinematic = true;
+        gameObject.GetComponent<Rigidbody>().isKinematic = false;
+
+
     }
 
     public override void TakeDamage(int damage)
     {
-        throw new NotImplementedException();
+        //Debug.Log($"{gameObject.name} have taken damage of {damage}");
+        Health -= damage;
+        if (Health <= 0)
+        {
+            OnDeathRemoveEvent?.Invoke(this);
+            //EffectController.Instance.PlayDeathSound();
+            //Destroy(gameObject);
+            AnimationController(AnimationState.Death);
+        }
     }
 }
 

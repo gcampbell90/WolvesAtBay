@@ -17,22 +17,24 @@ public class Swordsman : Enemy
     }
 
     //removed phyics(for now)
-    public override void OnCollisionEnter(Collision collision)
+    public override void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.tag != "Weapon") return;
-        Debug.Log($"SWORDMAN - {gameObject.name} hit by a " + collision.gameObject.tag);
-        
+
+        if (collision.collider.gameObject.tag != "Weapon") return;
+        //Debug.Log($"SWORDMAN - {gameObject.name} hit by a " + collision.collider.gameObject);
+
         //replace damage with weapon/player strength/damage
-        TakeDamage(10);
+        TakeDamage(0);
     }
 
-    public override void OnTriggerEnter(Collider collider)
-    {
-        if (collider.gameObject.tag != "Weapon") return;
-        //Debug.Log($"SWORDMAN - {gameObject.name} hit by a " + collider.gameObject.tag);
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
-        //replace damage with weapon/player strength/damage
-        TakeDamage(30);
-    }
+    //public override void OnTriggerEnter(Collider collider)
+    //{
+    //    //Debug.Log($"SWORDMAN - {gameObject.name} hit by a " + collider.gameObject.tag);
+
+    //    if (collider.gameObject.tag != "Weapon") return;
+    //    GetComponent<Rigidbody>().velocity = Vector3.zero;
+    //    //replace damage with weapon/player strength/damage
+    //    TakeDamage(0);
+    //}
 
 }

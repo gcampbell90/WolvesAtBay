@@ -14,13 +14,13 @@ public class SmartNPC_Character : CharacterBase
         throw new NotImplementedException();
     }
 
-    public override void OnCollisionEnter(Collision collision)
+    public override void OnCollisionStay(Collision collision)
     {
         throw new NotImplementedException();
     }
 
-    public override void OnTriggerEnter(Collider collision)
-    {
-        throw new NotImplementedException();
-    }
+    //public override void OnTriggerEnter(Collider collision)
+    //{
+    //    throw new NotImplementedException();
+    //}
 }

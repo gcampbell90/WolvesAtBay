@@ -21,7 +21,7 @@ public static class ApplicationStateManager
     private static void LogPlayModeState(PlayModeStateChange state)
     {
         playMode = state == PlayModeStateChange.EnteredPlayMode;
-        Debug.Log(state + " InPlayMode?" + playMode);
+        //Debug.Log(state + " InPlayMode?" + playMode);
     }
 #endif
 }

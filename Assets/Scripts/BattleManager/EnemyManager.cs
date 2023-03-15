@@ -31,7 +31,7 @@ public class EnemyManager : GenericFactory<Enemy>
         for (int i = 0; i < swordsmanCount; i++)
         {
             var _swordsManGO = GetNewInstance();
-            _swordsManGO.Initialise(100, 2, transform.position + new Vector3(-swordsmanCount + (i * 2),1, 15));
+            _swordsManGO.Initialise(100, 2, transform.position + new Vector3(-swordsmanCount + (i * 2), 1, 15));
             pool.Add(_swordsManGO);
         }
         _instance = spearManGO.GetComponent<Enemy>();

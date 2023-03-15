@@ -18,13 +18,8 @@ public class AllyFollowManager : MonoBehaviour
     private Task _followPlayerTask;
     private Task _followLeaderTask;
 
-    private AllyManager _allyController;
     private bool isDefending = false;
 
-    private void Awake()
-    {
-        _allyController = GetComponent<AllyManager>();
-    }
 
     private void Start()
     {
@@ -42,7 +37,7 @@ public class AllyFollowManager : MonoBehaviour
         }
         finally
         {
-            Debug.Log("Ally Controller- Follower player task set");
+            //Debug.Log("Ally Controller- Follower player task set");
         }
 
         try
@@ -55,7 +50,7 @@ public class AllyFollowManager : MonoBehaviour
         }
         finally
         {
-            Debug.Log("Ally Controller- Follower leader task set");
+            //Debug.Log("Ally Controller- Follower leader task set");
         }
 
     }
@@ -70,7 +65,7 @@ public class AllyFollowManager : MonoBehaviour
 
             if (token.IsCancellationRequested)
             {
-                Debug.Log("Ally Controller- Follow Async Task cancel token");
+                //Debug.Log("Ally Controller- Follow Async Task cancel token");
                 return;
             }
 
@@ -101,7 +96,7 @@ public class AllyFollowManager : MonoBehaviour
 
             if (Input.GetKey(KeyCode.Mouse1))
             {
-                Debug.Log("Defending");
+                //Debug.Log("Defending");
                 if (!isDefending)
                 {
                     isDefending = true;

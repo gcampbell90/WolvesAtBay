@@ -35,27 +35,15 @@ public class Spearman : Enemy
     //    rb.useGravity = true;
     //}
 
-    private void DEBUG_AddMoveComponent()
-    {
-        gameObject.AddComponent<MovementController>();
-    }
 
-    public override void OnCollisionEnter(Collision collision)
+    public override void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.tag != "Weapon") return;
-        Debug.Log($"{gameObject.name} hit by a " + collision.gameObject.tag);
+        Debug.Log($"SPEARMAN - {gameObject.name} hit by a " + collision.collider.gameObject);
+
+        if (collision.collider.gameObject.tag != "Weapon") return;
 
         //replace damage with weapon/player strength/damage
-        TakeDamage(20);
+        TakeDamage(50);
     }
-    public override void OnTriggerEnter(Collider collider)
-    {
-        if (collider.gameObject.tag != "Weapon") return;
-        //Debug.Log($"SWORDMAN - {gameObject.name} hit by a " + collider.gameObject.tag);
-
-        //replace damage with weapon/player strength/damage
-        TakeDamage(10);
-    }
-
     #endregion
 }

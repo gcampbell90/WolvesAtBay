@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerCombatController : MonoBehaviour
@@ -11,81 +12,156 @@ public class PlayerCombatController : MonoBehaviour
     public delegate void DefendCommand();
     public static DefendCommand OnDefendCommand;
 
+    public delegate void DefendAttackCommand();
+    public static DefendAttackCommand OnDefendAttackCommand;
+
+    public delegate void DefendMoveCommand();
+    public static DefendMoveCommand OnDefendMarch;
+
+    private Coroutine m_Coroutine;
+    private Transform _weaponPivot;
+
     private void OnEnable()
     {
         OnAttackCommand += AttackCommandAction;
         OnDefendCommand += DefendCommandAction;
+        OnDefendAttackCommand += DefendAttackCommandAction;
+        OnDefendMarch += DefendMoveCommandAction;
     }
+
+
     private void OnDisable()
     {
         OnAttackCommand -= AttackCommandAction;
         OnDefendCommand -= DefendCommandAction;
+        OnDefendAttackCommand -= DefendAttackCommandAction;
+        OnDefendMarch -= DefendMoveCommandAction;
+    }
+
+
+    private void Awake()
+    {
+        _weaponPivot = transform.GetChild(0).GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetComponentInChildren<Transform>();
     }
     private void AttackCommandAction()
     {
-        StartCoroutine(AttackMove());
+        StartCoroutine(Attack());
     }
     private void DefendCommandAction()
     {
-        StartCoroutine(DefensiveMove());
+        StartCoroutine(Defend());
+    }
+    private void DefendAttackCommandAction()
+    {
+        StartCoroutine(DefendAttack());
+    }
+    private void DefendMoveCommandAction()
+    {
+        StartCoroutine(DefendMarch());
     }
 
-    private IEnumerator AttackMove()
+    private IEnumerator Attack()
     {
         Debug.Log("PlayerCombatController - Attacking");
         // Just make the animation interval configurable for easier modification later
-        float duration = 0.1f;
-        float rot = 40;
+        float duration = 0.5f;
         float progress = 0f;
 
         //Play the sword swing audio from the effect controller
         //EffectController.Instance.PlaySwordSound();
 
-
-        //PlayerController?.On onAttack?.Invoke();
-
-        //Get Mouse Position
-        //var cam = Camera.main;
-        //Vector3 point = cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1));
-        //// Using some math to calculate the point of intersection between the line going through the camera and the mouse position with the XZ-Plane
-        //float t = cam.transform.position.y / (cam.transform.position.y - point.y);
-        //Vector3 finalPoint = new Vector3(t * (point.x - cam.transform.position.x) + cam.transform.position.x, 1, t * (point.z - cam.transform.position.z) + cam.transform.position.z);
-        //transform.LookAt(finalPoint);
+        Player.OnActionCompleted?.Invoke(false);
 
         // Loop until instructed otherwise
-        while (progress <= 1f)
+        while (progress <= duration)
         {
             //_swordPivot.localRotation = Quaternion.Slerp(Quaternion.Euler(0, -70, 0), Quaternion.Euler(0, rot, 0), progress);
-            progress += Time.deltaTime / duration;
+            progress += Time.deltaTime;
 
             yield return null;
         }
+
+        Player.OnActionCompleted?.Invoke(true);
 
         //_swordPivot.localRotation = Quaternion.Euler(0, -70, 0);
     }
-    private IEnumerator DefensiveMove()
+    private IEnumerator DefendAttack()
     {
-        Debug.Log("PlayerCombatController - Defending");
+        //Debug.Log("PlayerCombatController - AttackingFromPhalanx");
+        // Just make the animation interval configurable for easier modification later
+        float duration = 0.5f;
+        float progress = 0f;
 
-        
-        //onDefend?.Invoke();
+        Player.OnActionCompleted?.Invoke(false);
+        var newPos = new Vector3(0, 0.1f, 0);
 
-        //float rot = 40;
-        float timer = 0f;
-        float duration = 2f;
-        Quaternion originRot = Quaternion.identity;
-        var newRot = Quaternion.Euler(originRot.eulerAngles + new Vector3(0, 45, 0));
-        transform.GetChild(0).transform.localRotation = newRot;
-
-        while (!Input.GetKeyUp(KeyCode.Mouse1))
+        //Debug.Log(_weaponPivot.transform.localPosition);
+        // Loop until instructed otherwise
+        while (progress <= duration)
         {
-            //_swordPivot.gameObject.SetActive(false);
-            //_shieldPivot.gameObject.SetActive(true);
+            _weaponPivot.Translate(newPos, Space.Self);
+            _weaponPivot.transform.localPosition = Vector3.Lerp(_weaponPivot.localPosition, Vector3.zero, progress + Time.deltaTime);
+            progress += Time.deltaTime;
+
             yield return null;
         }
-        //_animator.SetBool("IsDefending", false);
-        transform.GetChild(0).transform.localRotation = originRot;
-        //_animator.Play("Movement", 0);
-        yield return null;
+
+        Player.OnActionCompleted?.Invoke(true);
+
+        //_swordPivot.localRotation = Quaternion.Euler(0, -70, 0);
     }
+    private IEnumerator Defend()
+    {
+        //Debug.Log("PlayerCombatController - Defending");
+        float duration = 1f;
+        float progress = 0f;
+
+        //PlayerRot for defense
+        Quaternion originRot = Quaternion.identity;
+        var newRot = Quaternion.Euler(originRot.eulerAngles + new Vector3(0, 25, 0));
+        transform.GetChild(0).transform.localRotation = newRot;
+        //weaponrot for defense
+        var originWeaponRot = _weaponPivot.transform.localRotation;
+        var newWeaponRot = Quaternion.Euler(0, 0, 130f);
+        _weaponPivot.transform.localRotation = newWeaponRot;
+
+        //Debug.Log($"PlayerCombatController - Defending   {originRot}->{newRot}");
+        Player.OnActionCompleted?.Invoke(false);
+
+        while (Input.GetKey(KeyCode.Mouse1))
+        {
+            yield return null;
+        }
+        transform.GetChild(0).transform.localRotation = originRot;
+
+        Player.OnActionCompleted?.Invoke(true);
+    }
+
+    private IEnumerator DefendMarch()
+    {
+        //Debug.Log("PlayerCombatController - Defending");
+        float duration = 1f;
+        float progress = 0f;
+
+        //PlayerRot for defense
+        Quaternion originRot = Quaternion.identity;
+        var newRot = Quaternion.Euler(originRot.eulerAngles + new Vector3(0, 25, 0));
+        transform.GetChild(0).transform.localRotation = newRot;
+        //weaponrot for defense
+        var originWeaponRot = _weaponPivot.transform.localRotation;
+        var newWeaponRot = Quaternion.Euler(0, 0, 130f);
+        _weaponPivot.transform.localRotation = newWeaponRot;
+
+        //Debug.Log($"PlayerCombatController - Defending   {originRot}->{newRot}");
+        Player.OnActionCompleted?.Invoke(false);
+
+        while (Input.GetKey(KeyCode.Mouse1))
+        {
+            yield return null;
+        }
+        transform.GetChild(0).transform.localRotation = originRot;
+
+        Player.OnActionCompleted?.Invoke(true);
+    }
+
 }

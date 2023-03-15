@@ -10,7 +10,7 @@ public class CombatController : MonoBehaviour
 {
     //WeaponInfo 
     public Transform Pivot { get; set; }
-    float range = 10;
+    float range = 2;
     //TODO implement into attack speed?
     int _speed;
     public Rigidbody WeaponRB { get; set; }
@@ -18,7 +18,7 @@ public class CombatController : MonoBehaviour
     //coroutine check
     bool isAttacking;
 
-    public Transform Target { get; set; } 
+    public Transform Target { get; set; }
 
     //Delegate to hold attack animation type - should eventually be managed by weapon system
     public delegate IEnumerator AttackBehaviourDelegate();
@@ -91,7 +91,7 @@ public class CombatController : MonoBehaviour
         WeaponRB.mass = 0.1f;
 
         WeaponCollider = Pivot.GetComponentInChildren<BoxCollider>();
-        WeaponCollider.isTrigger = true;
+        WeaponCollider.isTrigger = false;
         //Pivot.tag = "Weapon";
 
         //Debug.Log($"Attack Behaviour Component - Range: {range}");
@@ -116,6 +116,7 @@ public class CombatController : MonoBehaviour
         sword.tag = "Weapon";
         sword.layer = tag == "Enemy" ? 10 : 11;
     }
+
     private void AttachSpear()
     {
         //Pivot.transform.localPosition = new Vector3(0, 0, 0.9f);
@@ -135,6 +136,7 @@ public class CombatController : MonoBehaviour
         spear.tag = "Weapon";
         spear.layer = tag == "Enemy" ? 10 : 11;
     }
+
     private IEnumerator SwordAttackMove()
     {
         if (isAttacking)
@@ -171,6 +173,7 @@ public class CombatController : MonoBehaviour
 
         isAttacking = false;
     }
+
     private IEnumerator SpearAttackMove()
     {
         if (isAttacking)
@@ -208,7 +211,6 @@ public class CombatController : MonoBehaviour
             yield return null;
         }
         Pivot.GetComponentInChildren<BoxCollider>().enabled = false;
-
 
         isAttacking = false;
     }
