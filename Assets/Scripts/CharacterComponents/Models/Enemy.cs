@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider))]
+//[RequireComponent(typeof(BoxCollider))]
 public abstract class Enemy : CharacterBase
 {
-    [SerializeField]private BoxCollider _colliderBlocker;
-
     public delegate void DeathEvent();
     public static event DeathEvent deathEvent;
 
@@ -38,13 +36,12 @@ public abstract class Enemy : CharacterBase
 
         rb.isKinematic = false;
 
-        var col = GetComponent<Collider>();
-        col.isTrigger = false;
+        //var col = GetComponent<Collider>();
+        //col.isTrigger = false;
 
         transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0));
 
         gameObject.AddComponent<TargetingSystem>();
-        //gameObject.AddComponent<TargetController>();
         gameObject.AddComponent<MovementController>();
         gameObject.AddComponent<CombatController>();
 
@@ -67,11 +64,7 @@ public abstract class Enemy : CharacterBase
         deathRemoveEvent?.Invoke(this);
         GetComponent<IKillable>().Destroy();
     }
-    //public void SetTarget(Transform target)
-    //{
-    //    Debug.Log("Setting target" + target);
-    //    GetComponent<ICanTarget>().SetTarget(target);
-    //}
+
     public override void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.tag != "Weapon") return;
@@ -80,5 +73,6 @@ public abstract class Enemy : CharacterBase
         //replace damage with weapon/player strength/damage
         TakeDamage(20);
     }
+
 }
 

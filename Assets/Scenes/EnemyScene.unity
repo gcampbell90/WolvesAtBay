@@ -124,6 +124,57 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &453652955
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 453652957}
+  - component: {fileID: 453652956}
+  m_Layer: 0
+  m_Name: EnemyManager (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &453652956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453652955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 507ea5f8372ec364db608dd206df7f2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debug_swordsmanCount: 10
+  debug_spearmanCount: 0
+  swordsManGO: {fileID: 8024683321371669090, guid: 3e40d858396880b47b7b062277cec2ad,
+    type: 3}
+  spearManGO: {fileID: 2953740907042105437, guid: 1bd4fbe57cf6bf64b8af7e3938172a4e,
+    type: 3}
+  cols: 2
+--- !u!4 &453652957
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453652955}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 18.12, y: 0, z: 17.08}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1811054378
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,7 +200,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1811054378}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -168,9 +219,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507ea5f8372ec364db608dd206df7f2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug_swordsmanCount: 5
-  debug_spearmanCount: 0
-  swordsManGO: {fileID: 6675740421688258139, guid: 8bc18bf90c98b4a4e8efb0b7b6863c10,
+  debug_swordsmanCount: 10
+  debug_spearmanCount: 10
+  swordsManGO: {fileID: 8024683321371669090, guid: 3e40d858396880b47b7b062277cec2ad,
     type: 3}
   spearManGO: {fileID: 2953740907042105437, guid: 1bd4fbe57cf6bf64b8af7e3938172a4e,
     type: 3}
+  cols: 6
+--- !u!1 &2024431245
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2024431247}
+  - component: {fileID: 2024431246}
+  m_Layer: 0
+  m_Name: EnemyManager (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &2024431246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2024431245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 507ea5f8372ec364db608dd206df7f2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debug_swordsmanCount: 10
+  debug_spearmanCount: 0
+  swordsManGO: {fileID: 8024683321371669090, guid: 3e40d858396880b47b7b062277cec2ad,
+    type: 3}
+  spearManGO: {fileID: 2953740907042105437, guid: 1bd4fbe57cf6bf64b8af7e3938172a4e,
+    type: 3}
+  cols: 4
+--- !u!4 &2024431247
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2024431245}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -16.55, y: 0, z: 17.08}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

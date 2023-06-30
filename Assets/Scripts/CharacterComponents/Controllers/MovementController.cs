@@ -7,10 +7,10 @@ using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public partial class MovementController : MonoBehaviour, ICanMove
+public class MovementController : MonoBehaviour, ICanMove
 {
 
-    [SerializeField]private Transform target;
+    private Transform target;
     public Transform Target
     {
         get
@@ -46,7 +46,7 @@ public partial class MovementController : MonoBehaviour, ICanMove
 
     }
 
-    private async void Start()
+    private void Start()
     {
         //set up cancellation token for move task
         _cts = new CancellationTokenSource();
@@ -103,6 +103,7 @@ public partial class MovementController : MonoBehaviour, ICanMove
             await Task.Yield();
         }
 
+
         while (Target != null)
         {
             if (token.IsCancellationRequested)
@@ -110,27 +111,34 @@ public partial class MovementController : MonoBehaviour, ICanMove
                 //Debug.Log("Task Cancelled");
                 return;
             }
-            float distance = Vector3.Distance(transform.position, Target.position);
-            var targetPos = Target.position + new Vector3(0, transform.position.y, 0);
-            while (distance > 5 && Target != null)
+            var pos = Target.transform.position;
+            float _sqrLength = Vector3.SqrMagnitude(transform.position - pos);
+
+            while (_sqrLength > /*Distance before stopping(squared)*/ 2*2 && Target != null)
             {
                 if (token.IsCancellationRequested)
                 {
                     //Debug.Log("Task Cancelled");
                     return;
                 }
-
                 //Debug.Log($"MOVE TO TARGET - {gameObject} Moving to Target {distance}");
 
                 //distance = Vector3.Distance(transform.position, Target.position);
+                //_sqrLength = Vector3.SqrMagnitude(transform.position - Target.transform.position);
+                var targetPos = Target.position + new Vector3(0, transform.position.y, 0);
+                transform.LookAt(pos);
+
+                //Debug.Log("TargetPos: " + targetPos + " Distance: " + _sqrLength);
 
                 // Move our position a step closer to the target.
                 var step = _speed * Time.deltaTime; // calculate distance to move
                 
                 transform.position = Vector3.MoveTowards(transform.position, targetPos, step);
-                transform.LookAt(targetPos);
+
+                _sqrLength = Vector3.SqrMagnitude(transform.position - Target.transform.position);
                 await Task.Yield();
             }
+
             destinationArrived = true;
             //Debug.Log("MOVE TO TARGET - Destination Arrived");
             await Task.Yield();

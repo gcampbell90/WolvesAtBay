@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
@@ -14,7 +15,7 @@ public class BattleManager : MonoBehaviour
     [SerializeField] bool DebugTargetLinesEnabledAllies = false;
     [SerializeField] bool DebugTargetLinesEnabledEnemies = false;
 
-    private EnemyManager _enemyManager;
+    private EnemyManager[] _enemyManager;
     private AllyManager _allyManager;
 
     [Header("Enemy Setup")]
@@ -99,17 +100,12 @@ public class BattleManager : MonoBehaviour
     void Start()
     {
         _allyManager = FindObjectOfType<AllyManager>();
-        _enemyManager = FindObjectOfType<EnemyManager>();
+        _enemyManager = FindObjectsOfType<EnemyManager>();
 
         if (_allyManager != null)
         {
             FindAndSetAllies();
         }
-        else
-        {
-            Debug.Log("AllyManager null");
-        }
-
 
         if (_enemyManager != null)
         {
@@ -144,29 +140,36 @@ public class BattleManager : MonoBehaviour
     }
 
 
-
+    List<Enemy> tmpEnemies = new List<Enemy>();
     private IEnumerator CreateEnemies()
     {
-        float duration = 3f;
+        float duration = 10f;
         for (int i = 0; i < EnemyWaves; i++)
         {
-            Enemies = _enemyManager.SpawnEnemies(swordsmanCount, spearmanCount);
-            if (_allies.Count > 0) { SetEnemyTarget(); }
+            foreach (var manager in _enemyManager)
+            {
+                tmpEnemies = manager.SpawnEnemies(swordsmanCount, spearmanCount);
+
+                if (_allies.Count > 0) { SetEnemyTargets(tmpEnemies); }
+                Enemies.AddRange(tmpEnemies);
+                tmpEnemies.Clear();
+                yield return null;
+            }
             yield return new WaitForSeconds(duration);
         }
     }
-    private void SetEnemyTarget()
+
+    List<Ally> _freeTargets;
+
+    private void SetEnemyTargets(List<Enemy> tmpEnemies)
     {
-        if (Enemies.Count > 0)
+        Debug.Log("BATTLE MANAGER - Setting targets for enemies");
+        foreach (var enemy in tmpEnemies)
         {
-            //Debug.Log("Group Controller - Will arrive here after enemies found");
-            foreach (var enemy in Enemies)
-            {
-                Debug.Log("BATTLE MANAGER - Setting targets for enemies");
-                enemy.GetComponent<ICanTarget>().SetTarget(GetNearestTargetGeneric(enemy.gameObject));
-                enemy.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabledEnemies;
-            }
+            enemy.gameObject.GetComponent<ICanTarget>().SetTarget(GetNearestTarget(enemy.gameObject));
+            enemy.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabledEnemies;  
         }
+
     }
 
     private void FindAndSetAllies()
@@ -179,83 +182,34 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    //async Task<List<Enemy>> FindAndSetEnemies(CancellationToken token)
-    //{
-    //    List<Enemy> m_tmpList = new List<Enemy>();
-
-    //    var enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-    //    while (enemies == null || m_tmpList.Count == 0 || !ApplicationStateManager.playMode)
-    //    {
-    //        Debug.Log("BATTLE MANAGER - Looking for enemies");
-
-    //        if (token.IsCancellationRequested)
-    //        {
-    //            //Debug.Log("Group Controller - FollowTheLeader Async Task has been cancelled");
-    //            return null;
-    //        }
-    //        enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-    //        if (enemies.Length > 0)
-    //        {
-    //            //Debug.Log("Group Controller - Will arrive here after enemies found");
-    //            foreach (var enemy in enemies)
-    //            {
-    //                Debug.Log("BATTLE MANAGER - Setting Enemy in list");
-
-    //                var enemyComponent = enemy.GetComponent<Enemy>();
-
-    //                enemy.GetComponent<TargetingSystem>().EnableDebugLines = DebugTargetLinesEnabledEnemies;
-    //                m_tmpList.Add(enemyComponent);
-    //            }
-
-    //            continue;
-    //        }
-    //        await Task.Yield();
-    //    }
-
-    //    //Debug.Log("Group Controller - Returning Found Array/List" + m_tmpList);
-
-    //    if (m_tmpList.Count > 0)
-    //    {
-    //        return m_tmpList;
-    //    }
-    //    else
-    //    {
-    //        return null;
-    //    }
-    //}
-
-    public Transform GetNearestTargetGeneric(GameObject _source)
+    public Transform GetNearestTarget(GameObject _source)
     {
-        Transform[] _targetGroup = null;
-
-        if (_source.tag == "Ally" && _enemies.Count > 0)
-        {
-            _targetGroup = _enemies.Select(f => f.transform).ToArray();
-        }
-        else if (_source.tag == "Enemy" && _allies.Count > 0)
-        {
-            _targetGroup = _allies.Select(f => f.transform).ToArray();
-        }
+        //if (_allies.Count == 0 | _enemies.Count == 0) return null;
 
         var nearestDist = float.MaxValue;
         Transform nearestObject = null;
+        Ally tempAlly = null;
 
-        foreach (var entity in _targetGroup)
+        if(_freeTargets == null || _freeTargets.Count == 0)
+        {
+            _freeTargets = new List<Ally>(Allies);
+        }
+
+        foreach (var entity in _freeTargets)
         {
             //Vector3 offset = entity.position - transform.position;
             //float sqrLen = entity.sqrMagnitude;
 
             //calculates closest object
             var distance = Vector3.SqrMagnitude(_source.transform.position - entity.transform.position);
-            //Debug.Log($"{_source.name} {entity.name} distance: {distance}");
+            //Debug.Log($"Source- {_source.name} Target- {entity.name} distance: {distance}");
 
             if (distance < nearestDist)
             {
                 nearestDist = distance;
                 nearestObject = entity.transform;
             }
+
             //    Debug.Log($"Distance from {_source.name} to {entity.name} is {distance}");
 
             //    //if when finds an object closest will check the raycast
@@ -290,7 +244,20 @@ public class BattleManager : MonoBehaviour
             //    //Debug.Log($"BATTLE MANAGER - {gameObject.name} - Setting Target {nearestObject.name}");
             //}
         }
-        return nearestObject;
+        if (nearestObject != null)
+        {
+            //Debug.Log($"BATTLE MANAGER - Enemy {_source.name} Target- {nearestObject}");
+            tempAlly = nearestObject.GetComponent<Ally>();
+            _freeTargets.Remove(tempAlly);
+            //if (_freeTargets.Contains(tempAlly)) Debug.Log($"Removing from free list."); _freeTargets.Remove(tempAlly); Debug.Log($"Remaining {_freeTargets.Count}");
+            return nearestObject;
+        }
+        else
+        {
+            //Debug.Log($"BATTLE MANAGER - Enemy {_source.name} -No available targets");
+
+            return null;
+        }
     }
 
     private void RemoveEntity(Enemy enemy)

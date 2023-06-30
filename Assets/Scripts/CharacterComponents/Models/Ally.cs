@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Ally : CharacterBase
 {
+    [SerializeField] HitBox hitbox;
+    [SerializeField] HitBox hitboxShield;
+
     private GameObject _follower;
     private Transform _weaponPivot;
 
@@ -17,29 +20,62 @@ public class Ally : CharacterBase
     private bool isDefending = false;
     private bool isAttacking = false;
 
+    public delegate void AttackCommand();
+    public static AttackCommand OnAttackCommand;
+
     public delegate void DefendCommand();
     public static DefendCommand OnDefendCommand;
 
     public delegate void DefendAttackCommand();
     public static DefendAttackCommand OnDefendAttackCommand;
 
-    public delegate void AttackCommand();
-    public static AttackCommand OnAttackCommand;
+    public delegate void IdleCommand();
+    public static IdleCommand OnIdleCommand;
 
     public delegate void DeathRemoveEvent(Ally ally);
     public static event DeathRemoveEvent OnDeathRemoveEvent;
 
+
+    private void shield_OnHit(object sender, EventArgs e)
+    {
+        Debug.Log($"Subscriber receives the Ihitable event.{sender} {e}");
+    }
+    private void ally_OnHit(object sender, EventArgs e)
+    {
+        Debug.Log($"Subscriber receives the Ihitable event.{sender} {e}");
+    }
+
     private void OnEnable()
     {
+        OnIdleCommand += delegate { TogglePlayerHitbox(true); };
         OnDefendCommand += DefendMove;
+        OnDefendCommand += delegate { TogglePlayerHitbox(false); }; ;
         OnAttackCommand += AttackMove;
         OnDefendAttackCommand += DefendAttackMove;
+
+        IHitable _playerHitBox = hitbox;
+        _playerHitBox.OnColliderHit += ally_OnHit;
+        IHitable _shieldHitBox = hitboxShield;
+        _shieldHitBox.OnColliderHit += shield_OnHit;
     }
     private void OnDisable()
     {
+        OnIdleCommand -= delegate { TogglePlayerHitbox(true); };
         OnDefendCommand -= DefendMove;
+        OnDefendCommand -= delegate { TogglePlayerHitbox(false); }; ;
         OnAttackCommand -= AttackMove;
         OnDefendAttackCommand -= DefendAttackMove;
+
+        IHitable _playerHitBox = hitbox;
+        _playerHitBox.OnColliderHit -= ally_OnHit;
+        IHitable _shieldHitBox = hitboxShield;
+        _shieldHitBox.OnColliderHit -= shield_OnHit;
+    }
+
+    private void TogglePlayerHitbox(bool v)
+    {
+        if (hitbox.Collider.enabled == v) return;
+        hitbox.Collider.enabled = v;
     }
 
     private void Awake()
@@ -84,7 +120,6 @@ public class Ally : CharacterBase
             yield return null;
         }
     }
-
     private IEnumerator Attack()
     {
         Debug.Log("AllyController - Attacking");
@@ -122,7 +157,6 @@ public class Ally : CharacterBase
         isDefending = false;
         transform.GetChild(0).transform.localRotation = Quaternion.Euler(0, 0, 0);
     }
-
     private IEnumerator DefendAttack()
     {
         //Debug.Log("Ally - AttackingFromPhalanx");
@@ -148,7 +182,6 @@ public class Ally : CharacterBase
 
         //_swordPivot.localRotation = Quaternion.Euler(0, -70, 0);
     }
-
     void AnimationController(AnimationState newstate)
     {
         string motionTitle;
@@ -215,18 +248,14 @@ public class Ally : CharacterBase
 
     public override void OnCollisionStay(Collision collision)
     {
+        //if (collision.collider.gameObject.tag != "Weapon") return;
 
-        if (collision.collider.gameObject.tag != "Weapon") return;
+        //Debug.Log($"Collision on {gameObject.name} from {collision.collider.gameObject.name}");
 
-        Debug.Log($"Collision on {gameObject.name} from {collision.collider.gameObject.name}");
-
-        TakeDamage(10);
-        gameObject.GetComponent<Rigidbody>().isKinematic = true;
-        gameObject.GetComponent<Rigidbody>().isKinematic = false;
-
-
+        //TakeDamage(10);
+        //gameObject.GetComponent<Rigidbody>().isKinematic = true;
+        //gameObject.GetComponent<Rigidbody>().isKinematic = false;
     }
-
     public override void TakeDamage(int damage)
     {
         //Debug.Log($"{gameObject.name} have taken damage of {damage}");

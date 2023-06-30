@@ -10,7 +10,7 @@ public class CombatController : MonoBehaviour
 {
     //WeaponInfo 
     public Transform Pivot { get; set; }
-    float range = 2;
+    float range = 5;
     //TODO implement into attack speed?
     int _speed;
     public Rigidbody WeaponRB { get; set; }
@@ -19,10 +19,13 @@ public class CombatController : MonoBehaviour
     bool isAttacking;
 
     public Transform Target { get; set; }
-
+    private float cooldown = 2f;
     //Delegate to hold attack animation type - should eventually be managed by weapon system
     public delegate IEnumerator AttackBehaviourDelegate();
     public AttackBehaviourDelegate AttackMove;
+
+    private float _distance;
+    private float timer = 0.0f;
 
     void Start()
     {
@@ -39,14 +42,25 @@ public class CombatController : MonoBehaviour
             return;
         }
 
-        var _distance = Vector3.Distance(transform.position, Target.position);
+        _distance = Vector3.SqrMagnitude(transform.position - Target.transform.position);
 
-        if (_distance < range + 5)
+        if (timer >= cooldown)
         {
-            //Debug.Log("Attacking" + target);
-
-            StartCoroutine(AttackMove());
+            if (_distance < range)
+            {
+                Attack();
+                timer -= cooldown;
+                //StartCoroutine(AttackMove());
+            }
         }
+        else if (timer < cooldown)
+        {
+            {
+                timer += Time.deltaTime;
+            }
+        }
+
+
 
         //Debug.Log($"Attack Behaviour Component"
         //    + $" - Range: {_distance}"
@@ -56,42 +70,44 @@ public class CombatController : MonoBehaviour
 
     public void Attack()
     {
-        Debug.Log("AttackBehaviour - attack method ");
+        //Debug.Log("EnemyCombatController- attack method ");
 
         StartCoroutine(AttackMove());
     }
     private void AttachWeaponObjects()
     {
-        Pivot = new GameObject("WeaponPivot").transform;
 
         if (gameObject.GetComponent<Swordsman>() != null)
         {
-            AttachSword();
+            //AttachSword();
             AttackMove += SwordAttackMove;
 
         }
         else if (gameObject.GetComponent<Spearman>() != null)
         {
-            AttachSpear();
-            AttackMove += SpearAttackMove;
-        }
-        else if (gameObject.GetComponent<Ally>() != null)
-        {
-            //AttachSword();
-            //AttackMove += SwordAttackMove;
+            Pivot = new GameObject("WeaponPivot").transform;
 
             AttachSpear();
             AttackMove += SpearAttackMove;
+            Pivot.transform.SetParent(transform, false);
+            WeaponCollider = Pivot.GetComponentInChildren<BoxCollider>();
+            WeaponCollider.isTrigger = false;
         }
+        //else if (gameObject.GetComponent<Ally>() != null)
+        //{
+        //    //AttachSword();
+        //    //AttackMove += SwordAttackMove;
 
-        Pivot.transform.SetParent(transform, false);
+        //    AttachSpear();
+        //    AttackMove += SpearAttackMove;
+        //}
+
 
         //range = Pivot.GetComponentInChildren<Transform>().GetChild(0).localScale.z;
-        WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
-        WeaponRB.mass = 0.1f;
+        //WeaponRB = Pivot.GetComponentInChildren<Rigidbody>();
+        //WeaponRB.mass = 0.1f;
 
-        WeaponCollider = Pivot.GetComponentInChildren<BoxCollider>();
-        WeaponCollider.isTrigger = false;
+
         //Pivot.tag = "Weapon";
 
         //Debug.Log($"Attack Behaviour Component - Range: {range}");
@@ -143,28 +159,32 @@ public class CombatController : MonoBehaviour
             yield break;
 
         isAttacking = true;
+
         // Just make the animation interval configurable for easier modification later
         float duration = 0.5f;
-        float rot = Pivot.localRotation.y > 0 ? -45 : 45;
+        //float rot = Pivot.localRotation.y > 0 ? -45 : 45;
         float progress = 0f;
-        // Loop until instructed otherwise
-        while (progress <= duration)
+
+        //telegraph move for player to anticipate
+        while (progress <= 1)
         {
 
             // Do some nice animation
-            Pivot.localRotation = Quaternion.Slerp(Pivot.localRotation, Quaternion.Euler(new Vector3(0, rot, 0)), progress);
-            progress += Time.deltaTime / duration;
+            //Pivot.localRotation = Quaternion.Slerp(Pivot.localRotation, Quaternion.Euler(new Vector3(0, rot, 0)), progress);
+            progress += Time.deltaTime;
 
             // Make the coroutine wait for a moment
             yield return null;
         }
+
+        //attack move
         progress = 0f;
-        rot = Pivot.localRotation.y > 0 ? -45 : 45;
+
         while (progress <= duration)
         {
 
             // Do some nice animation
-            Pivot.localRotation = Quaternion.Slerp(Pivot.localRotation, Quaternion.Euler(new Vector3(0, rot, 0)), progress);
+            //Pivot.localRotation = Quaternion.Slerp(Pivot.localRotation, Quaternion.Euler(new Vector3(0, rot, 0)), progress);
             progress += Time.deltaTime / duration;
 
             // Make the coroutine wait for a moment

@@ -5,21 +5,22 @@ using UnityEngine;
 
 public class Player : CharacterBase
 {
-    public static PlayerInputController.ActionCompleted OnActionCompleted;
+    [SerializeField] HitBox hitbox;
+    [SerializeField] HitBox hitboxShield;
 
     public static PlayerMovementController.PlayerMoveCommand OnMove;
     public static PlayerCombatController.AttackCommand OnAttack;
     public static PlayerCombatController.DefendCommand OnDefend;
     public static PlayerCombatController.DefendAttackCommand OnDefendAttack;
     public static PlayerCombatController.DefendMoveCommand OnDefendMarch;
-    //public static PlayerMovementController.PlayerDefendMoveCommand OnDefendMove;
-
+    public static PlayerInputController.ActionCompleted OnActionCompleted;
 
     public delegate void IdleCommand();
     public static IdleCommand OnIdle;
 
     public enum AnimationState { Idle, Attack, Block, BlockAttack, BlockMove, Walk, Death }
     private AnimationState _animationState;
+
     public AnimationState CurrentAnimationState
     {
         get { return _animationState; }
@@ -28,6 +29,14 @@ public class Player : CharacterBase
 
     private Animator _animator;
 
+    private void shield_OnHit(object sender, EventArgs e)
+    {
+        Debug.Log($"Subscriber receives the Ihitable event.{sender} {e}");
+    }
+    private void player_OnHit(object sender, EventArgs e)
+    {
+        Debug.Log($"Subscriber receives the Ihitable event.{sender} {e}");
+    }
     private void OnEnable()
     {
         OnMove += PlayerMovementController.OnMovePlayer;
@@ -35,28 +44,32 @@ public class Player : CharacterBase
         OnDefend += PlayerCombatController.OnDefendCommand;
         OnDefendAttack += PlayerCombatController.OnDefendAttackCommand;
         OnDefendMarch += PlayerCombatController.OnDefendMarch;
-        //OnDefendMove += PlayerMovementController.OnDefendMove;
         OnActionCompleted += PlayerInputController.OnActionCompleted;
 
         OnMove += delegate { GetAnimation(); };
-        //OnMove += delegate { UpdateAnimator(AnimationState.Walk); };
         OnAttack += delegate { UpdateAnimator(AnimationState.Attack); };
         OnDefend += delegate { UpdateAnimator(AnimationState.Block); }; ;
         OnDefendMarch += delegate { UpdateAnimator(AnimationState.BlockMove); }; ;
         OnIdle += delegate { UpdateAnimator(AnimationState.Idle); };
+        OnIdle += delegate { TogglePlayerHitbox(true); };
 
+        //test for blocking attacks
+        OnDefend += delegate { TogglePlayerHitbox(false); };
+
+        IHitable _playerHitBox = hitbox;
+        _playerHitBox.OnColliderHit += player_OnHit;
+        IHitable _shieldHitBox = hitboxShield;
+        _shieldHitBox.OnColliderHit += shield_OnHit;
     }
 
-    private void GetAnimation()
+    private void TogglePlayerHitbox(bool v)
     {
-        if (_animationState == AnimationState.Block || _animationState == AnimationState.BlockMove)
-        {
-            UpdateAnimator(AnimationState.BlockMove);
-        }
-        else
-        {
-            UpdateAnimator(AnimationState.Walk);
-        }
+        //Debug.Log($"Toggle player call");
+
+        if (hitbox.Collider.enabled == v) return;
+        //Debug.Log($"Toggling player hitbox {v}");
+
+        hitbox.Collider.enabled = v; 
     }
 
     private void OnDisable()
@@ -66,26 +79,22 @@ public class Player : CharacterBase
         OnDefend -= PlayerCombatController.OnDefendCommand;
         OnDefendAttack -= PlayerCombatController.OnDefendAttackCommand;
         OnDefendMarch -= PlayerCombatController.OnDefendMarch;
-        //OnDefendMove -= PlayerMovementController.OnDefendMove;
 
         OnActionCompleted -= PlayerInputController.OnActionCompleted;
 
-        //OnMove -= (_animationState == AnimationState.Block ? delegate
-        //{
-        //    UpdateAnimator(AnimationState.BlockMove);
-        //}
-        //:
-        //delegate
-        // {
-        //     UpdateAnimator(AnimationState.Walk);
-        // });
         OnMove -= delegate { GetAnimation(); };
-
-        //OnMove -= delegate { UpdateAnimator(AnimationState.Walk); };
         OnAttack -= delegate { UpdateAnimator(AnimationState.Attack); };
         OnDefend -= delegate { UpdateAnimator(AnimationState.Block); }; ;
         OnDefendMarch -= delegate { UpdateAnimator(AnimationState.BlockMove); }; ;
         OnIdle -= delegate { UpdateAnimator(AnimationState.Idle); };
+        OnIdle -= delegate { TogglePlayerHitbox(true); };
+
+        //test for blocking attacks
+        OnDefend -= delegate { TogglePlayerHitbox(false); };
+        IHitable _playerHitBox = hitbox;
+        _playerHitBox.OnColliderHit -= player_OnHit;
+        IHitable _shieldHitBox = hitboxShield;
+        _shieldHitBox.OnColliderHit -= shield_OnHit;
 
     }
 
@@ -103,13 +112,23 @@ public class Player : CharacterBase
     {
         Cursor.lockState = CursorLockMode.Locked;
     }
-
+    private void GetAnimation()
+    {
+        if (_animationState == AnimationState.Block || _animationState == AnimationState.BlockMove)
+        {
+            UpdateAnimator(AnimationState.BlockMove);
+        }
+        else
+        {
+            UpdateAnimator(AnimationState.Walk);
+        }
+    }
     void UpdateAnimator(AnimationState newstate)
     {
         string motionTitle;
         motionTitle = "";
 
-
+        //Debug.Log("Animator Call");
         if (newstate == _animationState) return;
         //Debug.Log($"{_animationState} -> {newstate}");
         switch (newstate)
@@ -178,13 +197,11 @@ public class Player : CharacterBase
     }
     public override void OnCollisionStay(Collision collision)
     {
-        //Debug.Log($"Collision on {gameObject.name} from {collision.gameObject.name}");
-        if (collision.collider.gameObject.name != "Sword" && collision.collider.gameObject.name != "Spear") return;
-        {
-            TakeDamage(5);
-            gameObject.GetComponent<Rigidbody>().isKinematic = true;
-            gameObject.GetComponent<Rigidbody>().isKinematic = false;
-        }
+        //if (collision.collider.gameObject.tag != "Weapon") return;
+        //Debug.Log($"Collision on {gameObject.name} from {collision.gameObject.name}'s {collision.collider.gameObject.name}");
 
+        //TakeDamage(5);
+        //gameObject.GetComponent<Rigidbody>().isKinematic = true;
+        //gameObject.GetComponent<Rigidbody>().isKinematic = false;
     }
 }

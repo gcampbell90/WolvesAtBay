@@ -5,7 +5,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 //Base Character Class - Root of all characters
-[RequireComponent(typeof(Rigidbody))]
 public abstract class CharacterBase : MonoBehaviour, IKillable
 {
     public string Name { get; set; }
@@ -20,6 +19,7 @@ public abstract class CharacterBase : MonoBehaviour, IKillable
     {
         Debug.Log("CharacterBase awake method - the monobehaviour is in the base class so all inherited members should also have inherit monobehaviour class");
     }
+
     //Initialisation
     public virtual void Initialise(int health, int speed, Vector3 position)
     {

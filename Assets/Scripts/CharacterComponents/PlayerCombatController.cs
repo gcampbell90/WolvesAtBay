@@ -19,6 +19,8 @@ public class PlayerCombatController : MonoBehaviour
     public static DefendMoveCommand OnDefendMarch;
 
     private Coroutine m_Coroutine;
+
+    [SerializeField]
     private Transform _weaponPivot;
 
     private void OnEnable()
@@ -29,7 +31,6 @@ public class PlayerCombatController : MonoBehaviour
         OnDefendMarch += DefendMoveCommandAction;
     }
 
-
     private void OnDisable()
     {
         OnAttackCommand -= AttackCommandAction;
@@ -38,11 +39,11 @@ public class PlayerCombatController : MonoBehaviour
         OnDefendMarch -= DefendMoveCommandAction;
     }
 
-
     private void Awake()
     {
-        _weaponPivot = transform.GetChild(0).GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetChild(2).GetChild(0).GetChild(0).GetChild(0).GetChild(0).GetComponentInChildren<Transform>();
+
     }
+
     private void AttackCommandAction()
     {
         StartCoroutine(Attack());
